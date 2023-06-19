@@ -85,13 +85,9 @@ Go to burrito directory.::
 
    $ cd burrito
 
-Run prepare.sh script with offline flag.::
+Run prepare.sh script.::
 
    $ ./prepare.sh
-   Enter management network interface name: eth1
-
-It will prompt for the management network interface name. 
-Enter the management network interface name. (e.g. eth1)
 
 inventory hosts and variables
 +++++++++++++++++++++++++++++
