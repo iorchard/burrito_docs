@@ -26,3 +26,10 @@ Welcome to Burrito's documentation!
 
    operation/add_compute_node
 
+.. toctree::
+   :caption: Releases
+   :maxdepth: 2
+
+   releases/1.2.1
+   releases/1.2.0
+
