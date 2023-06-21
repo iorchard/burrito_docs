@@ -1,0 +1,55 @@
+1.2.1 Aster
+============
+
+This is the first patch in the Aster 1.2 series.
+
+Notable changes
+----------------
+
+* Modify an inventory hosts file. 
+  The monitor_address and radosgw_address variables are removed
+  to reduce human error.
+* Add the ceph-csi and k8s images to the genesis registry to avoid deadlocks
+  when shutting down and starting all control nodes.
+* Patch the ceph-csi and k8s resources to update the image url 
+  to genesis registry.
+* Fix the btx image to check the validity of the first and last ip address
+  based on the provider network cidr.
+
+Burrito Changelog
+------------------
+
+* fix: add pause on restart kubelet; (jijisa@iorchard.net)
+* fix: add become: true to get the pod info so that landing can be independent of burrito playbook; (jijisa@iorchard.net)
+* fix: add image patch to registry pod; (jijisa@iorchard.net)
+* fix: virtual router id range is 1 - 255 so add start parameter in random filter; (jijisa@iorchard.net)
+* fix: gather facts for mon servers in burrito.yml; (jijisa@iorchard.net)
+* fix: add retries in wait for kubernetes services task; (jijisa@iorchard.net)
+* fix: use storage_iface_name to get the monitor address in ceph-provisioners.yml.j2; (jijisa@iorchard.net)
+* fix: update k8s service patch and check; (jijisa@iorchard.net)
+* fix: add k8s images to genesis registry; (jijisa@iorchard.net)
+* fix: typo in Description of genesis_registry.service systemd file; (jijisa@iorchard.net)
+* fix: typo in ceph-csi.yml; (jijisa@iorchard.net)
+* fix: gather facts for mon servers, not rgw servers; (jijisa@iorchard.net)
+* fix: add registry_enabled in when condition; (jijisa@iorchard.net)
+* fix: add the condition when ceph is the default storage backend; (jijisa@iorchard.net)
+* fix: check if registry is running after installing ceph-csi; (jijisa@iorchard.net)
+* feature: upgrade btx to 1.2.1; (jijisa@iorchard.net)
+* fix: scripts/burrito.sh; replace KUBESPRAY_DIR into TOP_DIR; (jijisa@iorchard.net)
+* fix: add ceph-csi images to genesis registry; patch csi-rbdplugin and csi-rbdplugin-provisioner image url; (jijisa@iorchard.net)
+* fix: add tasks to push ceph-csi images to genesis registry; (jijisa@iorchard.net)
+* refactor: add ceph-csi version variables; (jijisa@iorchard.net)
+* fix: add the missing registry patch directory; (jijisa@iorchard.net)
+* fix: (regression) patch registry replicaset to add nodeSelector; (jijisa@iorchard.net)
+* add {monitor,radosgw}_interface in vars.yml.sample; (jijisa@iorchard.net)
+* remove {monitor,radosgw}_address in storage hosts; (jijisa@iorchard.net)
+* refactor: insert a newline after each monitor list item in ceph-csi configmap; (jijisa@iorchard.net)
+* refactor: gather facts for rgws group hosts to get monitor and radosgw address; (jijisa@iorchard.net)
+* refactor: get monitor and rgw ip from storage interface; (jijisa@iorchard.net)
+
+BTX Changelog
+--------------
+
+* image: jijisa/btx:1.2.1 (https://hub.docker.com/r/jijisa/btx/tags)
+* fix: check first and last ip in provider address pool are in network range.
+
