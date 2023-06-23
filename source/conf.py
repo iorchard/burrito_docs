@@ -7,6 +7,7 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'Burrito Documentation'
+author = 'Burrito authors and contributors'
 copyright = '2023, Burrito authors and contributors.'
 
 # -- General configuration ---------------------------------------------------
