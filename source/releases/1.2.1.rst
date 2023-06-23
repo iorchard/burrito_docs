@@ -15,6 +15,9 @@ Notable changes
   to genesis registry.
 * Fix the btx image to check the validity of the first and last ip address
   based on the provider network cidr.
+* Fix burrito.sh script. The burrito.yml playbook is moved out of kubespray 
+  upstream repo but burrito.sh script was still looking for it 
+  in the kubespray directory.
 
 Burrito Changelog
 ------------------
