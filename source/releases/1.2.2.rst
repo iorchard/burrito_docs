@@ -1,0 +1,38 @@
+1.2.2 Aster
+============
+
+This is the second patch in the Aster 1.2 series.
+
+Notable changes
+----------------
+
+* Add the in-use volume migration support in cinder.
+* Add checklist in preflight playbook to minimize human errors.
+* Add NFS-related two paramenters in cinder.
+  Set nas_secure_file_operation and nas_secure_file_permission to false.
+  It is recommended to set them to true but we need to make additional
+  settings on storage backend when we set them to true.
+  So we set them to false by default.
+* Set high scheduling priority to etcd service.
+  Etcd is a critical service in kubernetes cluster so we set cpu and disk io
+  for etcd process to higher priority.
+
+Burrito Changelog
+------------------
+
+* fix: containerd_insecure_registries in vars.yml.sample; (jijisa@iorchard.net)
+* feature: include tag and commit id info in release tarball; (jijisa@iorchard.net)
+* fix: nas_secure_file_; typo in cinder.yml.j2; (jijisa@iorchard.net)
+* feature: patch to set high scheduling priority to etcd service; (jijisa@iorchard.net)
+* feature: add etcd scheduling priority variables in vars.yml.sample; (jijisa@iorchard.net)
+* fix: add nas_secure_file_{operation,permissions} in cinder netapp backend; (jijisa@iorchard.net)
+* fix: remove echo in copying CFG files; (jijisa@iorchard.net)
+* feature: add checklist variables in vars.yml.sample; (jijisa@iorchard.net)
+* feature: import checklist in preflight playbook; (jijisa@iorchard.net)
+* feature: add preflight checklist playbook; (jijisa@iorchard.net)
+* feature: add the in-use volume migration support in cinder; (jijisa@iorchard.net)
+* add comments on kube_pods_subnet; (jijisa@iorchard.net)
+* enhance: change the default kube_pods_subnet to support up to 2048 nodes; (jijisa@iorchard.net)
+* doc: fix typo in README; (jijisa@iorchard.net)
+* doc: update README; (jijisa@iorchard.net)
+* doc: update README and remove docs/ since burrito documentation is maintained by burrito_docs.git; 
