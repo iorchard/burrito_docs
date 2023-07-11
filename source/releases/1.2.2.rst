@@ -1,0 +1,40 @@
+1.2.2 Aster
+============
+
+This is the second patch in the Aster 1.2 series.
+
+Notable changes
+----------------
+
+* Add the in-use volume migration support in cinder.
+* Add checklist in preflight playbook to minimize human errors.
+* Add NFS-related two paramenters in cinder.
+  Set nas_secure_file_operation and nas_secure_file_permission to false.
+  It is recommended to set them to true but we need to make additional
+  settings on storage backend when we set them to true.
+  So we set them to false by default.
+* Set high scheduling priority to etcd service.
+  Etcd is a critical service in kubernetes cluster so we set cpu and disk io
+  for etcd process to higher priority.
+* Set calico blockSize to kube_network_node_prefix.
+* Skip copying config files if exist when running prepare.sh script.
+
+Burrito Changelog
+------------------
+
+* fix: add burrito.openstack role variables in defaults/main.yml; (jijisa@iorchard.net)
+* define nas_secure_* parameters in netapp_vars.yml.tpl and use them in cinder.yml.j2; (jijisa@iorchard.net)
+* feature: skip copying config files if exist.; (jijisa@iorchard.net)
+* fix a bug in kubespray cni-calico.conflist.j2; It should check the calico_ipam_host_local boolean value; (jijisa@iorchard.net)
+* feature: set calico blockSize to kube_network_node_prefix; (jijisa@iorchard.net)
+* feature: add burrito version in VERSIONS when create_tarball script runs; (jijisa@iorchard.net)
+* add VERSIONS file; (jijisa@iorchard.net)
+* feature: change cron_volume_usage_audit to false in cinder; (jijisa@iorchard.net)
+* fix: containerd_insecure_registries default value depending on registry_enabled in vars.yml.sample; (jijisa@iorchard.net)
+* feature: patch to set high scheduling priority to etcd service; (jijisa@iorchard.net)
+* feature: add etcd scheduling priority variables in vars.yml.sample; (jijisa@iorchard.net)
+* fix: add nas_secure_file_{operations,permissions} in cinder netapp backend; (jijisa@iorchard.net)
+* feature: add checklist variables in vars.yml.sample; (jijisa@iorchard.net)
+* feature: import checklist in preflight playbook; (jijisa@iorchard.net)
+* feature: add preflight checklist playbook; (jijisa@iorchard.net)
+* feature: add the in-use volume migration support in cinder; (jijisa@iorchard.net)
