@@ -16,23 +16,25 @@ Notable changes
 * Set high scheduling priority to etcd service.
   Etcd is a critical service in kubernetes cluster so we set cpu and disk io
   for etcd process to higher priority.
+* Set calico blockSize to kube_network_node_prefix.
+* Skip copying config files if exist when running prepare.sh script.
 
 Burrito Changelog
 ------------------
 
-* fix: containerd_insecure_registries in vars.yml.sample; (jijisa@iorchard.net)
-* feature: include tag and commit id info in release tarball; (jijisa@iorchard.net)
-* fix: nas_secure_file_; typo in cinder.yml.j2; (jijisa@iorchard.net)
+* fix: add burrito.openstack role variables in defaults/main.yml; (jijisa@iorchard.net)
+* define nas_secure_* parameters in netapp_vars.yml.tpl and use them in cinder.yml.j2; (jijisa@iorchard.net)
+* feature: skip copying config files if exist.; (jijisa@iorchard.net)
+* fix a bug in kubespray cni-calico.conflist.j2; It should check the calico_ipam_host_local boolean value; (jijisa@iorchard.net)
+* feature: set calico blockSize to kube_network_node_prefix; (jijisa@iorchard.net)
+* feature: add burrito version in VERSIONS when create_tarball script runs; (jijisa@iorchard.net)
+* add VERSIONS file; (jijisa@iorchard.net)
+* feature: change cron_volume_usage_audit to false in cinder; (jijisa@iorchard.net)
+* fix: containerd_insecure_registries default value depending on registry_enabled in vars.yml.sample; (jijisa@iorchard.net)
 * feature: patch to set high scheduling priority to etcd service; (jijisa@iorchard.net)
 * feature: add etcd scheduling priority variables in vars.yml.sample; (jijisa@iorchard.net)
-* fix: add nas_secure_file_{operation,permissions} in cinder netapp backend; (jijisa@iorchard.net)
-* fix: remove echo in copying CFG files; (jijisa@iorchard.net)
+* fix: add nas_secure_file_{operations,permissions} in cinder netapp backend; (jijisa@iorchard.net)
 * feature: add checklist variables in vars.yml.sample; (jijisa@iorchard.net)
 * feature: import checklist in preflight playbook; (jijisa@iorchard.net)
 * feature: add preflight checklist playbook; (jijisa@iorchard.net)
 * feature: add the in-use volume migration support in cinder; (jijisa@iorchard.net)
-* add comments on kube_pods_subnet; (jijisa@iorchard.net)
-* enhance: change the default kube_pods_subnet to support up to 2048 nodes; (jijisa@iorchard.net)
-* doc: fix typo in README; (jijisa@iorchard.net)
-* doc: update README; (jijisa@iorchard.net)
-* doc: update README and remove docs/ since burrito documentation is maintained by burrito_docs.git; 
