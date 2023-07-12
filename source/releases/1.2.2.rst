@@ -9,7 +9,7 @@ Notable changes
 * Add the in-use volume migration support in cinder.
 * Add checklist in preflight playbook to minimize human errors.
 * Add NFS-related two paramenters in cinder.
-  Set nas_secure_file_operation and nas_secure_file_permission to false.
+  Set nas_secure_file_operations and nas_secure_file_permission to false.
   It is recommended to set them to true but we need to make additional
   settings on storage backend when we set them to true.
   So we set them to false by default.
