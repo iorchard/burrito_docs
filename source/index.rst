@@ -19,6 +19,7 @@ Welcome to Burrito's documentation!
 
    Online Installation <install/install>
    Offline Installation <install/install_offline>
+   Errata <install/errata>
 
 .. toctree::
    :caption: Operation
