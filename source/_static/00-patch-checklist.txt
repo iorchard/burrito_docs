@@ -1,0 +1,42 @@
+--- checklist.yml.bak	2023-08-01 09:48:45.447490297 +0900
++++ checklist.yml	2023-08-01 10:00:02.829665666 +0900
+@@ -3,6 +3,12 @@
+   hosts: all
+   any_errors_fatal: true
+   tasks:
++    - name: touch /etc/resolv.conf on every node
++      ansible.builtin.file:
++        path: /etc/resolv.conf
++        state: touch
++      become: true
++
+     - name: check if ip addresses in inventory hosts are valid.
+       ansible.builtin.assert:
+         quiet: "{{ checklist.quiet }}"
+@@ -128,7 +134,9 @@
+           {{ overlay_iface_name }} is not up.
+         that:
+           - hostvars[inventory_hostname]['ansible_'+overlay_iface_name].active
+-      when: overlay_iface_name
++      when:
++        - overlay_iface_name
++        - inventory_hostname in groups['k8s_cluster']
+ 
+     - name: check if all other interfaces are up
+       ansible.builtin.assert:
+@@ -142,6 +150,15 @@
+         - "{{ mgmt_iface_name }}"
+         - "{{ provider_iface_name }}"
+         - "{{ storage_iface_name }}"
++      when: inventory_hostname in groups['k8s_cluster']
++
++    - name: check storage ip address is set
++      ansible.builtin.assert:
++        quiet: "{{ checklist.quiet }}"
++        fail_msg: >-
++          IP address is not set up on storage interface.
++        that:
++          - hostvars[inventory_hostname]['ansible_'+storage_iface_name].ipv4.address is defined
+ 
+     - name: check if all hosts are reachable
+       ansible.builtin.ping:
