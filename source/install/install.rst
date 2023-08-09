@@ -85,6 +85,10 @@ Go to burrito directory.::
 
    $ cd burrito
 
+.. warning::
+    It is highly recommended that you apply the errata before installing.
+    See :doc:`Errata page <errata>`.
+
 Run prepare.sh script.::
 
    $ ./prepare.sh
