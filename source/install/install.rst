@@ -27,7 +27,7 @@ Reference network architecture
 This is the reference network architecture.
 
 * control/compute machines have all 5 networks.
-* No ip addresses are assigned on the provider network.
+* No ip address is assigned on the provider network.
 * storage machines have 2 networks (management and storage)
 
 ========  ============ ============ ============ ============ ============
@@ -102,65 +102,210 @@ There are 4 groups of hosts in burrito.
   rados gateway.
 
 Network node is optional.
-Control node usually acts as both control node and network node.
+Control node usually acts as both control and network node.
 
-Edit hosts inventory file.::
+Edit inventory hosts
+^^^^^^^^^^^^^^^^^^^^^
 
-   $ vi hosts
-   control1 ip=192.168.21.101 ansible_connection=local ansible_python_interpreter=/usr/bin/python3
-   control2 ip=192.168.21.102
-   control3 ip=192.168.21.103
-   compute1 ip=192.168.21.104
-   compute2 ip=192.168.21.105
-   storage1 ip=192.168.21.106
-   storage2 ip=192.168.21.107
-   storage3 ip=192.168.21.108
-   
-   # ceph nodes
-   [mons]
-   storage[1:3]
-   
-   [mgrs]
-   storage[1:3]
-   
-   [osds]
-   storage[1:3]
-   
-   [rgws]
-   storage[1:3]
-   
-   [clients]
-   control[1:3]
-   compute[1:2]
-   
-   # kubernetes nodes
-   [kube_control_plane]
-   control[1:3]
-   
-   [kube_node]
-   control[1:3]
-   compute[1:2]
-   
-   # openstack nodes
-   [controller-node]
-   control[1:3]
-   
-   [network-node]
-   control[1:3]
-   
-   [compute-node]
-   compute[1:2]
-   
-   ###################################################
-   ## Do not touch below if you are not an expert!!! #
-   ###################################################
+There are 3 sample inventory files.
 
-Beware that control nodes are in network-node group since there is no
-network node in this case.
+* hosts.sample (default):
+    This is a sample file using ceph as the storage backend.
+* hosts_powerflex.sample:
+    This is a sample file using powerflex as the storage backend.
+* hosts_powerflex_hci.sample:
+    This is a sample file using powerflex HCI (Hyper-Converged Infrastructure).
 
-Edit vars.yml.::
+.. warning::
+    You need to get the powerflex rpm packages from Dell if you want to install
+    powerflex in burrito.
 
-   $ vi vars.yml
+When you run prepare.sh script, the default hosts.sample is copied to 
+*hosts* file.
+
+If you want to use powerflex, copy one of powerflex inventory files.::
+
+   $ cp hosts_powerflex_hci.sample hosts
+
+Here are the sample inventory files.
+
+.. collapse:: the default inventory file
+
+   .. code-block::
+      :linenos:
+
+      control1 ip=192.168.21.101 ansible_connection=local ansible_python_interpreter=/usr/bin/python3
+      control2 ip=192.168.21.102
+      control3 ip=192.168.21.103
+      compute1 ip=192.168.21.104
+      compute2 ip=192.168.21.105
+      storage1 ip=192.168.21.106
+      storage2 ip=192.168.21.107
+      storage3 ip=192.168.21.108
+      
+      # ceph nodes
+      [mons]
+      storage[1:3]
+      
+      [mgrs]
+      storage[1:3]
+      
+      [osds]
+      storage[1:3]
+      
+      [rgws]
+      storage[1:3]
+      
+      [clients]
+      control[1:3]
+      compute[1:2]
+      
+      # kubernetes nodes
+      [kube_control_plane]
+      control[1:3]
+      
+      [kube_node]
+      control[1:3]
+      compute[1:2]
+      
+      # openstack nodes
+      [controller-node]
+      control[1:3]
+      
+      [network-node]
+      control[1:3]
+      
+      [compute-node]
+      compute[1:2]
+      
+      ###################################################
+      ## Do not touch below if you are not an expert!!! #
+      ###################################################
+
+.. collapse:: the powerflex inventory file
+
+   .. code-block::
+      :linenos:
+
+      control1 ip=192.168.21.101 ansible_connection=local ansible_python_interpreter=/usr/bin/python3
+      control2 ip=192.168.21.102
+      control3 ip=192.168.21.103
+      compute1 ip=192.168.21.104
+      compute2 ip=192.168.21.105
+      storage1 ip=192.168.21.106
+      storage2 ip=192.168.21.107
+      storage3 ip=192.168.21.108
+      
+      # ceph nodes
+      [mons]
+      [mgrs]
+      [osds]
+      [rgws]
+      [clients]
+      
+      # powerflex nodes
+      [mdm]
+      storage[1:3]
+      
+      [sds]
+      storage[1:3]
+      
+      [sdc]
+      control[1:3]
+      compute[1:2]
+      
+      [gateway]
+      storage[1:2]
+      
+      [presentation]
+      storage3
+      
+      # kubernetes nodes
+      [kube_control_plane]
+      control[1:3]
+      
+      [kube_node]
+      control[1:3]
+      compute[1:2]
+      
+      # openstack nodes
+      [controller-node]
+      control[1:3]
+      
+      [network-node]
+      control[1:3]
+      
+      [compute-node]
+      compute[1:2]
+      
+      ###################################################
+      ## Do not touch below if you are not an expert!!! #
+      ###################################################
+
+.. collapse:: the powerflex HCI inventory file
+
+   .. code-block::
+      :linenos:
+
+      pfx-1 ip=192.168.21.131 ansible_connection=local ansible_python_interpreter=/usr/bin/python3
+      pfx-2 ip=192.168.21.132
+      pfx-3 ip=192.168.21.133
+      
+      # ceph nodes
+      [mons]
+      [mgrs]
+      [osds]
+      [rgws]
+      [clients]
+      
+      # powerflex nodes
+      [mdm]
+      pfx-[1:3]
+      
+      [sds]
+      pfx-[1:3]
+      
+      [sdc]
+      pfx-[1:3]
+      
+      [gateway]
+      pfx-[1:2]
+      
+      [presentation]
+      pfx-3
+      
+      # kubernetes nodes
+      [kube_control_plane]
+      pfx-[1:3]
+      
+      [kube_node]
+      pfx-[1:3]
+      
+      # openstack nodes
+      [controller-node]
+      pfx-[1:3]
+      
+      [network-node]
+      pfx-[1:3]
+      
+      [compute-node]
+      pfx-[1:3]
+      
+      ###################################################
+      ## Do not touch below if you are not an expert!!! #
+      ###################################################
+
+.. warning::
+   Beware that control nodes are in network-node group since there is no
+   network node in these sample files.
+
+
+Edit vars.yml
+^^^^^^^^^^^^^^
+
+.. code-block:: yaml
+   :linenos:
+   
    ---
    ### common
    # deploy_ssh_key: (boolean) create ssh keypair and copy it to other nodes.
@@ -206,14 +351,16 @@ Edit vars.yml.::
      - "192.168.20.95-192.168.20.98"
     
    ### storage
-   # storage backends: ceph and(or) netapp
+   # storage backends
    # If there are multiple backends, the first one is the default backend.
    storage_backends:
-     - netapp
      - ceph
+     - netapp
+     - powerflex
    
    # ceph: set ceph configuration in group_vars/all/ceph_vars.yml
    # netapp: set netapp configuration in group_vars/all/netapp_vars.yml
+   # powerflex: set powerflex configuration in group_vars/all/powerflex_vars.yml
    
    ###################################################
    ## Do not edit below if you are not an expert!!!  #
@@ -267,22 +414,28 @@ metallb_ip_range
   * Only one IP: 192.168.20.95/32 (192.168.20.95 can be assigned.)
 
 storage_backends
-  Burrito supports two storage backends - ceph and/or netapp.
+  Burrito supports 3 storage backends - ceph, netapp, and powerflex.
 
   If there are multiple backends, the first one is the default backend.
   It means the default storageclass, glance store and the default cinder 
   volume type is the first backend.
 
-  The Persistent Volumes are created on the default backend if you do not 
-  specify the storageclass name.
-  The volumes are created on the default volume type if you do not specify
-  the volume type.
+  The Persistent Volumes in k8s are created on the default backend 
+  if you do not specify the storageclass name.
+
+  The volumes in openstack are created on the default backend
+  if you do not specify the volume type.
 
 storage variables
 +++++++++++++++++
 
+ceph
+^^^^^
+
 If ceph is in storage_backends, 
-run lsblk command on storage nodes to get the device names.::
+run lsblk command on storage nodes to get the device names.
+
+.. code-block:: shell
 
    storage1$ lsblk -p
    NAME        MAJ:MIN RM SIZE RO TYPE MOUNTPOINT
@@ -295,9 +448,11 @@ run lsblk command on storage nodes to get the device names.::
 In this case, /dev/sda is the OS disk and /dev/sd{b,c,d} are for ceph
 OSD disks.
 
-Edit group_vars/all/ceph_vars.yml and add /dev/sd{b,c,d} in it.::
+Edit group_vars/all/ceph_vars.yml.
 
-   $ vi group_vars/all/ceph_vars.yml
+.. code-block::
+   :linenos:
+
    ---
    # ceph config
    lvm_volumes:
@@ -306,9 +461,14 @@ Edit group_vars/all/ceph_vars.yml and add /dev/sd{b,c,d} in it.::
      - data: /dev/sdd
    ...
 
-If netapp is in storage_backends, edit group_vars/all/netapp_vars.yml.::
+netapp
+^^^^^^^
 
-   $ vi group_vars/all/netapp_vars.yml
+If netapp is in storage_backends, edit group_vars/all/netapp_vars.yml.
+
+.. code-block::
+   :linenos:
+
    ---
    netapp:
      - name: netapp1
@@ -322,8 +482,48 @@ If netapp is in storage_backends, edit group_vars/all/netapp_vars.yml.::
          - /dev03
    ...
 
+If you do not know what these variables are, consult netapp engineer.
 
-If you do not know what these netapp variables are, consult netapp engineer.
+powerflex
+^^^^^^^^^^
+
+If powerflex is in storage_backends, 
+run lsblk command on storage nodes to get the device names.
+
+.. code-block::
+   :linenos:
+
+   storage1$ lsblk -p
+   NAME        MAJ:MIN RM SIZE RO TYPE MOUNTPOINT
+   /dev/sda      8:0    0  50G  0 disk 
+   └─/dev/sda1   8:1    0  50G  0 part /
+   /dev/sdb      8:16   0  50G  0 disk 
+   /dev/sdc      8:32   0  50G  0 disk 
+   /dev/sdd      8:48   0  50G  0 disk 
+
+In this case, /dev/sda is the OS disk and /dev/sd{b,c,d} are for powerflex
+SDS disks.
+
+Edit group_vars/all/powerflex_vars.yml and add /dev/sd{b,c,d} in it.
+
+.. code-block::
+   :linenos:
+
+   # MDM VIPs on storage networks
+   mdm_ip: 
+     - "192.168.24.100"
+   storage_iface_names:
+     - eth4
+   sds_devices:
+     - /dev/sdb
+     - /dev/sdc
+     - /dev/sdd
+   
+   #
+   # Do Not Edit below
+   #
+
+If you do not know what these variables are, consult Dell engineer.
 
 Create a vault file to encrypt passwords.::
 
@@ -358,7 +558,8 @@ For example::
 Each step has a verification process, so be sure to verify 
 before proceeding to the next step. 
 
-**Never proceed to the next step if the verification fails.**
+.. warning::
+   **Never proceed to the next step if the verification fails.**
 
 Step.1 Preflight
 +++++++++++++++++
@@ -382,7 +583,7 @@ Verify
 Check if the ntp servers and clients are configured.
 
 When you set ntp_servers to the default ntp servers,
-each control node should have the ntp pool servers on the internet.::
+each control node should have the ntp servers on the internet.::
 
    control1$ chronyc sources
    MS Name/IP address         Stratum Poll Reach LastRx Last sample      
@@ -410,8 +611,7 @@ The HA installation step implements the following tasks.
 
 KeepAlived and HAProxy services are the vital services for burrito platform.
 
-OpenStack ingress, local container registry, local yum repository,
-ceph Rados Gateway services are dependent of them.
+Ceph Rados Gateway service is dependent of them.
 
 Install
 ^^^^^^^
@@ -517,7 +717,6 @@ The Kubernetes installation step implements the following tasks.
 * Install kubernetes binaries in kubernetes nodes.
 * Set up kubernetes control plane.
 * Set up kubernete worker nodes.
-* Set up the local registry in kube-system namespace.
 
 Install
 ^^^^^^^
@@ -529,7 +728,7 @@ Run k8s playbook.::
 Verify
 ^^^^^^
 
-Check all nodes are in ready state.::
+Check if all nodes are in ready state.::
 
    $ sudo kubectl get nodes
    NAME       STATUS   ROLES           AGE   VERSION
@@ -540,8 +739,8 @@ Check all nodes are in ready state.::
    control3   Ready    control-plane   16m   v1.24.14
 
 
-Step.5 Netapp
-+++++++++++++
+Step.5.1 Netapp
+++++++++++++++++
 
 Skip this step if netapp is **not** in storage_backends.
 
@@ -561,7 +760,7 @@ Run netapp playbook.::
 Verify
 ^^^^^^
 
-Check all pods are running and ready in trident namespace.::
+Check if all pods are running and ready in trident namespace.::
 
    $ sudo kubectl get pods -n trident
    NAME                           READY   STATUS    RESTARTS   AGE
@@ -571,6 +770,75 @@ Check all pods are running and ready in trident namespace.::
    trident-csi-klj7h              2/2     Running   0          42s
    trident-csi-kv9mw              2/2     Running   0          42s
    trident-csi-r8gqv              2/2     Running   0          43s
+
+Check if netapp storageclass is created.::
+
+   $ sudo kubectl get storageclass netapp
+   NAME               PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
+   netapp (default)   csi.trident.netapp.io   Delete          Immediate           true                   20h
+
+
+Step.5.2 Powerflex
++++++++++++++++++++
+
+Skip this step if powerflex is **not** in storage_backends.
+
+The powerflex installation step implements the following tasks.
+
+* Install powerflex rpm packages.
+* Create powerflex MDM cluster.
+* Configure gateway and presentation services.
+* Set up Protection Domain, Storage Pool, and SDS devices.
+* Install vxflexos controller and node in vxflexos namespace.
+* Create a powerflex storageclass.
+
+Prepare
+^^^^^^^^
+
+To install powerflex, you need to have powerflex rpm packages.
+
+Create the rpm package tarball powerflex_pkgs.tar.gz in /mnt.
+
+.. code-block:: shell
+
+   $ ls 
+   EMC-ScaleIO-gateway-3.6-700.103.x86_64.rpm
+   EMC-ScaleIO-lia-3.6-700.103.el8.x86_64.rpm
+   EMC-ScaleIO-mdm-3.6-700.103.el8.x86_64.rpm
+   EMC-ScaleIO-mgmt-server-3.6-700.101.noarch.rpm
+   EMC-ScaleIO-sdc-3.6-700.103.el8.x86_64.rpm
+   EMC-ScaleIO-sds-3.6-700.103.el8.x86_64.rpm
+   $ sudo tar cvzf /mnt/powerflex_pkgs.tar.gz EMC-*.rpm
+
+.. warning::
+   The tarball should be placed in /mnt.
+
+Install
+^^^^^^^
+
+Run powerflex playbook.::
+
+   $ ./run.sh powerflex
+
+Verify
+^^^^^^
+
+Check if all pods are running and ready in vxflexos namespace.::
+
+   $ sudo kubectl get pods -n trident
+   NAME                                   READY   STATUS    RESTARTS   AGE
+   vxflexos-controller-744989794d-92bvf   5/5     Running   0          18h
+   vxflexos-controller-744989794d-gblz2   5/5     Running   0          18h
+   vxflexos-node-dh55h                    2/2     Running   0          18h
+   vxflexos-node-k7kpb                    2/2     Running   0          18h
+   vxflexos-node-tk7hd                    2/2     Running   0          18h
+
+Check if powerflex storageclass is created.::
+
+   $ sudo kubectl get storageclass powerflex
+   NAME                  PROVISIONER                RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
+   powerflex (default)   csi-vxflexos.dellemc.com   Delete          WaitForFirstConsumer   true                   20h
+
 
 Step.6 Patch
 +++++++++++++
@@ -593,40 +861,44 @@ Verify
 
 It will take some time to restart kube-apiserver after patch.
 
-Check all pods are running and ready in kube-system namespace.::
+Check if all pods are running and ready in kube-system namespace.
 
-   $ sudo kubectl get pods -n kube-system
-   NAME                                       READY STATUS    RESTARTS      AGE
-   calico-kube-controllers-67c66cdbfb-rz8lz   1/1   Running   0             60m
-   calico-node-28k2c                          1/1   Running   0             60m
-   calico-node-7cj6z                          1/1   Running   0             60m
-   calico-node-99s5j                          1/1   Running   0             60m
-   calico-node-tnmht                          1/1   Running   0             60m
-   calico-node-zmpxs                          1/1   Running   0             60m
-   coredns-748d85fb6d-c8cj2                   1/1   Running   1 (28s ago)   59m
-   coredns-748d85fb6d-gfv98                   1/1   Running   1 (27s ago)   59m
-   dns-autoscaler-795478c785-hrjqr            1/1   Running   1 (32s ago)   59m
-   kube-apiserver-control1                    1/1   Running   0             33s
-   kube-apiserver-control2                    1/1   Running   0             34s
-   kube-apiserver-control3                    1/1   Running   0             35s
-   kube-controller-manager-control1           1/1   Running   1             62m
-   kube-controller-manager-control2           1/1   Running   1             62m
-   kube-controller-manager-control3           1/1   Running   1             62m
-   kube-proxy-jjq5l                           1/1   Running   0             61m
-   kube-proxy-k4kxq                           1/1   Running   0             61m
-   kube-proxy-lqtgc                           1/1   Running   0             61m
-   kube-proxy-qhdzh                           1/1   Running   0             61m
-   kube-proxy-vxrg8                           1/1   Running   0             61m
-   kube-scheduler-control1                    1/1   Running   2             62m
-   kube-scheduler-control2                    1/1   Running   1             62m
-   kube-scheduler-control3                    1/1   Running   1             62m
-   nginx-proxy-compute1                       1/1   Running   0             60m
-   nginx-proxy-compute2                       1/1   Running   0             60m
-   nodelocaldns-5dbbw                         1/1   Running   0             59m
-   nodelocaldns-cq2sd                         1/1   Running   0             59m
-   nodelocaldns-dzcjr                         1/1   Running   0             59m
-   nodelocaldns-plhwm                         1/1   Running   0             59m
-   nodelocaldns-vlb8w                         1/1   Running   0             59m
+.. collapse:: pod list in kube-system namespace
+
+   .. code-block:: shell
+
+      $ sudo kubectl get pods -n kube-system
+      NAME                                       READY STATUS    RESTARTS      AGE
+      calico-kube-controllers-67c66cdbfb-rz8lz   1/1   Running   0             60m
+      calico-node-28k2c                          1/1   Running   0             60m
+      calico-node-7cj6z                          1/1   Running   0             60m
+      calico-node-99s5j                          1/1   Running   0             60m
+      calico-node-tnmht                          1/1   Running   0             60m
+      calico-node-zmpxs                          1/1   Running   0             60m
+      coredns-748d85fb6d-c8cj2                   1/1   Running   1 (28s ago)   59m
+      coredns-748d85fb6d-gfv98                   1/1   Running   1 (27s ago)   59m
+      dns-autoscaler-795478c785-hrjqr            1/1   Running   1 (32s ago)   59m
+      kube-apiserver-control1                    1/1   Running   0             33s
+      kube-apiserver-control2                    1/1   Running   0             34s
+      kube-apiserver-control3                    1/1   Running   0             35s
+      kube-controller-manager-control1           1/1   Running   1             62m
+      kube-controller-manager-control2           1/1   Running   1             62m
+      kube-controller-manager-control3           1/1   Running   1             62m
+      kube-proxy-jjq5l                           1/1   Running   0             61m
+      kube-proxy-k4kxq                           1/1   Running   0             61m
+      kube-proxy-lqtgc                           1/1   Running   0             61m
+      kube-proxy-qhdzh                           1/1   Running   0             61m
+      kube-proxy-vxrg8                           1/1   Running   0             61m
+      kube-scheduler-control1                    1/1   Running   2             62m
+      kube-scheduler-control2                    1/1   Running   1             62m
+      kube-scheduler-control3                    1/1   Running   1             62m
+      nginx-proxy-compute1                       1/1   Running   0             60m
+      nginx-proxy-compute2                       1/1   Running   0             60m
+      nodelocaldns-5dbbw                         1/1   Running   0             59m
+      nodelocaldns-cq2sd                         1/1   Running   0             59m
+      nodelocaldns-dzcjr                         1/1   Running   0             59m
+      nodelocaldns-plhwm                         1/1   Running   0             59m
+      nodelocaldns-vlb8w                         1/1   Running   0             59m
 
 
 Step.7 Burrito
@@ -634,8 +906,8 @@ Step.7 Burrito
 
 The Burrito installation step implements the following tasks.
 
-* Create a rados gateway user(default: cloudpc) and 
-  a client configuration(s3cfg).
+* Create a rados gateway user (default: cloudpc) and 
+  a client configuration (s3cfg).
 * Deploy nova vnc TLS certificate.
 * Deploy openstack components.
 * Create a nova ssh keypair and copy them on every compute nodes.
@@ -651,7 +923,7 @@ Run burrito playbook.::
 Verify
 ^^^^^^
 
-Check all pods are running and ready in openstack namespace.::
+Check if all pods are running and ready in openstack namespace.::
 
    $ sudo kubectl get pods -n openstack
    NAME                                   READY   STATUS      RESTARTS   AGE
@@ -660,7 +932,6 @@ Check all pods are running and ready in openstack namespace.::
    rabbitmq-rabbitmq-0                    1/1     Running     0          27m
    rabbitmq-rabbitmq-1                    1/1     Running     0          27m
    rabbitmq-rabbitmq-2                    1/1     Running     0          27m
-
 
 Congratulations! 
 
