@@ -825,7 +825,7 @@ Verify
 
 Check if all pods are running and ready in vxflexos namespace.::
 
-   $ sudo kubectl get pods -n trident
+   $ sudo kubectl get pods -n vxflexos
    NAME                                   READY   STATUS    RESTARTS   AGE
    vxflexos-controller-744989794d-92bvf   5/5     Running   0          18h
    vxflexos-controller-744989794d-gblz2   5/5     Running   0          18h
