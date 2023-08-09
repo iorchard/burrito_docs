@@ -1,0 +1,91 @@
+1.2.3 Aster
+============
+
+This is the third patch in the Aster 1.2 series.
+
+Notable changes
+----------------
+
+* Add network QoS parameters in neutron.
+* Add ntp-sync wait task so it waits until all hosts are time-synchronized.
+* Add Dell Powerflex storage support. You can run powerflex as storage-only 
+  mode or as HCI (Hyper-Converged Infrastructure) mode.
+* Fix genesis registry patch tasks.
+  The k8s bootloader images (control plane, kube-proxy, csi drivers, etc.)
+  are pushed to the genesis registry and the image url in the bootloader pods 
+  are patched to point to the genesis registry.
+* Support VM cold migration in non-default ssh port environment.
+
+Burrito Changelog
+------------------
+
+* fix: glance netapp backend name to file from filesystem; (jijisa@iorchard.net)
+* fix: csi snapshotter typo; (jijisa@iorchard.net)
+* fix: check ansible galaxy requirements file exists in offline prepare; (jijisa@iorchard.net)
+* remove kube_proxy patch variables; fix typo of csi_snapshotter_version; (jijisa@iorchard.net)
+* add powerflex access_type to private in cinder bootstrap; (jijisa@iorchard.net)
+* fix: typo in snapshot controller patch task; (jijisa@iorchard.net)
+* fix: typo in csi-snapshotter image url; (jijisa@iorchard.net)
+* Replace unused csi-external-health-monitor-controller image url to static one; (jijisa@iorchard.net)
+* make powerflex check list optional; (jijisa@iorchard.net)
+* Add the option to include or exclude netapp/powerflex images in registry.sh; (jijisa@iorchard.net)
+* remove unused powerflex images from genesisregistry and powerflex roles; (jijisa@iorchard.net)
+* netapp images are moved to netapp_images.txt so remove them[C from images.txt; (jijisa@iorchard.net)
+* Split netapp images to scripts/netapp_images.txt; (jijisa@iorchard.net)
+* feature: add service token and servier user config in nova and cinder; (jijisa@iorchard.net)
+* add powerflex check items in checklist; (jijisa@iorchard.net)
+* fix: use kubectl patch command to patch powerflex-node and kube-proxy daemonsets.; (jijisa@iorchard.net)
+* add powerflex storage mode support; (jijisa@iorchard.net)
+* feature: add ssh_port variable in vars.yml.sample; it is used by nova_compute_sshkey_copy submodule; (jijisa@iorchard.net)
+* feature: add ssh port in nova_compute_sshkey_copy submodule; (jijisa@iorchard.net)
+* modify not to run sdc initContainer by default since it is not necessary; remove sdc initContainer patch in genesis registry role; (jijisa@iorchard.net)
+* add netapp/powerflex patch; modify kube-proxy patch; (jijisa@iorchard.net)
+* add snapshot controller template file; (jijisa@iorchard.net)
+* templating external snapshot controller deployment; (jijisa@iorchard.net)
+* fix: typo in _helpers.tpl.j2; (jijisa@iorchard.net)
+* fix: typo in _helpers.tpl.j2; (jijisa@iorchard.net)
+* fix: typo in vxflexos-values.yml.j2; (jijisa@iorchard.net)
+* add netapp, powerflex version variables; (jijisa@iorchard.net)
+* updated requirements.txt; (jijisa@iorchard.net)
+* remove general csi images from pfx_images.txt since they are already in images.txt; (jijisa@iorchard.net)
+* upgrade csi versions in images.txt; (jijisa@iorchard.net)
+* replace static image version with version variables in powerflex template; (jijisa@iorchard.net)
+* replace static image version with version variables in netapp template; (jijisa@iorchard.net)
+* add netapp and powerflex support in genesisregistry role; (jijisa@iorchard.net)
+* add INCLUDE_PFX variable to include powerflex images; (jijisa@iorchard.net)
+* requirements.yml is renamed; (jijisa@iorchard.net)
+* rename requirements.yml to pfx_requirements.yml since this file is only for powerflex; (jijisa@iorchard.net)
+* add powerflex container image list file; (jijisa@iorchard.net)
+* fix: update checklist; (jijisa@iorchard.net)
+* add dellemc.powerflex collection version in requirements.yml; (jijisa@iorchard.net)
+* modify java package from 11 to 1.8; gateway depends on java 1.8; (jijisa@iorchard.net)
+* remove comments in main tasks; (jijisa@iorchard.net)
+* fix: put flush handlers after haproxy configuration; (jijisa@iorchard.net)
+* fix: get mdm ids; (jijisa@iorchard.net)
+* add powerflex python packages and collections; (jijisa@iorchard.net)
+* add touch /etc/resolv.conf task in checklist playbook; (jijisa@iorchard.net)
+* fix: check all other ifaces only on k8s nodes; add check if ip address on storage iface is set on all nodes; (jijisa@iorchard.net)
+* update to copy powerflex_vars.yml.tpl; (jijisa@iorchard.net)
+* add hosts_powerflex.sample file; (jijisa@iorchard.net)
+* reorganize powerflex variables; (jijisa@iorchard.net)
+* add filesystem backend in glance; (jijisa@iorchard.net)
+* add powerflex related variables; (jijisa@iorchard.net)
+* add powerflex play in run.sh; (jijisa@iorchard.net)
+* add scaleio openstack connector.conf; (jijisa@iorchard.net)
+* add powerflex support in glance, cinder, and nova; (jijisa@iorchard.net)
+* upgrade requirements.txt; (jijisa@iorchard.net)
+* add enabled_powerflex variable in cinder helm chart; (jijisa@iorchard.net)
+* remove deprecated auth_uri; add www_authenticate_uri in glance configmap-etc.yaml; (jijisa@iorchard.net)
+* fix: typo in storageclass manifest; (jijisa@iorchard.net)
+* fix: powerflex main task typo; (jijisa@iorchard.net)
+* feature: add powerflex cluster, setup, csi tasks; (jijisa@iorchard.net)
+* feature: add ntp sync check for the first control node if it is configured to use external ntp servers; (jijisa@iorchard.net)
+* remove changed_when in rocky.yml (ntp role); (jijisa@iorchard.net)
+* add always tag in preflight checklist playbook; (jijisa@iorchard.net)
+* feature: wait until ntp is synced; (jijisa@iorchard.net)
+* feature: add powerflex playbook; add cluster task file; (jijisa@iorchard.net)
+* fix: set target_size_ratio to 0 in vars.yml.sample; (jijisa@iorchard.net)
+* feature: add powerflex role; (jijisa@iorchard.net)
+* feature: add gateway_ip_qos in l3 agent; (jijisa@iorchard.net)
+* feature: add Network QoS parameters in neutron; (jijisa@iorchard.net)
+* fix: remove echo in moving CFGFILES; (jijisa@iorchard.net)
