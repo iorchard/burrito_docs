@@ -19,6 +19,10 @@ Notable changes
 Burrito Changelog
 ------------------
 
+* update powerflex variables template file; (jijisa@iorchard.net)
+* Set vxflexos controllerCount to pod.replicas; (jijisa@iorchard.net)
+* add when clause in powerflex install tasks; (jijisa@iorchard.net)
+* fix: check storage ip addresses are set checklist; (jijisa@iorchard.net)
 * fix: glance netapp backend name to file from filesystem; (jijisa@iorchard.net)
 * fix: check ansible galaxy requirements file exists in offline prepare; (jijisa@iorchard.net)
 * remove kube_proxy patch variables; fix typo of csi_snapshotter_version; (jijisa@iorchard.net)
