@@ -10,24 +10,11 @@ The burrito.sh script is broken.
 
 The burrito.yml playbook is moved out of kubespray upstream repo but burrito.sh script is still looking for it in the kubespray directory.
 
-This is a patch.::
+Download :download:`the patch <../_static/00-patch-burrito-sh.txt>` and
+put it in <burrito_source_dir>/patches/ directory.
 
-   @@ -7,7 +7,7 @@
-    OSH_INFRA_PATH=${CURRENT_DIR}/../openstack-helm-infra
-    OSH_PATH=${CURRENT_DIR}/../openstack-helm
-    BTX_PATH=${CURRENT_DIR}/../btx/helm
-   -KUBESPRAY_PATH=${CURRENT_DIR}/../kubespray
-   +TOP_PATH=${CURRENT_DIR}/..
-    OVERRIDE_PATH=$HOME/openstack-artifacts
-    
-    declare -A path_arr=(
-   @@ -67,7 +67,7 @@
-        ansible-playbook --extra-vars=@vars.yml ${OFFLINE_VARS} \
-            --extra-vars="{\"$KEY\": [\"${NAME}\"]}" \
-            ${TAG_OPTS} \
-   -        ${KUBESPRAY_PATH}/burrito.yml
-   +        ${TOP_PATH}/burrito.yml
-      popd
-    }
-    uninstall() {
+Aply the patch.::
+
+    $ cd <burrito_src_dir>
+    $ ./scripts/patch.sh
 
