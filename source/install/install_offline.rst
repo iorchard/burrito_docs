@@ -95,6 +95,10 @@ Go to burrito directory.::
 
    $ cd burrito-<version>
 
+.. warning::
+    It is highly recommended that you apply the errata before installing.
+    See :doc:`Errata page <errata>`.
+
 Run prepare.sh script with offline flag.::
 
    $ ./prepare.sh offline
