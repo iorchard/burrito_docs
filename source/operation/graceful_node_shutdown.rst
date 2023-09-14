@@ -40,6 +40,43 @@ the node.
 #. GNSH completes a drain process.
 #. And systemd does the rest of the shutdown procedure.
 
+Here are the console logs when a node is powering off.::
+
+    Sep  9 17:45:37 control3 systemd-logind[666]: Power key pressed.
+    Sep  9 17:45:37 control3 systemd-logind[666]: Powering Off...
+    Sep  9 17:45:37 control3 kubelet[973]: I0909 17:45:37.860271     973 nodeshutdown_manager_linux.go:262] "Shutdown manager detected new shutdown event, isNodeShuttingDownNow" event=true
+    ...
+    Sep  9 17:46:08 control3 kubelet[973]: I0909 17:46:08.890638     973 nodeshutdown_manager_linux.go:324] "Shutdown manager completed processing shutdown event, node will shutdown shortly"
+    Sep  9 17:46:08 control3 systemd-logind[667]: System is powering down.
+    ...
+             Stopping Graceful Node Shutdown Helper...
+    [  920.090119] gnsh[13450]: Show the node status.
+    [  920.209689] gnsh[13452]: NAME       STATUS     ROLES           AGE    VERSION
+    [  920.211873] gnsh[13452]: control3   NotReady   control-plane   3d5h   v1.24.14
+    [  925.214986] gnsh[13450]: Let's drain my node control3
+    [  925.338511] gnsh[13483]: node/control3 cordoned
+    [  925.376366] gnsh[13483]: evicting pod kube-system/nodelocaldns-rxnzq
+    [  925.378692] gnsh[13483]: evicting pod kube-system/kube-proxy-fs9f7
+    [  925.381179] gnsh[13483]: evicting pod kube-system/calico-node-sr9qk
+    ...
+    [  925.421417] gnsh[13483]: pod/calico-node-sr9qk evicted
+    [  925.424240] gnsh[13483]: pod/kube-proxy-fs9f7 evicted
+    [  925.427133] gnsh[13483]: pod/nodelocaldns-rxnzq evicted
+    [  925.429745] gnsh[13483]: node/control3 drained
+    [  930.450105] gnsh[13450]: Graceful Node Shutdown Helper (GNSH) completed a drain process
+    [  OK  ] Stopped Graceful Node Shutdown Helper.
+    ...
+             Stopping Kubernetes Kubelet Server...
+    ...
+    [  OK  ] Stopped Kubernetes Kubelet Server.
+    ...
+             Stopping containerd container runtime...
+    ...
+    [  OK  ] Stopped containerd container runtime.
+    ...
+    [  933.761678] reboot: Power down
+
+
 When the node starts, kubelet will make the node Ready and GNSH uncordon the
 node to make it schedulable.
 
