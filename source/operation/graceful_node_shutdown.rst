@@ -7,8 +7,11 @@ Kubernetes has a Graceful Node Shutdown feature since 1.21.
 It uses systemd inhibitor lock to delay shutdown process when it detects
 shutdown event.
 
+The current k8s version of burrito is 1.24.14 and the graceful node shutdown
+feature is already enabled by default.
+
 But this feature is not stable when we tested it.
-And there are many issues about this feature.
+There are many issues reported on this feature.
 
 Here are some of them.
 
@@ -40,7 +43,7 @@ the node.
 #. GNSH completes a drain process.
 #. And systemd does the rest of the shutdown procedure.
 
-Here are the console logs when a node is powering off.::
+Here are the logs when a node is powering off.::
 
     Sep  9 17:45:37 control3 systemd-logind[666]: Power key pressed.
     Sep  9 17:45:37 control3 systemd-logind[666]: Powering Off...
