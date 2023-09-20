@@ -25,11 +25,13 @@ Welcome to Burrito's documentation!
    :maxdepth: 2
 
    operation/add_compute_node
+   operation/graceful_node_shutdown
 
 .. toctree::
    :caption: Releases
    :maxdepth: 2
 
+   releases/1.2.4
    releases/1.2.3
    releases/1.2.2
    releases/1.2.1
