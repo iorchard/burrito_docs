@@ -427,7 +427,7 @@ metallb_ip_range
   * Only one IP: 192.168.20.95/32 (192.168.20.95 can be assigned.)
 
 storage_backends
-  Burrito supports two storage backends - ceph, netapp, and powerflex.
+  Burrito supports 3 storage backends - ceph, netapp, and powerflex.
 
   If there are multiple backends, the first one is the default backend.
   It means the default storageclass, glance store and the default cinder 
