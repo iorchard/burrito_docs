@@ -320,11 +320,6 @@ Edit vars.yml
    :linenos:
 
    ---
-   ### common
-   # deploy_ssh_key: (boolean) create ssh keypair and copy it to other nodes.
-   # default: false
-   deploy_ssh_key: false
-   
    ### define network interface names
    # set overlay_iface_name to null if you do not want to set up overlay network.
    # then, only provider network will be set up.
@@ -362,7 +357,15 @@ Edit vars.yml
    # Only one IP: 192.168.20.95/32
    metallb_ip_range:
      - "192.168.20.95-192.168.20.98"
-    
+   
+   ### HA tuning
+   # ha levels: moderato, allegro, and vivace
+   # moderato: default liveness update and failover response
+   # allegro: faster liveness update and failover response
+   # vivace: fastest liveness update and failover response
+   ha_level: "moderato"
+   k8s_ha_level: "moderato"
+   
    ### storage
    # storage backends: ceph and(or) netapp
    # If there are multiple backends, the first one is the default backend.
@@ -381,14 +384,6 @@ Edit vars.yml
 
 Description of each variable
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-deploy_ssh_key (default: false)
-  If true, it creates a ssh keypair on the deployer node and copy the public
-  key to other nodes. Ansible will use the public key to ssh into other nodes
-  after deploying the public key.
-
-  If false, it does not create a ssh keypair. Ansible will use vault-encrypted
-  user's password to ssh into other nodes.
 
 \*_iface_name
   Set each network interface name.
@@ -426,8 +421,42 @@ metallb_ip_range
   * CIDR: 192.168.20.128/26 (192.168.20.128 - 191 can be assigned.)
   * Only one IP: 192.168.20.95/32 (192.168.20.95 can be assigned.)
 
+ha_level
+  Set KeepAlived/HAProxy HA level.
+  It should be one of moderato(default), allegro, and vivace.
+  Each level sets the following parameters.
+
+  * interval: health check interval in seconds
+  * timeout: health check timeout in seconds
+  * rise: required number of success
+  * fall: required number of failure 
+
+k8s_ha_level
+  Set kubernetes HA level.
+  It should be one of moderato(default), allegro, and vivace.
+  Each level sets the following parameters.
+
+  * node_status_update_frequency: 
+    Specifies how often kubelet posts node status to master.
+  * node_monitor_period:
+    The period for syncing NodeStatus in NodeController.
+  * node_monitor_grace_period:
+    Amount of time which we allow running Node to be unresponsive before
+    marking it unhealthy.
+  * not_ready_toleration_seconds:
+    the tolerationSeconds of the toleration for notReady:NoExecute that is 
+    added by default to every pod that does not already have such a toleration
+  * unreachable_toleration_seconds:
+    the tolerationSeconds of the toleration for unreachable:NoExecute that is
+    added by default to every pod that does not already have such a toleration
+  * kubelet_shutdown_grace_period:
+    the total duration that the node should delay the shutdown by
+  * kubelet_shutdown_grace_period_critical_pods:
+    the duration used to terminate critical pods during a node shutdown
+
 storage_backends
-  Burrito supports two storage backends - ceph, netapp, and powerflex.
+  Burrito supports the following storage backends -
+  ceph, netapp, and powerflex.
 
   If there are multiple backends, the first one is the default backend.
   It means the default storageclass, glance store and the default cinder 
