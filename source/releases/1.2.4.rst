@@ -21,7 +21,7 @@ Notable changes
 
     - moderato: default liveness update and failover response
     - allegro: faster liveness update and failover response
-    - vivace: faster liveness update and failover response
+    - vivace: fastest liveness update and failover response
 
 * Add Graceful Node Shutdown Helper (GNSH) to help shutting down the node
   gracefully. 
