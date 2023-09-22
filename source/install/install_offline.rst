@@ -964,15 +964,61 @@ Check the images are in the local registry.::
 
 Registries in output should not be empty.
 
-Step.8 Burrito
+Step.8 Landing
 +++++++++++++++
 
-The Burrito installation step implements the following tasks.
+The Landing installation step implements the following tasks.
 
-* Create a rados gateway user(default: cloudpc) and 
-  a client configuration(s3cfg).
+* Deploy the genesis registry service on control nodes.
+* Patch bootstrap pods (kube-{apiserver,scheduler,controller-manager},
+  kube-proxy, local registry, and csi driver pods) to change image url to 
+  genesis registry.
+* Deploy the local yum repository pod in burrito namespace.
+* Register the registry and repository service in haproxy.
+* Install Graceful Node Shutdown Helper (GNSH).
+
+Install
+^^^^^^^
+
+Run landing playbook.::
+
+   $ ./run.sh landing
+
+Verify
+^^^^^^
+
+Check if the genesis registry service is running on control nodes.::
+
+   $ sudo systemctl status genesis_registry.service gnsh.service
+   genesis_registry.service - Geneis Registry service
+   ...
+    Active: active (running) since Fri 2023-09-22 14:39:41 KST; 3min 13s ago
+   ...
+   gnsh.service - Graceful Node Shutdown Helper
+   ...
+     Active: active (exited) since Fri 2023-09-22 14:42:36 KST; 19s ago
+
+Check if the local repository pod is running and ready in burrito namespace.::
+
+   $ sudo kubectl get pods -n burrito
+   NAME                        READY   STATUS    RESTARTS   AGE
+   localrepo-c4bc5b89d-nbtq9   1/1     Running   0          3m38s
+
+Congratulations! 
+
+You've just finished the installation of burrito kubernetes platform.
+
+Next you will install OpenStack on burrito kubernetes platform.
+
+Step.9 Burrito
++++++++++++++++++
+
+The burrito installation step implements the following tasks.
+
+* Create a rados gateway user (default: cloudpc) and 
+  a client configuration (s3cfg).
 * Deploy nova vnc TLS certificate.
-* Deploy openstack components.
+* Deploy OpenStack components.
 * Create a nova ssh keypair and copy them on every compute nodes.
 
 Install
@@ -994,44 +1040,6 @@ Check all pods are running and ready in openstack namespace.::
    rabbitmq-rabbitmq-0                    1/1     Running     0          27m
    rabbitmq-rabbitmq-1                    1/1     Running     0          27m
    rabbitmq-rabbitmq-2                    1/1     Running     0          27m
-
-Step.9 Landing
-+++++++++++++++
-
-The Landing installation step implements the following tasks.
-
-* Deploy the genesis registry service on control nodes.
-* Patch bootstrap pods (kube-{apiserver,scheduler,controller-manager},
-  kube-proxy, and csi driver pods) to change image url to genesis registry.
-* Deploy the local yum repository pod in burrito namespace.
-* Register the registry and repository service in haproxy.
-
-Install
-^^^^^^^
-
-Run landing playbook.::
-
-   $ ./run.sh landing
-
-Verify
-^^^^^^
-
-Check if the genesis registry service is running on control nodes.::
-
-   $ sudo systemctl status genesis_registry.service
-   genesis_registry.service - Geneis Registry service
-   ...
-      Active: active (running) since Wed 2023-05-31 20:40:30 KST; 3min 7s ago
-
-Check if the local repository pod is running and ready in burrito namespace.::
-
-   $ sudo kubectl get pods -n burrito
-   NAME                        READY   STATUS    RESTARTS   AGE
-   localrepo-c4bc5b89d-nbtq9   1/1     Running   0          3m38s
-
-Congratulations! 
-
-You've just finished the installation of burrito platform.
 
 Horizon
 ----------
