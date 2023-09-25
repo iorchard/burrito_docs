@@ -13,6 +13,7 @@ If Burrito is not installed yet,
 download :download:`the patch <../_static/00-patch-placement-barbican-replicas.txt>` and
 put it in <burrito_source_dir>/patches/ directory.
 And follow the installation procedures.
+(When you run prepare.sh script, it will patch.)
 
 If Burrito is already installed, go to btx shell and 
 set a new replicas for placement and barbican deployments.::
