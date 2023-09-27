@@ -83,4 +83,22 @@ Here are the logs when a node is powering off.::
 When the node starts, kubelet will make the node Ready and GNSH uncordon the
 node to make it schedulable.
 
+Caveat
+-------
+
+When we tested, we found that kubelet nodeshutdown manager is
+triggered only by systemctl command.
+
+* systemctl poweroff
+* systemctl reboot
+* systemctl halt
+
+The following commands do not trigger kubelet nodeshutdown manager.
+
+* shutdown -h now
+* shutdown -P now
+* poweroff
+* reboot
+
+So it is recommended to use systemctl command when shutting down a node.
 
