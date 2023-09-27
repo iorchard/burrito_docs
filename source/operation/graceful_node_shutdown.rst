@@ -100,5 +100,8 @@ The following commands do not trigger kubelet nodeshutdown manager.
 * poweroff
 * reboot
 
+This is the systemd behavior not to emit the dbus signal for the legacy 
+commands so kubelet's inhibitor is skipped.
+
 So it is recommended to use systemctl command when shutting down a node.
 
