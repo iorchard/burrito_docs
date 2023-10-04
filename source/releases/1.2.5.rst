@@ -10,13 +10,17 @@ Notable changes
   addition to Deployment type. The default type is Deployment.
 * Add PVC to cinder-volume and glance-api to prevent node root filesystem
   from being used by OpenStack volume-to-image conversion operation.
+
   The PVC in cinder-volume is mounted at /var/lib/cinder/conversion and the
   PVC in glance-api is mounted at /var/cache/nginx/client_temp in nginx
   frontend container.
-  The PVC access mode is set by the default storage backend.
+
+  The PVC access mode is set by what the default storage backend is.
+
   If the default storage backend is netapp,
   the PVC access mode is set to ReadWriteMany and the default deployment type
   is used for cinder-volume and glance-api.
+
   If the default storage backend is ceph or powerflex,
   the PVC access mode is set to ReadWriteOnce and the StatefulSet type is 
   used for cinder-volume and glance-api.
