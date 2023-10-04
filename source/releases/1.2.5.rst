@@ -25,6 +25,9 @@ Notable changes
   the PVC access mode is set to ReadWriteOnce and the StatefulSet type is 
   used for cinder-volume and glance-api.
 
+* Set kube-controller-manager and kube-scheduler to bind localhost (127.0.0.1)
+  for security.
+
 * Remove localrepo and registry haproxy config files when running clean_k8s.sh
   since the localrepo and registry pods are already gone 
   when cleaning kubernetes cluster.
