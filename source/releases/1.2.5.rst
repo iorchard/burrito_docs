@@ -1,0 +1,37 @@
+1.2.5 Aster
+============
+
+This is the 5th patch in the Aster 1.2 series.
+
+Notable changes
+----------------
+
+* Add StatefulSet type to cinder-volume and glance-api in 
+  addition to Deployment type. The default type is Deployment.
+* Add PVC to cinder-volume and glance-api to prevent node root filesystem
+  from being used by OpenStack volume-to-image conversion operation.
+  The PVC in cinder-volume is mounted at /var/lib/cinder/conversion and the
+  PVC in glance-api is mounted at /var/cache/nginx/client_temp in nginx
+  frontend container.
+  The PVC access mode is set by the default storage backend.
+  If the default storage backend is netapp,
+  the PVC access mode is set to ReadWriteMany and the default deployment type
+  is used for cinder-volume and glance-api.
+  If the default storage backend is ceph or powerflex,
+  the PVC access mode is set to ReadWriteOnce and the StatefulSet type is 
+  used for cinder-volume and glance-api.
+
+* Remove localrepo and registry haproxy config files when running clean_k8s.sh
+  since the localrepo and registry pods are already gone 
+  when cleaning kubernetes cluster.
+
+Burrito Changelog
+------------------
+
+* feature(clean_k8s.sh): add haproxy reload; (jijisa@iorchard.net)
+* feature(k8s): bind 127.0.0.1 for kube-controller-manager and kube-scheduler; (jijisa@iorchard.net)
+* feature(clean_k8s.sh): remove localrepo and registry haproxy config files; (jijisa@iorchard.net)
+* fix: add inventory and vault password parameter in clean_openstack.sh script; (jijisa@iorchard.net)
+* feature(openstack): add PVC to cinder-volume and glance-api; (jijisa@iorchard.net)
+* fix: remove btx in bashrc when clean_openstack.sh script runs; (jijisa@iorchard.net)
+
