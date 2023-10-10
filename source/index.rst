@@ -26,11 +26,13 @@ Welcome to Burrito's documentation!
 
    operation/add_compute_node
    operation/graceful_node_shutdown
+   operation/preserve_glance_image_pv
 
 .. toctree::
    :caption: Releases
    :maxdepth: 2
 
+   releases/1.2.5
    releases/1.2.4
    releases/1.2.3
    releases/1.2.2
