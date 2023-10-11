@@ -49,7 +49,7 @@ The glance-images PVC is gone but the PV still exists.::
     NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS     CLAIM                     STORAGECLASS   REASON   AGE
     pvc-b0f01f0f-fab5-4c0f-b549-89f47d819cf1   500Gi      RWX            Retain           Released   openstack/glance-images   netapp                  25h
 
-Yes, it exists and the status is changed to Released.
+The status of PV is changed to Released.
 
 Patch resourceVersion and uid of claimRef to null.::
 
@@ -60,7 +60,7 @@ Patch resourceVersion and uid of claimRef to null.::
 I want to reuse the PV when I install glance so I edit the appropriate yaml 
 manifest file - pvc-images.yaml.::
 
-    [clex@bbeta-controller burrito]$ git diff openstack-helm/glance/templates/pvc-images.yaml
+    [burrito]$ git diff openstack-helm/glance/templates/pvc-images.yaml
     diff --git a/openstack-helm/glance/templates/pvc-images.yaml b/openstack-helm/glance/templates/pvc-images.yaml
     index 86a3b47..658c1ec 100644
     --- a/openstack-helm/glance/templates/pvc-images.yaml
