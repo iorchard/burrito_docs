@@ -15,7 +15,7 @@ Notable changes
   PVC in glance-api is mounted at /var/cache/nginx/client_temp in nginx
   frontend container.
 
-  The PVC access mode is set by what the default storage backend is.
+  The PVC access mode is set based on what the default storage backend is.
 
   If the default storage backend is netapp,
   the PVC access mode is set to ReadWriteMany and the default deployment type
@@ -36,10 +36,10 @@ Burrito Changelog
 ------------------
 
 * fix: Remove nfsvers from nfsMountOptions in trident backend json; (jijisa@iorchard.net)
-* - remove delegate_to and run_once.
+* remove delegate_to and run_once.
   sometimes it gives error when the picked host is one of storage node
   because storage node may not have service network ip. 
-  - add inventory_hostname == groups['kube_control_plane'][0] in when clause.; (jijisa@iorchard.net)
+  add inventory_hostname == groups['kube_control_plane'][0] in when clause.; (jijisa@iorchard.net)
 * fix(vars): fix typo in cinder_vol_deploy_type_map variable; (jijisa@iorchard.net)
 * feature(mariadb): disable local_infile in mariadb; (jijisa@iorchard.net)
 * fix(openstack): Deployment PVC support for cinder-volume and glance-api; (jijisa@iorchard.net)
