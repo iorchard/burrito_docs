@@ -9,7 +9,7 @@ the Persistent Volume (PV) is created and used to store glance images.
 
 When the PV is dynamically created by netapp trident csi driver and the
 reclaim policy is inherited from the storageclass setting which is Delete,
-the PV is deleted when no pod uses it.
+the PV is deleted when the PVC is deleted.
 So if we uninstall glance, the PV is gone.
 
 We want to preserve the PV even if glance is deleted.
