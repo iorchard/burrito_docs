@@ -511,6 +511,12 @@ If netapp is in storage_backends, edit group_vars/all/netapp_vars.yml.
          - /dev03
    ...
 
+You can add nfsvers in nfsMountOptions to use the specific nfs version.
+
+For example, if you want to use nfs version 4.0, put nfsvers=4.0 in
+nfsMountOptions (nfsMountOptions: "nfsvers=4.0,lookupcache=pos").
+Then, you should check if nfs version 4 is enabled in NetApp NFS storage.
+
 If you do not know what these variables are, consult netapp engineer.
 
 powerflex
