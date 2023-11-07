@@ -935,8 +935,48 @@ Check if all pods are running and ready in kube-system namespace.
       nodelocaldns-plhwm                         1/1   Running   0             59m
       nodelocaldns-vlb8w                         1/1   Running   0             59m
 
+Step.7 Landing
+++++++++++++++
 
-Step.7 Burrito
+The Landing installation step implements the following tasks.
+
+* Install Graceful Node Shutdown Helper (GNSH).
+
+Install
+^^^^^^^
+
+Run landing playbook.::
+
+   $ ./run.sh landing
+
+Verify
+^^^^^^
+
+Check if the Graceful Node Shutdown Helper (GNSH) service is running.::
+
+   $ sudo systemctl status gnsh.service
+    gnsh.service - Graceful Node Shutdown Helper
+      Loaded: loaded (/etc/systemd/system/gnsh.service; enabled; vendor preset: di>
+      Active: active (exited) since Tue 2023-11-07 13:58:34 KST; 25min ago
+     Process: 435851 ExecStart=/usr/bin/gnsh start (code=exited, status=0/SUCCESS)
+    Main PID: 435851 (code=exited, status=0/SUCCESS)
+       Tasks: 0 (limit: 100633)
+      Memory: 0B
+      CGroup: /system.slice/gnsh.service
+   
+   Nov 07 13:58:34 control1 systemd[1]: Starting Graceful Node Shutdown Helper...
+   Nov 07 13:58:34 control1 gnsh[435851]: Uncordon my node control1.
+   Nov 07 13:58:34 control1 gnsh[435853]: node/control1 already uncordoned
+   Nov 07 13:58:34 control1 systemd[1]: Started Graceful Node Shutdown Helper.
+
+
+Congratulations! 
+
+You've just finished the installation of burrito kubernetes platform.
+
+Next you will install OpenStack on burrito kubernetes platform.
+
+Step.8 Burrito
 +++++++++++++++
 
 The Burrito installation step implements the following tasks.

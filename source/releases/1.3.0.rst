@@ -1,0 +1,56 @@
+1.3.0 Aster
+============
+
+This is the first patch in the Aster 1.3 series.
+
+Notable changes
+----------------
+
+* Upgraded kubespray and kubernetes.
+  Upgraded kubespray to the current master branch (commit id
+  6a70f026628c4f9976f96e135853f094239ca48e) and kubernetes to 1.28.3.
+* Removed the containerd cri-base.json patch task.
+  The new kubespray already has this applied.
+* Modified variables in offline_vars.yml due to changes in the way
+  containerd is configured. It uses hosts.toml to configure
+  the container registries.
+* Changed localrepo namespace to kube-system from burrito.
+  It is not necessary to create a new namespace for the only one pod.
+* Add security-hardening features in kubernetes - 
+  `Cluster Hardening
+  <https://github.com/kubernetes-sigs/kubespray/blob/master/docs/hardening.md>`_
+
+Burrito Changelog
+------------------
+
+* add kubelet_csr_approver variables in vars.yml.sample; (jijisa@iorchard.net)
+* change helm diff tarball path; remove the check of OFFLINE_VARS when PLAYBOOK is landing. We will run landing playbook for online installation since gnsh service should be installed for both online and offline installation.; (jijisa@iorchard.net)
+* change localrepo namespace from burrito to kube-system; (jijisa@iorchard.net)
+* remove burrito namespace creation task; (jijisa@iorchard.net)
+* change the hardcoded namespace name to localrepo.namespace variable in 06-localrepo-svc.yml.j2; (jijisa@iorchard.net)
+* add --insecure-registry parameter in nerdctl command; (jijisa@iorchard.net)
+* add containerd_registries_mirrors and kubelet_csr_approver variables in offline_vars.yml; (jijisa@iorchard.net)
+* add files.cluster.local to /etc/hosts file task; (jijisa@iorchard.net)
+* add when: offline for genesis registry and localrepo roles; (jijisa@iorchard.net)
+* add kubelet csr approver index yaml file and remove its entry in bin.txt; (jijisa@iorchard.net)
+* add kubelet-csr-approver image and binary files; (jijisa@iorchard.net)
+* add patches to ceph-ansible for ansible version match and to kubespray for local registries; (jijisa@iorchard.net)
+* add never tag in cripatch; no need to patch cri-base.json any more; (jijisa@iorchard.net)
+* feature: update kubespray to the current master branch; (jijisa@iorchard.net)
+* update kube_version to v1.28.3; (jijisa@iorchard.net)
+* update binary and image list; (jijisa@iorchard.net)
+* change openstack service port for ingress; (jijisa@iorchard.net)
+* remove podsecuritypolicy in openstack roles; (jijisa@iorchard.net)
+* add a patch for calico-config.yml.j2; (jijisa@iorchard.net)
+* update requirements.txt; (jijisa@iorchard.net)
+* fix(openstack): vnc listens on management interface only; (jijisa@iorchard.net)
+* add dasel_download_url variable in offline_vars.yml; (jijisa@iorchard.net)
+* update vars.yml.sample for security and k8s upgrade; (jijisa@iorchard.net)
+* update patch script to patch the new kubespray sources; (jijisa@iorchard.net)
+* add dasel binary for inline yaml edit; (jijisa@iorchard.net)
+* add privileged pod security in namespace; (jijisa@iorchard.net)
+* updated kubespray patch files; (jijisa@iorchard.net)
+* updated kubespray patch files; (jijisa@iorchard.net)
+* upgrade kubespray to v2.23.0; (jijisa@iorchard.net)
+* change k8spatch for inline patch; (jijisa@iorchard.net)
+* add backup:true in cri patch; (jijisa@iorchard.net)
