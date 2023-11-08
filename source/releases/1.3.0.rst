@@ -9,6 +9,9 @@ Notable changes
 * Upgraded kubespray and kubernetes.
   Upgraded kubespray to the current master branch (commit id
   6a70f026628c4f9976f96e135853f094239ca48e) and kubernetes to 1.28.3.
+* Removed PodSecurityPolicy in Admission plugin 
+  because it is not supported since kubernetes version 1.25.
+  Use PodSecurity Admission plugin instead.
 * Removed the containerd cri-base.json patch task.
   The new kubespray already has this applied.
 * Modified variables in offline_vars.yml due to changes in the way
