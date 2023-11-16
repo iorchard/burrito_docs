@@ -9,6 +9,9 @@ Notable changes
 * Upgraded kubespray and kubernetes.
   Upgraded kubespray to the current master branch (commit id
   6a70f026628c4f9976f96e135853f094239ca48e) and kubernetes to 1.28.3.
+* Upgraded ceph to 17.2.7.
+* Upgraded kubernetes components like calico, containerd, nerdctl, etc.
+  Refer to `VERSIONS <https://github.com/iorchard/burrito/blob/main/VERSIONS>`.
 * Removed PodSecurityPolicy in Admission plugin 
   because it is not supported since kubernetes version 1.25.
   Use PodSecurity Admission plugin instead.
@@ -26,6 +29,11 @@ Notable changes
 Burrito Changelog
 ------------------
 
+* fix(openstack): set verify_glance_signatures to disabled; (jijisa@iorchard.net)
+* fix(openstack): signature_verified metadata conflict problem in cinder; (jijisa@iorchard.net)
+* fix: add the default containerd_registries_mirrors in vars.yml.sample; (jijisa@iorchard.net)
+* fix(openstack): add extra capabilities for netapp cinder-volume; (jijisa@iorchard.net)
+* update VERSIONS file; (jijisa@iorchard.net)
 * add kubelet_csr_approver variables in vars.yml.sample; (jijisa@iorchard.net)
 * change helm diff tarball path; remove the check of OFFLINE_VARS when PLAYBOOK is landing. We will run landing playbook for online installation since gnsh service should be installed for both online and offline installation.; (jijisa@iorchard.net)
 * change localrepo namespace from burrito to kube-system; (jijisa@iorchard.net)
@@ -57,3 +65,4 @@ Burrito Changelog
 * upgrade kubespray to v2.23.0; (jijisa@iorchard.net)
 * change k8spatch for inline patch; (jijisa@iorchard.net)
 * add backup:true in cri patch; (jijisa@iorchard.net)
+
