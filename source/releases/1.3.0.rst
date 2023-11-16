@@ -11,7 +11,7 @@ Notable changes
   6a70f026628c4f9976f96e135853f094239ca48e) and kubernetes to 1.28.3.
 * Upgraded ceph to 17.2.7.
 * Upgraded kubernetes components like calico, containerd, nerdctl, etc.
-  Refer to `VERSIONS <https://github.com/iorchard/burrito/blob/main/VERSIONS>`.
+  See `VERSIONS <https://github.com/iorchard/burrito/blob/main/VERSIONS>`_.
 * Removed PodSecurityPolicy in Admission plugin 
   because it is not supported since kubernetes version 1.25.
   Use PodSecurity Admission plugin instead.
