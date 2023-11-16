@@ -10,7 +10,8 @@ Notable changes
   Upgraded kubespray to the current master branch (commit id
   6a70f026628c4f9976f96e135853f094239ca48e) and kubernetes to 1.28.3.
 * Upgraded ceph to 17.2.7.
-* Upgraded kubernetes components like calico, containerd, nerdctl, etc.
+* Upgraded other kubernetes components like etcd, containerd, calico, 
+  nerdctl, helm, etc.
   See `VERSIONS <https://github.com/iorchard/burrito/blob/main/VERSIONS>`_.
 * Removed PodSecurityPolicy in Admission plugin 
   because it is not supported since kubernetes version 1.25.
