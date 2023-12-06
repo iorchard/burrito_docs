@@ -1,7 +1,7 @@
 1.3.0 Aster
 ============
 
-This is the first patch in the Aster 1.3 series.
+This is the first release in the Aster 1.3 series.
 
 Notable changes
 ----------------
@@ -9,6 +9,13 @@ Notable changes
 * Upgraded kubespray and kubernetes.
   Upgraded kubespray to the current master branch (commit id
   6a70f026628c4f9976f96e135853f094239ca48e) and kubernetes to 1.28.3.
+* Upgraded ceph to 17.2.7.
+* Upgraded other kubernetes components like etcd, containerd, calico, 
+  nerdctl, helm, etc.
+  See `VERSIONS <https://github.com/iorchard/burrito/blob/main/VERSIONS>`_.
+* Removed PodSecurityPolicy in Admission plugin 
+  because it is not supported since kubernetes version 1.25.
+  Use PodSecurity Admission plugin instead.
 * Removed the containerd cri-base.json patch task.
   The new kubespray already has this applied.
 * Modified variables in offline_vars.yml due to changes in the way
@@ -23,6 +30,11 @@ Notable changes
 Burrito Changelog
 ------------------
 
+* fix(openstack): set verify_glance_signatures to disabled; (jijisa@iorchard.net)
+* fix(openstack): signature_verified metadata conflict problem in cinder; (jijisa@iorchard.net)
+* fix: add the default containerd_registries_mirrors in vars.yml.sample; (jijisa@iorchard.net)
+* fix(openstack): add extra capabilities for netapp cinder-volume; (jijisa@iorchard.net)
+* update VERSIONS file; (jijisa@iorchard.net)
 * add kubelet_csr_approver variables in vars.yml.sample; (jijisa@iorchard.net)
 * change helm diff tarball path; remove the check of OFFLINE_VARS when PLAYBOOK is landing. We will run landing playbook for online installation since gnsh service should be installed for both online and offline installation.; (jijisa@iorchard.net)
 * change localrepo namespace from burrito to kube-system; (jijisa@iorchard.net)
@@ -54,3 +66,4 @@ Burrito Changelog
 * upgrade kubespray to v2.23.0; (jijisa@iorchard.net)
 * change k8spatch for inline patch; (jijisa@iorchard.net)
 * add backup:true in cri patch; (jijisa@iorchard.net)
+
