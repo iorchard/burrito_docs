@@ -17,12 +17,16 @@ Notable changes
       you need to set up host groups and host mode optios (HMO) manually
       in Hitachi Virtual Storage Platform (HVSP) Web UI.
 
-* Upgrade btx to 1.2.2
+* Upgrade the burrito_iso project to support Rocky Linux 8.9.
+
+    - The burrito_iso project (https://github.com/iorchard/burrito_iso.git) 
+      is updated to support Rocky Linux 8.9.
+
+* Upgrade btx to 1.2.2 (btx project)
 
     - Increase volume availability check time to 2 minutes when running
       "btx --test" since it sometimes fails when waiting for the volume
       availability.
-
 
 Burrito Changelog
 ------------------
