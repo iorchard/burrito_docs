@@ -6,7 +6,7 @@ This is a guide to install Burrito in offline environment.
 Use the Burrito ISO to install.
 
 You can build your own burrito iso using burrito_iso project
-(https://github.com/iorchard/burrito_iso)
+(https://github.com/iorchard/burrito_iso).
 
 Supported OS
 -------------
@@ -129,17 +129,27 @@ There are 3 sample inventory files.
     This is a sample file using powerflex as the storage backend.
 * hosts_powerflex_hci.sample:
     This is a sample file using powerflex HCI (Hyper-Converged Infrastructure).
+* hosts_hitachi.sample:
+    This is a sample file using hitachi as the storage backend.
 
 .. warning::
     You need to get the powerflex rpm packages from Dell if you want to install
     powerflex in burrito.
 
+.. warning::
+    You need to get the hitachi container images from Hitachi if you want to 
+    install HSPC (Hitachi Storage Plug-in for Containers) images in burrito.
+
 When you run prepare.sh script, the default hosts.sample is copied to 
 *hosts* file.
 
-If you want to use powerflex, copy one of powerflex inventory files.::
+If you want to use powerflex storage, copy one of powerflex inventory files.::
 
    $ cp hosts_powerflex_hci.sample hosts
+
+If you want to use hitachi storage, copy hitachi inventory file.::
+
+   $ cp hosts_hitachi.sample hosts
 
 Here are the sample inventory files.
 
@@ -309,6 +319,50 @@ Here are the sample inventory files.
       ## Do not touch below if you are not an expert!!! #
       ###################################################
 
+.. collapse:: the hitachi inventory file
+
+   .. code-block::
+      :linenos:
+
+      control1 ip=192.168.21.101 ansible_connection=local ansible_python_interpreter=/usr/bin/python3
+      control2 ip=192.168.21.102
+      control3 ip=192.168.21.103
+      compute1 ip=192.168.21.104
+      compute2 ip=192.168.21.105
+      storage1 ip=192.168.21.106
+      storage2 ip=192.168.21.107
+      storage3 ip=192.168.21.108
+      
+      # ceph nodes
+      [mons]
+      [mgrs]
+      [osds]
+      [rgws]
+      [clients]
+      
+      # kubernetes nodes
+      [kube_control_plane]
+      control[1:3]
+      
+      [kube_node]
+      control[1:3]
+      compute[1:2]
+      
+      # openstack nodes
+      [controller-node]
+      control[1:3]
+      
+      [network-node]
+      control[1:3]
+      
+      [compute-node]
+      compute[1:2]
+      
+      ###################################################
+      ## Do not touch below if you are not an expert!!! #
+      ###################################################
+
+
 .. warning::
    Beware that control nodes are in network-node group since there is no
    network node in these sample files.
@@ -373,11 +427,13 @@ Edit vars.yml
      - ceph
      - netapp
      - powerflex
+     - hitachi
    
    # ceph: set ceph configuration in group_vars/all/ceph_vars.yml
    # netapp: set netapp configuration in group_vars/all/netapp_vars.yml
    # powerflex: set powerflex configuration in group_vars/all/powerflex_vars.yml
-   
+   # hitachi: set hitachi configuration in group_vars/all/hitachi_vars.yml
+
    ###################################################
    ## Do not edit below if you are not an expert!!!  #
    ###################################################
@@ -456,7 +512,7 @@ k8s_ha_level
 
 storage_backends
   Burrito supports the following storage backends -
-  ceph, netapp, and powerflex.
+  ceph, netapp, powerflex, and hitachi.
 
   If there are multiple backends, the first one is the default backend.
   It means the default storageclass, glance store and the default cinder 
@@ -530,7 +586,7 @@ For example, if you want to use nfs version 4.0, put nfsvers=4.0 in
 nfsMountOptions (nfsMountOptions: "nfsvers=4.0,lookupcache=pos").
 Then, you should check if nfs version 4 is enabled in NetApp NFS storage.
 
-If you do not know what these variables are, consult netapp engineer.
+If you do not know what these variables are, contact a Netapp engineer.
 
 powerflex
 ^^^^^^^^^^
@@ -571,7 +627,43 @@ Edit group_vars/all/powerflex_vars.yml.
    # Do Not Edit below
    #
 
-If you do not know what these variables are, consult Dell engineer.
+If you do not know what these variables are, contact a Dell engineer.
+
+hitachi
+^^^^^^^
+
+If hitachi is in storage_backends, edit group_vars/all/hitachi_vars.yml.
+
+.. code-block::
+   :linenos:
+
+   ---
+   # storage model: See hitachi_prefix_id below for your storage model
+   hitachi_storage_model: vsp_e990
+   
+   ## k8s storageclass variables
+   # Get hitachi storage serial number
+   hitachi_serial_number: "<serial_number>"
+   hitachi_pool_id: "0"
+   # port_id to be used by k8s PV
+   hitachi_port_id: "CL4-A"
+   
+   ## openstack cinder variables
+   hitachi_san_ip: "<san_ip>"
+   hitachi_san_login: "<san_login>"
+   hitachi_san_password: "<san_password>"
+   hitachi_ldev_range: "00:10:00-00:10:FF"
+   hitachi_target_ports: "CL3-A"
+   hitachi_compute_target_ports: "CL1-A,CL2-A,CL3-A,CL5-A,CL6-A"
+   
+   ########################
+   # Do Not Edit below!!! #
+   ########################
+
+If you do not know what these variables are, contact a Hitachi engineer.
+
+Create a vault secret file
++++++++++++++++++++++++++++
 
 Create a vault file to encrypt passwords.::
 
@@ -584,6 +676,9 @@ Enter <user> password for ssh connection to other nodes.
 
 Enter openstack admin password which will be used when you connect to 
 openstack horizon dashboard.
+
+Check the connectivity
+++++++++++++++++++++++
 
 Check the connections to other nodes.::
 
@@ -621,7 +716,7 @@ The Preflight installation step implements the following tasks.
 Install
 ^^^^^^^
 
-Run preflight playbook.::
+Run a preflight playbook.::
 
    $ ./run.sh preflight
 
@@ -670,7 +765,7 @@ Ceph Rados Gateway services are dependent of them.
 Install
 ^^^^^^^
 
-Run HA stack playbook.::
+Run a HA stack playbook.::
 
    $ ./run.sh ha
 
@@ -714,7 +809,7 @@ The Ceph installation step implements the following tasks.
 Install
 ^^^^^^^
 
-Run ceph playbook if ceph is in storage_backends.::
+Run a ceph playbook if ceph is in storage_backends.::
 
    $ ./run.sh ceph
 
@@ -761,7 +856,7 @@ Archive all crashes.::
 
    $ sudo ceph crash archive-all
 
-Then, check ceph health again. It should show HEALTH_OK now.
+Then, check ceph health again. It will show HEALTH_OK now.
 
 Step.4 Kubernetes
 +++++++++++++++++
@@ -776,7 +871,7 @@ The Kubernetes installation step implements the following tasks.
 Install
 ^^^^^^^
 
-Run k8s playbook.::
+Run a k8s playbook.::
 
    $ ./run.sh k8s
 
@@ -808,7 +903,7 @@ The Netapp installation step implements the following tasks.
 Install
 ^^^^^^^
 
-Run netapp playbook.::
+Run a netapp playbook.::
 
    $ ./run.sh netapp
 
@@ -849,7 +944,7 @@ The powerflex installation step implements the following tasks.
 Install
 ^^^^^^^
 
-Run powerflex playbook.::
+Run a powerflex playbook.::
 
    $ ./run.sh powerflex
 
@@ -872,26 +967,61 @@ Check if powerflex storageclass is created.::
    NAME                  PROVISIONER                RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
    powerflex (default)   csi-vxflexos.dellemc.com   Delete          WaitForFirstConsumer   true                   20h
 
+Step.5.3 Hitachi
++++++++++++++++++
+
+Skip this step if hitachi is **not** in storage_backends.
+
+The Hitachi installation step implements the following tasks.
+
+* Install Hitachi Storage Plug-in for Containers (HSPC) in hspc-operator-system namespace.
+* Create a hitachi storageclass.
+
+Install
+^^^^^^^
+
+Run a hitachi playbook.::
+
+   $ ./run.sh hitachi
+
+Verify
+^^^^^^
+
+Check if all pods are running and ready in hspc-operator-system namespace.::
+
+   $ sudo kubectl get pods -n hspc-operator-system
+   NAME                                                READY   STATUS    RESTARTS        AGE
+   hspc-csi-controller-7c4cbdccbc-sh7lz                6/6     Running   0               40s
+   hspc-csi-node-2snpm                                 2/2     Running   0               42s
+   hspc-csi-node-2t897                                 2/2     Running   0               42s
+   hspc-csi-node-xd78f                                 2/2     Running   0               42s
+   hspc-operator-controller-manager-599b69557b-6v9k7   1/1     Running   0               35s
+
+Check if hitachi storageclass is created.::
+
+   $ sudo kubectl get storageclass hitachi
+   NAME                PROVISIONER            RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
+   hitachi (default)   hspc.csi.hitachi.com   Delete          Immediate           true                   30s
+
 Step.6 Patch
 +++++++++++++
 
 The Patch installation step implements the following tasks.
 
 * Install ceph-csi driver if ceph is in storage_backends.
-* Patch containerd configuration.
 * Patch kube-apiserver.
 
 Install
 ^^^^^^^
 
-Run patch playbook.::
+Run a patch playbook.::
 
    $ ./run.sh patch
 
 Verify
 ^^^^^^
 
-It will take some time to restart kube-apiserver after patch.
+It will take some time to restart kube-apiserver after the patch.
 
 Check if all pods are running and ready in kube-system namespace.
 
@@ -947,7 +1077,7 @@ The Registry installation step implements the following tasks.
 Install
 ^^^^^^^
 
-Run registry playbook.::
+Run a registry playbook.::
 
    $ ./run.sh registry
 
@@ -968,7 +1098,7 @@ Check the images are in the local registry.::
        ]
    }
 
-Registries in output should not be empty.
+Repositories in output should not be empty.
 
 Step.8 Landing
 +++++++++++++++
@@ -1048,7 +1178,7 @@ The burrito installation step implements the following tasks.
 Install
 ^^^^^^^
 
-Run burrito playbook.::
+Run a burrito playbook.::
 
    $ ./run.sh burrito
 
@@ -1065,12 +1195,16 @@ Check all pods are running and ready in openstack namespace.::
    rabbitmq-rabbitmq-1                    1/1     Running     0          27m
    rabbitmq-rabbitmq-2                    1/1     Running     0          27m
 
+Congratulations!
+
+You've just finished the OpenStack installation on burrito kubernetes platform.
+
 Horizon
 ----------
 
 The horizon dashboard listens on tcp 31000 on control nodes.
 
-Here is how to connect to horizon dashboard on your browser.
+Here is how to connect to the horizon dashboard on your browser.
 
 #. Open your browser.
 
@@ -1112,11 +1246,23 @@ Check openstack volume service status.::
    | cinder-volume    | cinder-volume-worker@netapp1 | nova | enabled | up    | 2023-05-31T12:05:07.000000 |
    +------------------+------------------------------+------+---------+-------+----------------------------+
 
+Here is the example of the volume service status of hitachi storage backend.::
+
+   root@btx-0:/# o volume service list
+   +------------------+------------------------------+------+---------+-------+----------------------------+
+   | Binary           | Host                         | Zone | Status  | State | Updated At                 |
+   +------------------+------------------------------+------+---------+-------+----------------------------+
+   | cinder-scheduler | cinder-volume-worker         | nova | enabled | up    | 2023-12-12T07:46:59.000000 |
+   | cinder-volume    | cinder-volume-worker@hitachi | nova | enabled | up    | 2023-12-12T07:46:56.000000 |
+   +------------------+------------------------------+------+---------+-------+----------------------------+
+
 * All services should be `enabled` and `up`.
 * If you set up both ceph and netapp storage backends, 
   both volume services are enabled and up in the output.
 * The cinder-volume-worker@rbd1 is the service for ceph backend
-  and the cinder-volume-worker@netapp1 is the service for netapp backend.
+  and the cinder-volume-worker@netapp1 is the service for Netapp backend.
+* The cinder-volumeworker@powerflex is the service for Dell powerflex backend.
+* The cinder-volumeworker@hitachi is the service for Hitachi backend.
 
 Check openstack network agent status.::
 
