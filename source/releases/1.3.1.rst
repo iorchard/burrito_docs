@@ -15,7 +15,7 @@ Notable changes
       Service (Cinder).
     - In order to support both kubernetes PVs and OpenStack volumes,
       you need to set up host groups and host mode optios (HMO) manually
-      in Hitachi Virtual Storage Platform (HVSP) Web UI.
+      in Hitachi Virtual Storage Platform (HVSP) UI.
 
 * Upgrade the burrito_iso project to support Rocky Linux 8.9.
 
