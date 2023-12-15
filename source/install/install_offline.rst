@@ -632,6 +632,12 @@ If you do not know what these variables are, contact a Dell engineer.
 hitachi
 ^^^^^^^
 
+Before using Hitachi Storage in Burrito,
+you must manually set up Host Groups and Host Mode Options.
+
+Please refer to the
+:doc:`Hitachi Storage Manual Setup Guide <setup_hitachi_storage>`.
+
 If hitachi is in storage_backends, edit group_vars/all/hitachi_vars.yml.
 
 .. code-block::
@@ -660,7 +666,21 @@ If hitachi is in storage_backends, edit group_vars/all/hitachi_vars.yml.
    # Do Not Edit below!!! #
    ########################
 
-If you do not know what these variables are, contact a Hitachi engineer.
+Contact a Hitachi engineer to get the information of the storage.
+
+* hitachi_storage_model: Enter one of hitachi_prefix_id variable values.
+* hitachi_serial_number: the 6-digit serial number
+* hitachi_pool_id: Hitachi storage pool id
+* hitachi_port_id: Port id for Kubernetes
+* hitachi_san_ip: IP address of Hitachi controller
+* hitachi_san_login: Username for Hitachi controller
+* hitachi_san_password: Password for Hitachi controller
+* hitachi_ldev_range: Range of the LDEV numbers in the format of 
+  ‘aa:bb:cc-dd:ee:ff’ that can be used by the cinder driver.
+* hitachi_target_ports: IDs of the storage ports used to attach volumes 
+  to the control nodes
+* hitachi_compute_target_ports: IDs of the storage ports used to attach 
+  volumes to control and compute nodes
 
 Create a vault secret file
 +++++++++++++++++++++++++++
