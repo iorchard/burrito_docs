@@ -107,7 +107,7 @@ Control node usually acts as both control and network node.
 Edit inventory hosts
 ^^^^^^^^^^^^^^^^^^^^^
 
-There are 3 sample inventory files.
+There are sample inventory files.
 
 * hosts.sample (default):
     This is a sample file using ceph as the storage backend.
@@ -117,14 +117,11 @@ There are 3 sample inventory files.
     This is a sample file using powerflex HCI (Hyper-Converged Infrastructure).
 * hosts_hitachi.sample:
     This is a sample file using hitachi as the storage backend.
+    But **burrito does not support hitachi storage for online installation.**
 
 .. warning::
     You need to get the powerflex rpm packages from Dell if you want to install
     powerflex in burrito.
-
-.. warning::
-    You need to get the hitachi container images from Hitachi if you want to 
-    install HSPC (Hitachi Storage Plug-in for Containers) images in burrito.
 
 When you run prepare.sh script, the default hosts.sample is copied to 
 *hosts* file.
@@ -132,10 +129,6 @@ When you run prepare.sh script, the default hosts.sample is copied to
 If you want to use powerflex, copy one of powerflex inventory files.::
 
    $ cp hosts_powerflex_hci.sample hosts
-
-If you want to use hitachi storage, copy hitachi inventory file.::
-
-   $ cp hosts_hitachi.sample hosts
 
 Here are the sample inventory files.
 
@@ -305,49 +298,6 @@ Here are the sample inventory files.
       ## Do not touch below if you are not an expert!!! #
       ###################################################
 
-.. collapse:: the hitachi inventory file
-
-   .. code-block::
-      :linenos:
-
-      control1 ip=192.168.21.101 ansible_connection=local ansible_python_interpreter=/usr/bin/python3
-      control2 ip=192.168.21.102
-      control3 ip=192.168.21.103
-      compute1 ip=192.168.21.104
-      compute2 ip=192.168.21.105
-      storage1 ip=192.168.21.106
-      storage2 ip=192.168.21.107
-      storage3 ip=192.168.21.108
-      
-      # ceph nodes
-      [mons]
-      [mgrs]
-      [osds]
-      [rgws]
-      [clients]
-      
-      # kubernetes nodes
-      [kube_control_plane]
-      control[1:3]
-      
-      [kube_node]
-      control[1:3]
-      compute[1:2]
-      
-      # openstack nodes
-      [controller-node]
-      control[1:3]
-      
-      [network-node]
-      control[1:3]
-      
-      [compute-node]
-      compute[1:2]
-      
-      ###################################################
-      ## Do not touch below if you are not an expert!!! #
-      ###################################################
-
 .. warning::
    Beware that control nodes are in network-node group since there is no
    network node in these sample files.
@@ -498,7 +448,8 @@ k8s_ha_level
 
 storage_backends
   Burrito supports the following storage backends -
-  ceph, netapp, powerflex, and hitachi.
+  ceph, netapp, powerflex, and hitachi (hitachi storage cannot be
+  used for online installation).
 
   If there are multiple backends, the first one is the default backend.
   It means the default storageclass, glance store and the default cinder 
@@ -614,59 +565,6 @@ Edit group_vars/all/powerflex_vars.yml and add /dev/sd{b,c,d} in it.
    #
 
 If you do not know what these variables are, contact a Dell engineer.
-
-hitachi
-^^^^^^^
-
-Before using Hitachi Storage in Burrito,
-you must manually set up Host Groups and Host Mode Options.
-
-Please refer to the 
-:doc:`Hitachi Storage Manual Setup Guide <setup_hitachi_storage>`.
-
-If hitachi is in storage_backends, edit group_vars/all/hitachi_vars.yml.
-
-.. code-block::
-   :linenos:
-
-   ---
-   # storage model: See hitachi_prefix_id below for your storage model
-   hitachi_storage_model: vsp_e990
-
-   ## k8s storageclass variables
-   # Get hitachi storage serial number
-   hitachi_serial_number: "<serial_number>"
-   hitachi_pool_id: "0"
-   # port_id to be used by k8s PV
-   hitachi_port_id: "CL4-A"
-
-   ## openstack cinder variables
-   hitachi_san_ip: "<san_ip>"
-   hitachi_san_login: "<san_login>"
-   hitachi_san_password: "<san_password>"
-   hitachi_ldev_range: "00:10:00-00:10:FF"
-   hitachi_target_ports: "CL3-A"
-   hitachi_compute_target_ports: "CL1-A,CL2-A,CL3-A,CL5-A,CL6-A"
-
-   ########################
-   # Do Not Edit below!!! #
-   ########################
-
-Contact a Hitachi engineer to get the information of the storage.
-
-* hitachi_storage_model: Enter one of hitachi_prefix_id variable values.
-* hitachi_serial_number: the 6-digit serial number
-* hitachi_pool_id: Hitachi storage pool id
-* hitachi_port_id: Port id for Kubernetes    
-* hitachi_san_ip: IP address of Hitachi controller
-* hitachi_san_login: Username for Hitachi controller
-* hitachi_san_password: Password for Hitachi controller
-* hitachi_ldev_range: Range of the LDEV numbers in the format of 
-  ‘aa:bb:cc-dd:ee:ff’ that can be used by the cinder driver.
-* hitachi_target_ports: IDs of the storage ports used to attach volumes 
-  to the control nodes
-* hitachi_compute_target_ports: IDs of the storage ports used to attach
-  volumes to control and compute nodes
 
 Create a vault secret file
 +++++++++++++++++++++++++++
@@ -988,42 +886,6 @@ Check if powerflex storageclass is created.::
    NAME                  PROVISIONER                RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
    powerflex (default)   csi-vxflexos.dellemc.com   Delete          WaitForFirstConsumer   true                   20h
 
-Step.5.3 Hitachi
-+++++++++++++++++
-
-Skip this step if hitachi is **not** in storage_backends.
-
-The Hitachi installation step implements the following tasks.
-
-* Install Hitachi Storage Plug-in for Containers (HSPC) in hspc-operator-system namespace.
-* Create a hitachi storageclass.
-
-Install
-^^^^^^^
-
-Run a hitachi playbook.::
-
-   $ ./run.sh hitachi
-
-Verify
-^^^^^^
-
-Check if all pods are running and ready in hspc-operator-system namespace.::
-
-   $ sudo kubectl get pods -n hspc-operator-system
-   NAME                                                READY   STATUS    RESTARTS        AGE
-   hspc-csi-controller-7c4cbdccbc-sh7lz                6/6     Running   0               40s
-   hspc-csi-node-2snpm                                 2/2     Running   0               42s
-   hspc-csi-node-2t897                                 2/2     Running   0               42s
-   hspc-csi-node-xd78f                                 2/2     Running   0               42s
-   hspc-operator-controller-manager-599b69557b-6v9k7   1/1     Running   0               35s
-
-Check if hitachi storageclass is created.::
-
-   $ sudo kubectl get storageclass hitachi
-   NAME                PROVISIONER            RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
-   hitachi (default)   hspc.csi.hitachi.com   Delete          Immediate           true                   30s
-
 Step.6 Patch
 +++++++++++++
 
@@ -1207,23 +1069,12 @@ Check openstack volume service status.::
    | cinder-volume    | cinder-volume-worker@netapp1 | nova | enabled | up    | 2023-05-31T12:05:07.000000 |
    +------------------+------------------------------+------+---------+-------+----------------------------+
 
-Here is the example of the volume service status of hitachi storage backend.::
-
-   root@btx-0:/# o volume service list
-   +------------------+------------------------------+------+---------+-------+----------------------------+
-   | Binary           | Host                         | Zone | Status  | State | Updated At                 |
-   +------------------+------------------------------+------+---------+-------+----------------------------+
-   | cinder-scheduler | cinder-volume-worker         | nova | enabled | up    | 2023-12-12T07:46:59.000000 |
-   | cinder-volume    | cinder-volume-worker@hitachi | nova | enabled | up    | 2023-12-12T07:46:56.000000 |
-   +------------------+------------------------------+------+---------+-------+----------------------------+
-
 * All services should be `enabled` and `up`.
 * If you set up both ceph and netapp storage backends, 
   both volume services are enabled and up in the output.
 * The cinder-volume-worker@rbd1 is the service for Ceph backend
   and the cinder-volume-worker@netapp1 is the service for Netapp backend.
 * The cinder-volumeworker@powerflex is the service for Dell powerflex backend.
-* The cinder-volumeworker@hitachi is the service for Hitachi backend.
 
 Check openstack network agent status.::
 
