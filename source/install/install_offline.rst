@@ -121,7 +121,7 @@ Control node usually acts as both control node and network node.
 Edit inventory hosts
 ^^^^^^^^^^^^^^^^^^^^^
 
-There are 3 sample inventory files.
+There are sample inventory files.
 
 * hosts.sample (default):
     This is a sample file using ceph as the storage backend.
