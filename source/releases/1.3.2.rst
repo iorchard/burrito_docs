@@ -1,0 +1,34 @@
+1.3.2 Aster
+============
+
+This is the second patch in the Aster 1.3 series.
+
+We will freeze the features with this version which means we will not 
+add any new features, just for bug fixes and patch-level upgrade 
+as each component reaches end-of-life (EOL).
+
+The next release series is the Begonia 2.0 series.
+
+Notable changes
+----------------
+
+* Upgrade mariadb to 10.6.16.
+
+* Upgrade btx to 1.2.3. (btx project)
+
+    - Remove public-zone host aggregate creation in post_install_burrito()
+      function.
+
+* The default flavor(flavor name: default) is no longer created.
+  The m1.tiny flavor is still created when btx --test script runs.
+
+Burrito Changelog
+------------------
+
+* feature: upgrade mariadb to 10.6.16; (jijisa@iorchard.net)
+* update btx image version to 1.2.3 in images.txt; (jijisa@iorchard.net)
+* upgrade btx to 1.2.3; (jijisa@iorchard.net)
+* replace ceph_rgw_uid and ceph_rgw_buckets variables with general names; (jijisa@iorchard.net)
+* add offline install only in registry playbook help message; (jijisa@iorchard.net)
+* remove auto-creation of default flavor; (jijisa@iorchard.net)
+* move "set auth_client_required to cephx task from burrito playbook to ceph-csi role; (jijisa@iorchard.net)
