@@ -3,6 +3,12 @@
 
 This is the second patch in the Aster 1.3 series.
 
+We will freeze the features with this version which means we will not 
+add any new features, just for bug fixes and patch-level upgrade for 
+each component if it is EOL'ed.
+
+The next release series will be Begonia 2.0 series.
+
 Notable changes
 ----------------
 
