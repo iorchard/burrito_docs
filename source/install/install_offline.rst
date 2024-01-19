@@ -1154,10 +1154,12 @@ Check if the genesis registry service is running on control nodes.::
    ...
      Active: active (exited) since Fri 2023-09-22 14:42:36 KST; 19s ago
 
-Check if the local repository pod is running and ready in burrito namespace.::
+Check if the local repository pod is running and ready 
+in kube-system namespace.::
 
-   $ sudo kubectl get pods -n burrito
+   $ sudo kubectl get pods -n kube-system
    NAME                        READY   STATUS    RESTARTS   AGE
+   ...
    localrepo-c4bc5b89d-nbtq9   1/1     Running   0          3m38s
 
 Check if the Graceful Node Shutdown Helper (GNSH) service is running.::
