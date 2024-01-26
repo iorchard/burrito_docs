@@ -13,8 +13,6 @@ System requirements
 
 This is the **minimum** system requirements to install Burrito.
 
-If you have more resources, consider allocating more resources to each node.
-
 =========  ============ ============ ============ ===================
 node role    CPU (ea)   Memory (GB)  Disk (GB)     Extra Disks
 =========  ============ ============ ============ ===================
@@ -23,6 +21,7 @@ compute     4                8          50          N/A
 storage     4                8          50          3 ea x 50GB
 =========  ============ ============ ============ ===================
 
+If you have more resources, consider allocating more resources to each node.
 
 Networks
 -----------
