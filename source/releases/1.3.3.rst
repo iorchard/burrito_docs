@@ -1,0 +1,24 @@
+1.3.3 Aster
+============
+
+This is the third patch in the Aster 1.3 series.
+
+Notable changes
+----------------
+
+* Add the calico images to the genesis registry. 
+  When a node boots, calico-kube-controller sometimes fails to run 
+  because the calico images cannot be downloaded from the local registry.
+
+* Override nodeSelector in coredns and calico-kube-controller deployment.
+  The default nodeSelector is "kubernetes.io/os: linux" so coredns and
+  calico-kube-controller could run on kubernetes worker nodes.
+  So we change the nodeSelector with 
+  'node-role.kubernetes.io/control-plane: ""' 
+  so that they run on kubernetes control nodes.
+
+Burrito Changelog
+------------------
+
+* add calico images in genesis registry; (jijisa@iorchard.net)
+* feature(k8s): override nodeSelector in coredns and calico controller; (jijisa@iorchard.net)
