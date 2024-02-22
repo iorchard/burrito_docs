@@ -18,7 +18,7 @@ I modified /usr/bin/gnsh script to try to uncordon the node
 10 times over 30 seconds if the node is not uncordoned.
 
 Download :download:`the modified gnsh script <../_static/gnsh>` and
-put it in /usr/bin/ directory.::
+put it in /usr/bin/ directory on all kubernetes nodes.::
 
     $ chmod +x gnsh
     $ sudo cp gnsh /usr/bin/
