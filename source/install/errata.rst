@@ -23,3 +23,5 @@ put it in /usr/bin/ directory on all kubernetes nodes.::
     $ chmod +x gnsh
     $ sudo cp gnsh /usr/bin/
 
+Then, It will be applied on next boot.
+
