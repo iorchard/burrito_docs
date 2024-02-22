@@ -57,7 +57,7 @@ function start_gnsh() {
       sleep 3
     fi
   done
-  echo "Give up on uncordon ${HOSTNAME}. You should uncordon manually."
+  echo "Give up on uncordoning ${HOSTNAME}. You should uncordon manually."
 }
 
 case "$1" in
