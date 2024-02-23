@@ -4,7 +4,7 @@ Errata
 Uncordon issue when gnsh.service starts
 ----------------------------------------
 
-* Affected version: all aster versions
+* Affected version: 1.3.3 and earlier
 
 Gnsh is the Graceful Node Shutdown Helper program.
 It cordons and drains the node when the node is gracefully powered off and
