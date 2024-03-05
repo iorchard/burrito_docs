@@ -20,6 +20,7 @@ Welcome to Burrito's documentation!
    Online Installation <install/install>
    Offline Installation <install/install_offline>
    Hitachi Storage Manual Setup Guide <install/setup_hitachi_storage>
+   Errata <install/errata>
 
 .. toctree::
    :caption: Operation
