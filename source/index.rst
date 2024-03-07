@@ -20,7 +20,6 @@ Welcome to Burrito's documentation!
    Online Installation <install/install>
    Offline Installation <install/install_offline>
    Hitachi Storage Manual Setup Guide <install/setup_hitachi_storage>
-   Errata <install/errata>
 
 .. toctree::
    :caption: Operation
@@ -34,10 +33,5 @@ Welcome to Burrito's documentation!
    :caption: Releases
    :maxdepth: 2
 
-   releases/1.3.3
-   releases/1.3.2
-   releases/1.3.1
-   releases/1.3.0
-   releases/1.2.5
-   releases/1.2.4
+   releases/2.0.0
 
