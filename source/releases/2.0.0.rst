@@ -14,7 +14,7 @@ Notable changes
 
 * Upgrade Ceph to `18.2.1 (Reef)
   <https://docs.ceph.com/en/latest/releases/reef/>`_.
-  Remove ceph-ansible.
+  Removed ceph-ansible.
   The official `ceph-ansible <https://github.com/ceph/ceph-ansible>`_ 
   says the project is still maintained but it is encouraged to migrate 
   to cephadm.
@@ -28,8 +28,7 @@ Notable changes
 * Include `Asklepios auth-healing service
   <https://github.com/iorchard/asklepios>`_.
 
-* Remove GNSH(Graceful Node Shutdown Helper) playbook role 
-  since Asklepios replaces it.
+* Remove GNSH(Graceful Node Shutdown Helper) since Asklepios replaces it.
 
 
 Burrito Changelog
