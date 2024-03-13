@@ -1,5 +1,11 @@
-Graceful Node Shutdown
-========================
+Graceful Node Shutdown (Deprecated)
+====================================
+
+.. warning::
+
+    Graceful Node Shutdown Helper (GNSH) is no longer installed 
+    starting from Burrito Begonia release.
+    Asklepios auto-healing service replaces GNSH in Burrito Begonia release.
 
 Kubernetes has a Graceful Node Shutdown feature since 1.21.
 (https://kubernetes.io/docs/concepts/architecture/nodes/#graceful-node-shutdown)
