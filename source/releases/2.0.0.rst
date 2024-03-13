@@ -3,6 +3,9 @@
 
 This is the first release in the Begonia series.
 
+In this first Begonia Series, we have made many high availability
+enhancements to openstack services.
+
 Notable changes
 ----------------
 
@@ -27,6 +30,12 @@ Notable changes
 
 * Include `Asklepios auth-healing service
   <https://github.com/iorchard/asklepios>`_.
+  It detects a node failure and quickly moves pods from that node 
+  to other nodes to minimize service failure.
+
+* Enhance rabbitmq connection settings for openstack services to minimize
+  communication problems between rabbitmq and openstack services in the event
+  of a node failure.
 
 * Remove GNSH(Graceful Node Shutdown Helper) since Asklepios replaces it.
 
