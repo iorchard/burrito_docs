@@ -34,6 +34,20 @@ Notable changes
 Burrito Changelog
 ------------------
 
+* move asklepios role to patch playbook; (jijisa@iorchard.net)
+* ceph: add status task yaml file; (jijisa@iorchard.net)
+* ceph: add health check at the end of tasks; (jijisa@iorchard.net)
+* change the play order; run burrito.asklepios role first; (jijisa@iorchard.net)
+* asklepios: add timeoutSeconds; (jijisa@iorchard.net)
+* modify transport_url for each openstack service to use 3 rabbitmq servers for failover; (jijisa@iorchard.net)
+* set rabbit_interval_max to default value(30 seconds); (jijisa@iorchard.net)
+* add asklepios image in genesis registry; (jijisa@iorchard.net)
+* asklepios: adjust liveness/readiness parameters; (jijisa@iorchard.net)
+* add transport.cleanup() to terminate the rabbitmq connection gracefully in health probe python script; (jijisa@iorchard.net)
+* adjust keystone and nova liveness/readiness; (jijisa@iorchard.net)
+* update rabbitmq liveness/readiness failureThreshold up to 90 seconds; (jijisa@iorchard.net)
+* feature(descheduler): remove LowNodeUtilization policy and plugin; (jijisa@iorchard.net)
+* upgrade descheduler to v0.29.0; (jijisa@iorchard.net)
 * update VERSIONS; (jijisa@iorchard.net)
 * fix(genesisregistry): use ctr instead of nerdctl since nerdctl is flaky; (jijisa@iorchard.net)
 * add patch file 16-patch-kubespray-download-tasks-main.txt; (jijisa@iorchard.net)

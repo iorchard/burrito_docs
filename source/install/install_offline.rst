@@ -139,13 +139,15 @@ Edit inventory hosts
 There are sample inventory files.
 
 * hosts.sample (default):
-    This is a sample file using ceph as the storage backend.
+    This is a sample file using ceph as a storage backend.
 * hosts_powerflex.sample:
-    This is a sample file using powerflex as the storage backend.
+    This is a sample file using powerflex as a storage backend.
 * hosts_powerflex_hci.sample:
     This is a sample file using powerflex HCI (Hyper-Converged Infrastructure).
 * hosts_hitachi.sample:
-    This is a sample file using hitachi as the storage backend.
+    This is a sample file using hitachi as a storage backend.
+* hosts_primera.sample:
+    This is a sample file using HPE Primera as a storage backend.
 
 .. warning::
     You need to get the powerflex rpm packages from Dell if you want to install
@@ -165,6 +167,10 @@ If you want to use powerflex storage, copy one of powerflex inventory files.::
 If you want to use hitachi storage, copy hitachi inventory file.::
 
    $ cp hosts_hitachi.sample hosts
+
+If you want to use HPE Primera, copy primera inventory file.::
+
+   $ cp hosts_primera.sample hosts
 
 Here are the sample inventory files.
 
@@ -377,6 +383,48 @@ Here are the sample inventory files.
       ## Do not touch below if you are not an expert!!! #
       ###################################################
 
+.. collapse:: the HPE Primera inventory file
+
+   .. code-block::
+      :linenos:
+
+      control1 ip=192.168.21.101 ansible_connection=local ansible_python_interpreter=/usr/bin/python3
+      control2 ip=192.168.21.102
+      control3 ip=192.168.21.103
+      compute1 ip=192.168.21.104
+      compute2 ip=192.168.21.105
+      storage1 ip=192.168.21.106
+      storage2 ip=192.168.21.107
+      storage3 ip=192.168.21.108
+      
+      # ceph nodes
+      [mons]
+      [mgrs]
+      [osds]
+      [rgws]
+      [clients]
+      
+      # kubernetes nodes
+      [kube_control_plane]
+      control[1:3]
+      
+      [kube_node]
+      control[1:3]
+      compute[1:2]
+      
+      # openstack nodes
+      [controller-node]
+      control[1:3]
+      
+      [network-node]
+      control[1:3]
+      
+      [compute-node]
+      compute[1:2]
+      
+      ###################################################
+      ## Do not touch below if you are not an expert!!! #
+      ###################################################
 
 .. warning::
    Beware that control nodes are in network-node group since there is no
@@ -448,7 +496,8 @@ Edit vars.yml
    # netapp: set netapp configuration in group_vars/all/netapp_vars.yml
    # powerflex: set powerflex configuration in group_vars/all/powerflex_vars.yml
    # hitachi: set hitachi configuration in group_vars/all/hitachi_vars.yml
-
+   # primera: set HP primera configuration in group_vars/all/primera_vars.yml
+   
    ###################################################
    ## Do not edit below if you are not an expert!!!  #
    ###################################################
@@ -697,6 +746,37 @@ Contact a Hitachi engineer to get the information of the storage.
 * hitachi_compute_target_ports: IDs of the storage ports used to attach 
   volumes to control and compute nodes
 
+HPE Primera
+^^^^^^^^^^^^
+
+If HPE Primera is in storage_backends, edit group_vars/all/primera_vars.yml.
+
+.. code-block::
+   :linenos:
+
+   ---
+   # Primera storage IP address
+   primera_ip: "192.168.200.178"
+   # Primera username/password
+   primera_username: "3paradm"
+   primera_password: "<PASSWORD>"
+   # Primera common provisioning group for kubernetes
+   primera_k8s_cpg: "<cpg_for_k8s>"
+   # Primera common provisioning group for openstack cinder
+   primera_openstack_cpg: "<cpg_for_openstack>"
+   
+   ########################
+   # Do Not Edit below!!! #
+   ########################
+
+* primera_ip: IP address of HPE Primera storage
+* primera_username: Username of HPE Primera storage
+* primera_password: Password of HPE Primera storage
+* primera_k8s_cpg: Primera Common Provisioning Group for kubernetes
+* primera_openstack_cpg: Primera Common Provisioning Group for openstack cinder
+
+If you do not know what these variables are, contact a HPE engineer.
+
 Create a vault secret file
 +++++++++++++++++++++++++++
 
@@ -744,6 +824,7 @@ Step.1 Preflight
 
 The Preflight installation step implements the following tasks.
 
+* Verify that the inventory nodes meets the Burrito installation requirements.
 * Set up a local yum repository.
 * Configure NTP time servers and clients.
 * Deploy the public ssh key to other nodes (if deploy_ssh_key is true).
@@ -863,35 +944,22 @@ It will show the output like this.::
 
    $ sudo ceph -s
      cluster:
-       id:     cd7bdd5a-1814-4e6a-9e07-c2bdc3f53fea
+       id:     01b83dd0-e0d5-11ee-840d-525400ce72c2
        health: HEALTH_OK
     
      services:
-       mon: 3 daemons, quorum storage1,storage2,storage3 (age 17h)
-       mgr: storage2(active, since 17h), standbys: storage1, storage3
-       osd: 9 osds: 9 up (since 17h), 9 in (since 17h)
+       mon: 3 daemons, quorum storage1,storage3,storage2 (age 17m)
+       mgr: storage1.kkdjdc(active, since 88m), standbys: storage3.lxtllo, storage2.vlgfyt
+       osd: 9 osds: 9 up (since 86m), 9 in (since 86m)
        rgw: 3 daemons active (3 hosts, 1 zones)
     
      data:
-       pools:   10 pools, 513 pgs
-       objects: 2.54k objects, 7.3 GiB
-       usage:   19 GiB used, 431 GiB / 450 GiB avail
-       pgs:     513 active+clean
+       pools:   10 pools, 289 pgs
+       objects: 3.50k objects, 9.7 GiB
+       usage:   32 GiB used, 418 GiB / 450 GiB avail
+       pgs:     289 active+clean
 
-There are 4 services - mon, mgr, osd, and rgw.
-
-Sometimes it could show `HEALTH_WARN <something> have recently crashed`.
-Don't worry. it is mostly harmless warning.
-
-List the crashes.::
-
-   $ sudo ceph crash ls
-
-Archive all crashes.::
-
-   $ sudo ceph crash archive-all
-
-Then, check ceph health again. It will show HEALTH_OK now.
+There should be 4 services - mon, mgr, osd, and rgw.
 
 Step.4 Kubernetes
 +++++++++++++++++
@@ -1038,12 +1106,50 @@ Check if hitachi storageclass is created.::
    NAME                PROVISIONER            RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
    hitachi (default)   hspc.csi.hitachi.com   Delete          Immediate           true                   30s
 
+Step.5.4 HPE Primera
++++++++++++++++++++++
+
+Skip this step if HPE Primera is **not** in storage_backends.
+
+The HPE Primera installation step implements the following tasks.
+
+* Install the necessary packages.
+* Install HPE Primera CSI drivers in hpe-storage namespace
+* Create a HPE Primera storageclass.
+
+Install
+^^^^^^^
+
+Run a primera playbook.::
+
+   $ ./run.sh primera
+
+Verify
+^^^^^^
+
+Check if all pods are running and ready in hpe-storage namespace.::
+
+    $ sudo kubectl get po -n hpe-storage  -o wide
+    NAME                                  READY   STATUS    RESTARTS      AGE   IP               NODE                NOMINATED NODE   READINESS GATES
+    hpe-csi-controller-5b7fb84447-jzrc8   9/9     Running   0             74s   192.168.172.31   hitachi-control-1   <none>           <none>
+    hpe-csi-node-tsllc                    2/2     Running   1 (53s ago)   74s   192.168.172.32   hitachi-compute-1   <none>           <none>
+    hpe-csi-node-xpjsl                    2/2     Running   1 (54s ago)   74s   192.168.172.33   hitachi-compute-2   <none>           <none>
+    hpe-csi-node-xplt8                    2/2     Running   1 (53s ago)   74s   192.168.172.31   hitachi-control-1   <none>           <none>
+    primera3par-csp-78bf8d479d-flkxs      1/1     Running   0             74s   10.205.161.8     hitachi-control-1   <none>           <none>
+
+Check if a storageclass is created.::
+
+   $ sudo kubectl get storageclass primera
+   NAME                PROVISIONER   RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
+   primera (default)   csi.hpe.com   Delete          Immediate           true                   30s
+
 Step.6 Patch
 +++++++++++++
 
 The Patch installation step implements the following tasks.
 
 * Install ceph-csi driver if ceph is in storage_backends.
+* Install descheduler and asklepios auto-healing service.
 * Patch kube-apiserver.
 
 Install
@@ -1066,6 +1172,8 @@ Check if all pods are running and ready in kube-system namespace.
 
       $ sudo kubectl get pods -n kube-system
       NAME                                       READY STATUS    RESTARTS      AGE
+      asklepios-547cd5b7b4-tqv8d                 1/1   Running   0             60m
+
       calico-kube-controllers-67c66cdbfb-rz8lz   1/1   Running   0             60m
       calico-node-28k2c                          1/1   Running   0             60m
       calico-node-7cj6z                          1/1   Running   0             60m
@@ -1074,6 +1182,9 @@ Check if all pods are running and ready in kube-system namespace.
       calico-node-zmpxs                          1/1   Running   0             60m
       coredns-748d85fb6d-c8cj2                   1/1   Running   1 (28s ago)   59m
       coredns-748d85fb6d-gfv98                   1/1   Running   1 (27s ago)   59m
+      descheduler-5c846756c7-dqjk2               1/1   Running   0             60m
+      descheduler-5c846756c7-qv7z7               1/1   Running   0             60m
+
       dns-autoscaler-795478c785-hrjqr            1/1   Running   1 (32s ago)   59m
       kube-apiserver-control1                    1/1   Running   0             33s
       kube-apiserver-control2                    1/1   Running   0             34s
@@ -1146,7 +1257,6 @@ The Landing installation step implements the following tasks.
   genesis registry.
 * Deploy the local yum repository pod in burrito namespace.
 * Register the registry and repository service in haproxy.
-* Install Graceful Node Shutdown Helper (GNSH).
 
 Install
 ^^^^^^^
@@ -1176,23 +1286,6 @@ in kube-system namespace.::
    NAME                        READY   STATUS    RESTARTS   AGE
    ...
    localrepo-c4bc5b89d-nbtq9   1/1     Running   0          3m38s
-
-Check if the Graceful Node Shutdown Helper (GNSH) service is running.::
-
-   $ sudo systemctl status gnsh.service
-    gnsh.service - Graceful Node Shutdown Helper
-      Loaded: loaded (/etc/systemd/system/gnsh.service; enabled; vendor preset: di>
-      Active: active (exited) since Tue 2023-11-07 13:58:34 KST; 25min ago
-     Process: 435851 ExecStart=/usr/bin/gnsh start (code=exited, status=0/SUCCESS)
-    Main PID: 435851 (code=exited, status=0/SUCCESS)
-       Tasks: 0 (limit: 100633)
-      Memory: 0B
-      CGroup: /system.slice/gnsh.service
-   
-   Nov 07 13:58:34 control1 systemd[1]: Starting Graceful Node Shutdown Helper...
-   Nov 07 13:58:34 control1 gnsh[435851]: Uncordon my node control1.
-   Nov 07 13:58:34 control1 gnsh[435853]: node/control1 already uncordoned
-   Nov 07 13:58:34 control1 systemd[1]: Started Graceful Node Shutdown Helper.
 
 
 Congratulations! 
