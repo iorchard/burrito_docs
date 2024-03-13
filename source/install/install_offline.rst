@@ -1184,8 +1184,7 @@ Check if all pods are running and ready in kube-system namespace.
       coredns-748d85fb6d-gfv98                   1/1   Running   1 (27s ago)   59m
       descheduler-5c846756c7-dqjk2               1/1   Running   0             60m
       descheduler-5c846756c7-qv7z7               1/1   Running   0             60m
-
-      dns-autoscaler-795478c785-hrjqr            1/1   Running   1 (32s ago)   59m
+      dns-autoscaler-795478c785-hrjqr            1/1   Running   0             59m
       kube-apiserver-control1                    1/1   Running   0             33s
       kube-apiserver-control2                    1/1   Running   0             34s
       kube-apiserver-control3                    1/1   Running   0             35s
