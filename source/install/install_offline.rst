@@ -1269,14 +1269,11 @@ Verify
 
 Check if the genesis registry service is running on control nodes.::
 
-   $ sudo systemctl status genesis_registry.service gnsh.service
+   $ sudo systemctl status genesis_registry.service 
    genesis_registry.service - Geneis Registry service
    ...
     Active: active (running) since Fri 2023-09-22 14:39:41 KST; 3min 13s ago
    ...
-   gnsh.service - Graceful Node Shutdown Helper
-   ...
-     Active: active (exited) since Fri 2023-09-22 14:42:36 KST; 19s ago
 
 Check if the local repository pod is running and ready 
 in kube-system namespace.::
