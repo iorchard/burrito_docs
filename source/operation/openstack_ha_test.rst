@@ -5,7 +5,7 @@ This is a test to see how long openstack services are unavailable when
 non-graceful control node shutdown occurrs.
 
 The openstack API service test is done by
-`cocina <https://github.com/iorchard/cocina>`_
+`cocina <https://github.com/iorchard/cocina>`_.
 
 Test environment
 -----------------
@@ -24,24 +24,24 @@ Test procedures
 
 * Procedure for powering off one of control node non-gracefully.
 
-    * Run cocina os_probe.sh on the jijisa-dev machine.
-      (All openstack API service queries should succeed.)
-    * Destroy one of control nodes using *virsh destroy* command.
-      (All or partial openstack API service queries will fail.)
-    * Wait for all openstack API services to succeed.
-    * Wait until all pods in openstack namespace are running and ready.
-    * Try creating volumes and instances to verify that they are created
-      successfully.
+    #. Run cocina os_probe.sh on the jijisa-dev machine.
+       (All openstack API service queries should succeed.)
+    #. Destroy one of control nodes using *virsh destroy* command.
+       (All or partial openstack API service queries will fail.)
+    #. Wait for all openstack API services to succeed.
+    #. Wait until all pods in openstack namespace are running and ready.
+    #. Try creating volumes and instances to verify that they are created
+       successfully.
 
 * Procedure for starting the powered-off control node
 
-    * Run cocina os_probe.sh on the jijisa-dev machine.
-      (All openstack API service queries should succeed.)
-    * Start the powered-off control node using *virsh start* command.
-    * Wait until all pods in openstack namespace are running and ready.
-      (The rabbitmq/mariadb pods will be moved to the recovered node.)
-    * Try creating volumes and instances to verify that they are created
-      successfully.
+    #. Run cocina os_probe.sh on the jijisa-dev machine.
+       (All openstack API service queries should succeed.)
+    #. Start the powered-off control node using *virsh start* command.
+    #. Wait until all pods in openstack namespace are running and ready.
+       (The rabbitmq/mariadb pods will be moved to the recovered node.)
+    #. Try creating volumes and instances to verify that they are created
+       successfully.
 
 Test results
 -------------
@@ -74,7 +74,7 @@ OpenStack API service probe log::
           NOVA       2024-03-19T20:32:18     FAIL(503)
           NOVA       2024-03-19T20:32:20     FAIL(503)
     
-    api total down time: 5m 2s
+OpenStack API total down time: 5m 2s
 
 Instance creation test.::
 
@@ -134,7 +134,7 @@ OpenStack API service probe log::
           NOVA	 2024-03-19T23:09:34	 FAIL(503)
           NOVA	 2024-03-19T23:09:36	 FAIL(503)
 
-api total down time: 1m 46s
+OpenStack API total down time: 1m 46s
 
 Instance creation test.::
 
@@ -194,7 +194,7 @@ OpenStack API service probe log::
           NOVA   2024-03-19T23:33:59     FAIL(503)
           NOVA   2024-03-19T23:34:03     FAIL(000)
 
-api total down time: 4m 53s
+OpenStack API total down time: 4m 53s
 
 Instance creation test.::
 
