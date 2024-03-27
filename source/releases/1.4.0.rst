@@ -1,0 +1,30 @@
+1.4.0 Aster
+============
+
+This is the first release in the Aster 1.4 series.
+
+Notable changes
+----------------
+
+* Include `Asklepios auth-healing service
+  <https://github.com/iorchard/asklepios>`_.
+  It detects a node failure and quickly moves pods from that node 
+  to other nodes to minimize service failure.
+
+* Enhance rabbitmq connection settings for openstack services to minimize
+  communication problems between rabbitmq and openstack services in the event
+  of a node failure.
+
+
+Burrito Changelog
+------------------
+
+* feature(aster): modify transport_url in openstack config; (jijisa@iorchard.net)
+* fix: add transport.cleanup in health-probe.py; (jijisa@iorchard.net)
+* add asklepios variables in vars.yml.sample; (jijisa@iorchard.net)
+* add asklepios image url in images.txt; (jijisa@iorchard.net)
+* add asklepios image and patch in genesis registry; (jijisa@iorchard.net)
+* add asklepios role in patch playbook; (jijisa@iorchard.net)
+* fix(gnsh): update gnsh script to try to uncordon the node multiple times until kube-apiserver is ready; (jijisa@iorchard.net)
+* fix(gnsh): do not run gnsh role when there is only one control node; (jijisa@iorchard.net)
+* add calico images in genesis registry; (jijisa@iorchard.net)
