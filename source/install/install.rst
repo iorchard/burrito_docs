@@ -1039,6 +1039,7 @@ Check if all pods are running and ready in kube-system namespace.
 
       $ sudo kubectl get pods -n kube-system
       NAME                                       READY STATUS    RESTARTS      AGE
+      asklepios-547cd5b7b4-tqv8d                 1/1   Running   0             60m
       calico-kube-controllers-67c66cdbfb-rz8lz   1/1   Running   0             60m
       calico-node-28k2c                          1/1   Running   0             60m
       calico-node-7cj6z                          1/1   Running   0             60m
