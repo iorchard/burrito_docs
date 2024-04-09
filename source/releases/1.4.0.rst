@@ -6,7 +6,7 @@ This is the first release in the Aster 1.4 series.
 Notable changes
 ----------------
 
-* Include `Asklepios auth-healing service
+* Include `Asklepios auth-healing service for non-graceful node shutdown
   <https://github.com/iorchard/asklepios>`_.
   It detects a node failure and quickly moves pods from that node 
   to other nodes to minimize service failure.
@@ -15,7 +15,8 @@ Notable changes
 
     - Upgrade openstack images to include the latest oslo.messaging
     - Set replicas to 1 for cinder-scheduler, nova-scheduler, 
-      nova-conductor, and placement services.
+      nova-conductor, and placement services for quick failover by
+      Asklepios.
     - Enhance rabbitmq connection settings for openstack services
 
 Burrito Changelog
