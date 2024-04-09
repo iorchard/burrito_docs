@@ -13,7 +13,8 @@ Notable changes
 
 * Enhance OpenStack HA failover.
 
-    - Upgrade openstack images to include the latest oslo.messaging
+    - Rebuild openstack yoga images to update oslo.messaging
+      (upgraded to 14.2.4).
     - Set replicas to 1 for cinder-scheduler, nova-scheduler, 
       nova-conductor, and placement services for quick failover by
       Asklepios.
