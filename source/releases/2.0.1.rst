@@ -1,10 +1,7 @@
 2.0.1 Begonia
 ==============
 
-This is the first release in the Begonia series.
-
-In this first Begonia Series, we have made many high availability
-enhancements to openstack services.
+This is the first patch in the Begonia 2.0 series.
 
 Notable changes
 ----------------
