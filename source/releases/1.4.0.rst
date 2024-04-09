@@ -11,14 +11,37 @@ Notable changes
   It detects a node failure and quickly moves pods from that node 
   to other nodes to minimize service failure.
 
-* Enhance rabbitmq connection settings for openstack services to minimize
-  communication problems between rabbitmq and openstack services in the event
-  of a node failure.
+* Enhance OpenStack HA failover.
 
+    - Upgrade openstack images to include the latest oslo.messaging
+    - Set replicas to 1 for cinder-scheduler, nova-scheduler, 
+      nova-conductor, and placement services.
+    - Enhance rabbitmq connection settings for openstack services
 
 Burrito Changelog
 ------------------
 
+* update kubelet-csr-approver variables; remove coredns nodeselector; (jijisa@iorchard.co.kr)
+* add jinja2_native = true in ansible.cfg.sample; (jijisa@iorchard.co.kr)
+* fix(openstack): set show_multiple_locations for cinder backends in glance to support volume-to-image operation; (jijisa@iorchard.co.kr)
+* fix(openstack): change heat image to ubuntu_jammy image; (jijisa@iorchard.co.kr)
+* upgrade openstack images to ubuntu_jammy in scripts/images.txt; (jijisa@iorchard.net)
+* update placement images to ubuntu_jammy; (jijisa@iorchard.net)
+* update nova images to ubuntu_jammy that includes oslo.messaging upgrade to 14.2.4; add heartbeat_in_pthread: true; (jijisa@iorchard.net)
+* update neutron images to ubuntu_jammy that includes oslo.messaging upgrade to 14.2.4; (jijisa@iorchard.net)
+* update keystone images(ubuntu_jammy); add heartbeat_in_pthread: true; (jijisa@iorchard.net)
+* update cinder image; cinder-scheduler replica=1; add volume cluster config; add heartbeat_in_pthread: true; (jijisa@iorchard.net)
+* change rabbit_interval_max to the default value 30; (jijisa@iorchard.net)
+* adjust nova-conductor/scheduler liveness/readiness parameteres; (jijisa@iorchard.net)
+* increase cinder-api liveness/readiness timeoutSeconds to 3 seconds; (jijisa@iorchard.net)
+* change rabbitmq readiness script to use check_local_alarms; (jijisa@iorchard.net)
+* change rabbitmq liveness script to use check_running; (jijisa@iorchard.net)
+* upgrade asklepios to 0.2.0; (jijisa@iorchard.net)
+* update vars.yml.sample; (jijisa@iorchard.net)
+* change placement-api replicas to 1; (jijisa@iorchard.net)
+* change nova-{scheduler,conductor} replicas to 1; (jijisa@iorchard.net)
+* make barbican installation optional; (jijisa@iorchard.net)
+* adjust nova liveness/readiness time; (jijisa@iorchard.net)
 * feature(aster): modify transport_url in openstack config; (jijisa@iorchard.net)
 * fix: add transport.cleanup in health-probe.py; (jijisa@iorchard.net)
 * add asklepios variables in vars.yml.sample; (jijisa@iorchard.net)
