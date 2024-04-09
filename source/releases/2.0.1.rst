@@ -1,0 +1,61 @@
+2.0.1 Begonia
+==============
+
+This is the first release in the Begonia series.
+
+In this first Begonia Series, we have made many high availability
+enhancements to openstack services.
+
+Notable changes
+----------------
+
+* Upgrade MariaDB to 10.11.7 (latest LTS version)
+
+* Add enable_alwayspullimages variable in vars.yml 
+  to make AlwaysPullImages admission plugin optional.
+  The default value is true since it is recommended to include this plugin 
+  for security.
+  If you want to exclude this plugin, set this variable to false.
+
+* Add install_barbican variable in vars.yml to make barbican installation
+  optional. The default value is false since it is usually not necessary.
+  If you want to install barbican, set this variable to true.
+
+* Upgrade Asklepios(pod auto-healing service for non-graceful node shutdown)
+  to 0.2.0. It includes a balancer to rebalance MariaDB/RabbitMQ pods 
+  across the control nodes.
+
+* Enhance OpenStack HA failover.
+
+    - Upgrade openstack images to include the latest oslo.messaging for
+      2023.1
+    - Set replicas to 1 for cinder-scheduler, nova-scheduler, 
+      nova-conductor, and placement services.
+
+* Remove Descheduler installation since Asklepios replaces it.
+
+
+Changelog
+----------
+
+* update mariadb version in VERSIONS; (jijisa@iorchard.co.kr)
+* feature(openstack): upgrade mariadb to 10.11.7; (jijisa@iorchard.co.kr)
+* fix(ceph): remove count from mon and mgr; (jijisa@iorchard.co.kr)
+* change enable_alwayspullimages to true; (jijisa@iorchard.co.kr)
+* upgrade asklepios image to 0.2.0; (jijisa@iorchard.co.kr)
+* add pod get/list/delete rbac to asklepios cluster role; (jijisa@iorchard.co.kr)
+* add balancer config variable; (jijisa@iorchard.co.kr)
+* set placement replicas to 1; (jijisa@iorchard.co.kr)
+* set conductor/scheduler replicas to 1; (jijisa@iorchard.co.kr)
+* add never tag in burrito.descheduler; (jijisa@iorchard.co.kr)
+* adjust nova liveness/readiness probes; (jijisa@iorchard.co.kr)
+* add heartbeat_in_pthread: true in oslo messaging configuration; (jijisa@iorchard.net)
+* change btx imagePullPolicy to IfNotPresent; (jijisa@iorchard.net)
+* feature(k8s): make AlwaysPullImages plugin optional; (jijisa@iorchard.net)
+* feature(openstack): make barbican installation optional; (jijisa@iorchard.net)
+* change rpc_timeout back to 60; (jijisa@iorchard.net)
+* change descheduler_interval from 5m to 3m; (jijisa@iorchard.net)
+* adjust nova liveness/readiness values; (jijisa@iorchard.net)
+* feature(netapp): upgrade trident to 24.02; (jijisa@iorchard.net)
+* fix(vars): default_volume_type in cinder; (jijisa@iorchard.net)
+* genesis registry: patch asklepios when control nodes > 1; (jijisa@iorchard.net)
