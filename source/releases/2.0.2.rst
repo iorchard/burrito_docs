@@ -19,6 +19,9 @@ Notable changes
 Changelog
 ----------
 
+* remove cluster config in cinder conf; (jijisa@iorchard.net)
+* remove jinja2_native in ansible.cfg.sample; (jijisa@iorchard.net)
+* remove replicas and leaderElection in kubelet_csr_approver_values; (jijisa@iorchard.net)
 * update kubelet-csr-approver variables; remove coredns nodeselector; (jijisa@iorchard.co.kr)
 * add kubelet-csr-approver in k8s_app.sh; (jijisa@iorchard.co.kr)
 * fix(openstack): set show_multiple_locations for cinder backends in glance to support volume-to-image operation; (jijisa@iorchard.co.kr)
