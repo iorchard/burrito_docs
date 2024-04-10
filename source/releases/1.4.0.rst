@@ -23,6 +23,9 @@ Notable changes
 Burrito Changelog
 ------------------
 
+* remove cluster config in cinder conf; (jijisa@iorchard.net)
+* update vars.yml.sample; (jijisa@iorchard.net)
+* remove jinja2_native; (jijisa@iorchard.net)
 * update kubelet-csr-approver variables; remove coredns nodeselector; (jijisa@iorchard.co.kr)
 * add jinja2_native = true in ansible.cfg.sample; (jijisa@iorchard.co.kr)
 * fix(openstack): set show_multiple_locations for cinder backends in glance to support volume-to-image operation; (jijisa@iorchard.co.kr)
