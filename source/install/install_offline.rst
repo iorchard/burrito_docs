@@ -491,6 +491,7 @@ Edit vars.yml
      - netapp
      - powerflex
      - hitachi
+     - primera
    
    # ceph: set ceph configuration in group_vars/all/ceph_vars.yml
    # netapp: set netapp configuration in group_vars/all/netapp_vars.yml
@@ -1149,7 +1150,7 @@ Step.6 Patch
 The Patch installation step implements the following tasks.
 
 * Install ceph-csi driver if ceph is in storage_backends.
-* Install descheduler and asklepios auto-healing service.
+* Install asklepios auto-healing service.
 * Patch kube-apiserver.
 
 Install
@@ -1327,7 +1328,7 @@ You've just finished the OpenStack installation on burrito kubernetes platform.
 Horizon
 ----------
 
-The horizon dashboard listens on tcp 31000 on control nodes.
+The horizon dashboard listens on 31000 tcp port on control nodes.
 
 Here is how to connect to the horizon dashboard on your browser.
 
@@ -1423,12 +1424,8 @@ Check openstack compute service status.::
    +--------------------------------------+----------------+---------------------------------+----------+---------+-------+----------------------------+
    | ID                                   | Binary         | Host                            | Zone     | Status  | State | Updated At                 |
    +--------------------------------------+----------------+---------------------------------+----------+---------+-------+----------------------------+
-   | b31c814b-d210-4e52-9d6e-59090f8a641a | nova-scheduler | nova-scheduler-5bcc764f79-wkfgl | internal | enabled | up    | 2023-05-31T12:16:20.000000 |
    | 872555ad-dd52-46ce-be01-1ec7f8af9cd9 | nova-conductor | nova-conductor-56dfd9749-fn9xb  | internal | enabled | up    | 2023-05-31T12:16:21.000000 |
-   | ff3710b8-f110-4949-b578-b09a1dbc19bb | nova-scheduler | nova-scheduler-5bcc764f79-5hcvx | internal | enabled | up    | 2023-05-31T12:16:21.000000 |
    | d6831741-677e-471f-a019-66b46150cbcc | nova-scheduler | nova-scheduler-5bcc764f79-sfclc | internal | enabled | up    | 2023-05-31T12:16:20.000000 |
-   | 792ec442-5e04-4a5f-9646-7cb0001dfb9c | nova-conductor | nova-conductor-56dfd9749-s5c6j  | internal | enabled | up    | 2023-05-31T12:16:21.000000 |
-   | 848f1573-3706-49ab-8c57-d6edf1631dce | nova-conductor | nova-conductor-56dfd9749-dfkgd  | internal | enabled | up    | 2023-05-31T12:16:21.000000 |
    | c5217922-bc1d-446e-a951-a4871d6020e3 | nova-compute   | compute2                        | nova     | enabled | up    | 2023-05-31T12:16:25.000000 |
    | 5f8cbde0-3c5f-404c-b31e-da443c1f14fd | nova-compute   | compute1                        | nova     | enabled | up    | 2023-05-31T12:16:25.000000 |
    +--------------------------------------+----------------+---------------------------------+----------+---------+-------+----------------------------+
