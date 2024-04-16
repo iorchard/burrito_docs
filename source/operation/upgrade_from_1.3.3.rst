@@ -1,4 +1,4 @@
-Upgrade from 1.3.x
+Upgrade from 1.3.3
 =====================
 
 This is a guide to upgrade Burrito 1.3.3 to 1.4.0.
