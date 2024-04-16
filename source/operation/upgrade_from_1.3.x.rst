@@ -8,11 +8,11 @@ It assumes Burrito 1.3.3 is installed and running.
 Go to burrito directory and download
 :download:`the upgrade tarball <../_static/1.3.3to1.4.0.tar.gz>`.
 
-#. Unarchive the tarball.::
+1. Unarchive the tarball.::
 
     $ tar xvzf 1.3.3to1.4.0.tar.gz
 
-#. Run image_upgrade.yml playbook.
+2. Run image_upgrade.yml playbook.
    It will import, tag, and push new images to the local registry.::
 
     $ ./run.sh image_upgrade
@@ -27,12 +27,12 @@ Verify the new images are uploaded to the local registry.::
       ]
     }
 
-#. Run gnsh_disable.yml playbook.
+3. Run gnsh_disable.yml playbook.
    It will disable gnsh systemd service on each kubernetes node.::
 
     $ ./run.sh gnsh_disable
 
-#. Install Asklepios auto-healing service.
+4. Install Asklepios auto-healing service.
 
     - First, add asklepios variables in vars.yml (refer to vars.yml.sample).::
 
@@ -61,7 +61,7 @@ Verify Asklepios is running on kube-system namespace.::
     NAME                         READY   STATUS    RESTARTS   AGE
     asklepios-784cb67dc8-4m6wz   1/1     Running   0          25m
 
-#. Run burrito.genesisregistry role.::
+5. Run burrito.genesisregistry role.::
 
     $ ./run.sh landing --tags=genesisregistry
 
@@ -69,10 +69,10 @@ Verify Asklepios image url is updated to the genesis registry.::
 
     root@btx-0:/# k get po -l app=asklepios -n kube-system -o yaml | grep image: | head -1
 
-#. Update OpenStack components.
+6. Update OpenStack components.
 
     - Add `install_barbican: false` in vars.yml.
-    - Add enable_iscsi_map and enable_iscsi in vars.yml.::
+    - Add `enable_iscsi_map` and `enable_iscsi` in vars.yml.::
 
         install_barbican: false
         enable_iscsi_map:
@@ -96,5 +96,4 @@ Verify Asklepios image url is updated to the genesis registry.::
 That's all!
 
 You've completed the upgrade from Burrito 1.3.3 to 1.4.0.
-
 
