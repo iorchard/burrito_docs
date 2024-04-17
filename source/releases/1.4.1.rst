@@ -1,0 +1,27 @@
+1.4.1 Aster
+============
+
+This is the first patch in the Aster 1.4 series.
+
+Notable changes
+----------------
+
+* Use cinder as a glance store for NetApp NFS storage.
+
+In previous versions, PVCs were created and used as the image store 
+for glance when using NetApp NFS storage.
+It took a long time to create a cinder volume from the image
+because the NFS volumes using glance and cinder are different.
+
+To make the creation more efficient,
+we changed the setting to use cinder as the glance image store.
+
+Burrito Changelog
+------------------
+
+* update asklepios variables in burrito.asklepios/defaults/main.yml; (jijisa@iorchard.net)
+* add install_barbican: false in burrito.openstack/defaults/main.yml; (jijisa@iorchard.net)
+* change nova logger to INFO; (jijisa@iorchard.net)
+* feature(netapp): use cinder as a glance store; (jijisa@iorchard.net)
+* fix(cinder): useHostNetwork: true when netapp is in the storage backends; (jijisa@iorchard.net)
+
