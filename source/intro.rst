@@ -9,7 +9,7 @@ We will be adding support for other operating systems soon.
 
 Burrito includes the following main open source software.
 
-* ceph-ansible: to install the ceph distributed storage system
+* cephadm: to install the ceph distributed storage system
 * kubespray: to install kubernetes cluster 
 * openstack-helm: to install container-based openstack components on top of
   kubernetes cluster.
