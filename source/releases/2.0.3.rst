@@ -1,0 +1,25 @@
+2.0.3 Begonia
+==============
+
+This is the third patch in the Begonia 2.0 series.
+
+Notable changes
+----------------
+
+* Use cinder as a glance store for NetApp NFS storage.
+
+In previous versions, PVC was created and used as the image store
+for glance when using NetApp NFS storage.
+It took a long time to create a cinder volume from the image
+because the NFS volumes using glance and cinder are different.
+
+To make the creation more efficient,
+we changed the setting to use cinder as the glance image store.
+
+Changelog
+----------
+
+* update asklepios variables in burrito.asklepios/defaults/main.yml; (jijisa@iorchard.net)
+* remove trident_version in offline_vars.yml; change netapp glance store type and glance storage to cinder; (jijisa@iorchard.net)
+* fix(cinder): useHostNetwork: true when netapp is in the storage backends; (jijisa@iorchard.net)
+
