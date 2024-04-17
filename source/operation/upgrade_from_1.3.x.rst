@@ -9,11 +9,12 @@ This is a guide to upgrade Burrito 1.3.x to 1.4.0.
 It assumes Burrito 1.3.2 or 1.3.3 is installed and running.
 
 Reqeust for the upgrade tarball file (1.3.xto1.4.0.tar.gz) to 
-:email:`Support <support@iorchard.net>`.
+:email:`iOrchard Support Team <support@iorchard.net>`.
 
-1. Unarchive the tarball.::
+1. Go to burrito directory and unarchive the tarball.::
 
-    $ tar xvzf 1.3.xto1.4.0.tar.gz
+    $ cd /path/to/burrito/directory
+    $ tar xvzf /path/to/1.3.xto1.4.0.tar.gz
 
 2. Patch the source to 1.4.0.
 
