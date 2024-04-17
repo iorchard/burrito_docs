@@ -1,18 +1,31 @@
-Upgrade from 1.3.3
+Upgrade from 1.3.x
 =====================
 
-This is a guide to upgrade Burrito 1.3.3 to 1.4.0.
+This is a guide to upgrade Burrito 1.3.x to 1.4.0.
 
-It assumes Burrito 1.3.3 is installed and running.
+* Source version: 1.3.2 - 1.3.3
+* Target version: 1.4.0
 
-Go to burrito directory and download
-:download:`the upgrade tarball <../_static/1.3.3to1.4.0.tar.gz>`.
+It assumes Burrito 1.3.2 or 1.3.3 is installed and running.
+
+Reqeust for the upgrade tarball file (1.3.xto1.4.0.tar.gz) to 
+:email:`Support <support@iorchard.net>`.
 
 1. Unarchive the tarball.::
 
-    $ tar xvzf 1.3.3to1.4.0.tar.gz
+    $ tar xvzf 1.3.xto1.4.0.tar.gz
 
-2. Run image_upgrade.yml playbook.
+2. Patch the source to 1.4.0.
+
+Use 1.3.2to1.4.0.patch for 1.3.2 source.::
+
+    $ patch -Np1 < 1.3.2to1.4.0.patch
+
+Use 1.3.3to1.4.0.patch for 1.3.3 source.::
+
+    $ patch -Np1 < 1.3.3to1.4.0.patch
+
+3. Run image_upgrade.yml playbook.
    It will import, tag, and push new images to the local registry.::
 
     $ ./run.sh image_upgrade
@@ -27,12 +40,12 @@ Verify the new images are uploaded to the local registry.::
       ]
     }
 
-3. Run gnsh_disable.yml playbook.
+4. Run gnsh_disable.yml playbook.
    It will disable gnsh systemd service on each kubernetes node.::
 
     $ ./run.sh gnsh_disable
 
-4. Install Asklepios auto-healing service.
+5. Install Asklepios auto-healing service.
 
     - First, add asklepios variables in vars.yml (refer to vars.yml.sample).::
 
@@ -61,7 +74,7 @@ Verify Asklepios is running on kube-system namespace.::
     NAME                         READY   STATUS    RESTARTS   AGE
     asklepios-784cb67dc8-4m6wz   1/1     Running   0          25m
 
-5. Run burrito.genesisregistry role.::
+6. Run burrito.genesisregistry role.::
 
     $ ./run.sh landing --tags=genesisregistry
 
@@ -69,7 +82,7 @@ Verify Asklepios image url is updated to the genesis registry.::
 
     root@btx-0:/# k get po -l app=asklepios -n kube-system -o yaml | grep image: | head -1
 
-6. Update OpenStack components.
+7. Update OpenStack components.
 
     - Add `install_barbican: false` in vars.yml.
     - Add `enable_iscsi_map` and `enable_iscsi` in vars.yml.::
@@ -95,5 +108,5 @@ Verify Asklepios image url is updated to the genesis registry.::
 
 That's all!
 
-You've completed the upgrade from Burrito 1.3.3 to 1.4.0.
+You've completed the upgrade to Burrito 1.4.0.
 

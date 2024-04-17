@@ -1,2 +1,3 @@
 sphinx-toolbox
 sphinx-rtd-theme
+sphinxcontrib-email

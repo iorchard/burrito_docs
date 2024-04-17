@@ -15,6 +15,7 @@ copyright = '2023, Burrito authors and contributors.'
 
 extensions = [
   'sphinx_toolbox.collapse',
+  'sphinxcontrib.email',
 ]
 
 templates_path = ['_templates']
