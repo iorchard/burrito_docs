@@ -51,13 +51,13 @@ Verify the feature is added.::
 
     $ zcat asklepios-0.2.0.tgz | sudo ctr -n k8s.io images import -
     $ sudo ctr -n k8s.io images tag --force docker.io/jijisa/asklepios:0.2.0 \
-        <keepalived_vip>:6000/jijisa/asklepios:0.2.0
+        KEEPALIVED_VIP:6000/jijisa/asklepios:0.2.0
     $ sudo ctr -n k8s.io images push --plain-http \
-        <keepalived_vip>:6000/jijisa/asklepios:0.2.0
+        KEEPALIVED_VIP:6000/jijisa/asklepios:0.2.0
 
 Verify the new image is uploaded to the genesis registry.::
 
-    $ curl -s <keepalived_vip>:6000/v2/jijisa/asklepios/tags/list | jq
+    $ curl -s KEEPALIVED_VIP:6000/v2/jijisa/asklepios/tags/list | jq
     {
       "name": "jijisa/asklepios",
       "tags": [
