@@ -55,6 +55,7 @@ Verify the feature is added.::
     $ sudo ctr -n k8s.io images push --plain-http \
         KEEPALIVED_VIP:6000/jijisa/asklepios:0.2.0
 
+
 Verify the new image is uploaded to the genesis registry.::
 
     $ curl -s KEEPALIVED_VIP:6000/v2/jijisa/asklepios/tags/list | jq
@@ -64,6 +65,10 @@ Verify the new image is uploaded to the genesis registry.::
         "0.2.0"
       ]
     }
+
+.. warning::
+    Modify KEEPALIVED_VIP to match your site.
+
 
 4. Install Asklepios auto-healing service.
 
