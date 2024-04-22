@@ -69,8 +69,11 @@ Verify the new image is uploaded to the genesis registry.::
 .. warning::
     Modify KEEPALIVED_VIP to match your site.
 
+4. Disable gnsh systemd service on each kubernetes node.::
 
-4. Install Asklepios auto-healing service.::
+    $ sudo systemctl disable gnsh.service
+
+5. Install Asklepios auto-healing service.::
 
     $ ./run.sh asklepios
 
