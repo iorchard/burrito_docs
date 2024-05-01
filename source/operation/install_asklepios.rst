@@ -116,10 +116,10 @@ The control2 node becomes `NotReady`.
 Asklepios will count down the kickout timeout and set the node unschedulable
 and add the out-of-service taint on the node after timeout expiry.::
 
-    I0305 05:43:06.488590       1 serve.go:145] "Node is not ready" node="control3" status="False" kickedOut=false timeToKickOut=51
+    I0305 05:43:06.488590       1 serve.go:145] "Node is not ready" node="control2" status="False" kickedOut=false timeToKickOut=51
     ...
-    I0305 05:44:08.882515       1 k8s.go:167] "Succeeded to process the node" node="control3" action="Make the node unschedulable"
-    I0305 05:44:12.524590       1 k8s.go:131] "Succeeded to process the node" node="control3" action="Add the out-of-service taint"
+    I0305 05:44:08.882515       1 k8s.go:167] "Succeeded to process the node" node="control2" action="Make the node unschedulable"
+    I0305 05:44:12.524590       1 k8s.go:131] "Succeeded to process the node" node="control2" action="Add the out-of-service taint"
 
 Now, see the control2 node status.::
 
