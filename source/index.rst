@@ -26,7 +26,7 @@ Welcome to Burrito's documentation!
    :caption: Operation
    :maxdepth: 2
 
-   openstack_volume_resize
+   operation/openstack_volume_resize
    operation/install_asklepios
    operation/upgrade_from_1.3.x
    operation/add_compute_node
