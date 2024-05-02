@@ -16,10 +16,9 @@ in OpenStack yoga.
 
 Due to this bug, there is a problem with uploading an image 
 if the cinder backend is NFS.
+The bug is fixed glance-store 4.3.0 or later.
 
-To use cinder as a glance store, 
-We rebuilt the glance image with glance-store 4.3.3.
-
+So we rebuilt the glance image with glance-store 4.3.3.
 
 Changelogs
 -----------
