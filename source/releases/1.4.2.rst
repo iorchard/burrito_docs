@@ -1,0 +1,29 @@
+1.4.2 Aster
+============
+
+This is the second patch in the Aster 1.4 series.
+
+Notable changes
+----------------
+
+* Fix: cinder as a glance store for NFS
+
+This is a quick fix for cinder as a glance store for NFS.
+
+There is `a bug <https://bugs.launchpad.net/glance-store/+bug/2000584>`_
+in glance-store 3.0.1 python package which is the default package 
+in OpenStack yoga.
+
+Due to this bug, there is a problem with uploading an image 
+if the cinder backend is NFS.
+
+To use cinder as a glance store, 
+We rebuilt the glance image with glance-store 4.3.3.
+
+
+Changelogs
+-----------
+
+* fix(aster): cinder as a glance store; (jijisa@iorchard.net)
+* fix(vars): cinder.default_volume_type; (jijisa@iorchard.net)
+* update asklepios variables in burrito.asklepios/defaults/main.yml; (jijisa@iorchard.net)
