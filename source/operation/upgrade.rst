@@ -1,15 +1,15 @@
-Upgrade kubernetes
-====================
+Upgrade
+========
 
 This is a guide to upgrade Burrito Aster to Burrito Begonia.
 
-I assume Burrito Aster 1.4.2 is already installed and up and running.
+I assume Burrito Aster 1.4.2 is already installed and running.
 This guide will show you how to upgrade it to Burrito Begonia 2.0.5.
 
 This is a version table.
 
 ===============  ============ ==============
-Software         Aster 1.4.2  Begonia 2.0.5
+Components       Aster 1.4.2  Begonia 2.0.5
 ===============  ============ ==============
 containerd          v1.7.7      v1.7.13
 kubernetes          v1.28.3     v1.29.2
@@ -41,16 +41,23 @@ Unarchive burrito-2.0.5 tarball from the iso.::
 
     $ tar xzf /mnt/burrito-2.0.5.tar.gz
 
-Stop haproxy.service on the first controller.::
+Back up localrepo.cfg and registry.cfg in /etc/haproxy/conf.d/.::
 
-    $ sudo systemctl stop haproxy.service
+    $ sudo mv /etc/haproxy/conf.d/localrepo.cfg \
+                /etc/haproxy/conf.d/localrepo.cfg.bak
+    $ sudo mv /etc/haproxy/conf.d/registry.cfg \
+                /etc/haproxy/conf.d/registry.cfg.bak
+
+Reload haproxy.service on the first control node.::
+
+    $ sudo systemctl reload haproxy.service
 
 Run prepare.sh script.::
 
     $ cd burrito-2.0.5
     $ ./prepare.sh offline
 
-Copy files from the existing burrito dir (e.g. $HOME/burrito-1.4.1).::
+Copy files from the existing burrito dir (e.g. $HOME/burrito-1.4.2).::
 
     $ cp $HOME/burrito-1.4.2/.vaultpass .
     $ cp $HOME/burrito-1.4.2/group_vars/all/vault.yml group_vars/all/
@@ -71,15 +78,7 @@ Check the node connectivity.::
 
     $ ./run.sh ping
 
-Remove localrepo.cfg and registry.cfg in /etc/haproxy/conf.d/.::
-
-    $ sudo rm -f /etc/haproxy/conf.d/{localrepo,registry}.cfg
-
-Start haproxy.service.::
-
-    $ sudo systemctl start haproxy.service
-
-Check if keepalived_vip is on the first control node.::
+Check if keepalived_vip(192.168.21.110) is on the first control node.::
 
     $ ip -br a s dev eth1
     eth1             UP             192.168.21.111/24 192.168.21.110/32 fe80::5054:ff:feeb:2b8b/64

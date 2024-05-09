@@ -25,12 +25,11 @@ Welcome to Burrito's documentation!
    :caption: Operation
    :maxdepth: 2
 
-   operation/upgrade_k8s
+   operation/upgrade
    operation/openstack_volume_resize
    operation/openstack_ha_test
    operation/add_compute_node
    operation/graceful_node_shutdown
-   operation/preserve_glance_image_pv
 
 .. toctree::
    :caption: Releases
