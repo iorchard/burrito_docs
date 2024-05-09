@@ -168,5 +168,7 @@ the genesis registry.::
 
 
 Congratulations!
-Upgrading Burrito Aster to Begonia is done!
+
+Kubernetes upgrade is done!
+
 
