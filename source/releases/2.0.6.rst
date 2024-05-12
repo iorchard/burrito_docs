@@ -3,6 +3,25 @@
 
 This is the 6th patch in the Begonia 2.0 series.
 
+Notable Changes
+----------------
+
+There was an nova configuration issue when netapp was the default
+storage.
+
+We changed the default glance store type from `file` to `cinder`
+When netapp is the default storage.
+
+And there is `volume_use_multipath` config in libvirt section of
+nova.conf.
+It is set to true when glance store type is cinder.
+
+There will be an error when nova-compute tries to attach the volume since
+multipath is not working for netapp NFS backend.
+
+We added enable_multipath variable which is used by `volume_use_multipath`
+variable to fix this problem.
+
 Changelog
 ----------
 
