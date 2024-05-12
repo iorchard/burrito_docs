@@ -4,7 +4,7 @@ Errata
 Nova configuration issue when netapp is the default storage
 ------------------------------------------------------------
 
-* Affected version: 2.0.5 and 2.0.4
+* Affected version: 2.0.5, 2.0.4, and 2.0.3
 
 We changed the default glance store type from `file` to `cinder`
 When netapp is the default storage.
