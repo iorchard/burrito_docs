@@ -167,8 +167,306 @@ the genesis registry.::
     {"name":"kube-apiserver","tags":["v1.28.3","v1.29.2"]}
 
 
-Congratulations!
-
 Kubernetes upgrade is done!
 
 
+Upgrade OpenStack
+--------------------
+
+We will upgrade each openstack component one by one.
+
+Before upgrading openstack
+++++++++++++++++++++++++++++
+
+Before upgrade, we need to do the following tasks.
+
+Stop all VM instances.::
+
+    root@btx-0:/# o server stop <VM_NAME> [<VM_NAME> ...]
+    
+Preserve nova-instances PVC if NetApp NFS is the default storage backend.
+
+Patch nova-instances PVC.::
+
+    $ NOVA_INSTANCES_PVC=$(kubectl get pvc nova-instances -n openstack \
+        -o jsonpath='{.spec.volumeName}')
+    $ echo $NOVA_INSTANCES_PVC
+    pvc-cc0d533d-eaaf-4a8f-81a0-3e11d9720944
+    $ sudo kubectl patch pv $NOVA_INSTANCES_PVC -p \
+        '{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}'
+    persistentvolume/pvc-cc0d533d-eaaf-4a8f-81a0-3e11d9720944 patched
+
+Uninstall the following components
+since these components cannot be upgraded while they are running.::
+
+    $ ./scripts/burrito.sh uninstall nova
+    $ ./scripts/burrito.sh uninstall ingress
+    $ ./scripts/burrito.sh uninstall mariadb
+    $ ./scripts/burrito.sh uninstall rabbitmq
+
+Patch nova-instances PVC to nullify claim.::
+
+    $ sudo kubectl patch pv $NOVA_INSTANCES_PVC -p \
+        '{"spec":{"claimRef": {"resourceVersion": null, "uid": null}}}'
+    persistentvolume/pvc-cc0d533d-eaaf-4a8f-81a0-3e11d9720944 patched
+
+Add volumeName in openstack-helm/nova/templates/pvc-instances.yaml.::
+
+    spec:
+      accessModes: [ "ReadWriteMany" ]
+      resources:
+        requests:
+          storage: {{ .Values.volume.size }}
+      storageClassName: {{ .Values.volume.class_name }}
+      volumeName: pvc-cc0d533d-eaaf-4a8f-81a0-3e11d9720944
+    {{- end }}
+
+Detach all volumes that ingress, mariadb, and rabbitmq are using
+:download:`remove_volumeattachment script
+<../_static/remove_volumeattachment.sh>`.::
+
+    $ ./remove_volumeattachment.sh
+    ingress-0 pvc: pvc-28fb7360-cef8-4d64-9edb-08636f6c2e6b
+    ingress-0 volumeattachment id: csi-63fe882673981ce326e6eb7fbf1da194300e1bed9a30a2a5f7366172f5247887
+    volumeattachment.storage.k8s.io "csi-63fe882673981ce326e6eb7fbf1da194300e1bed9a30a2a5f7366172f5247887" deleted
+    ...
+    mariadb-0 pvc: pvc-9b95c69f-2e8e-47ec-ad79-2bc1ca5c0dde
+    mariadb-0 volumeattachment id: csi-1d8d1834daf738654f4f79f587745f9c5469a3f7c0329b235b368f8b46f5c529
+    volumeattachment.storage.k8s.io "csi-1d8d1834daf738654f4f79f587745f9c5469a3f7c0329b235b368f8b46f5c529" deleted
+    ...
+    rabbitmq-2 pvc: pvc-c201cc59-63fb-4cb2-8149-bfafe91d0d14
+    rabbitmq-2 volumeattachment id: csi-b52b24c2da084ea89f816b2d9bb9417836937784ef9c65d0c36292b3302288bf
+    volumeattachment.storage.k8s.io "csi-b52b24c2da084ea89f816b2d9bb9417836937784ef9c65d0c36292b3302288bf" deleted
+
+Unmount /var/lib/nova/instances in every compute node
+if netapp NFS is the default storage backend.::
+
+    $ sudo umount /var/lib/nova/instances
+
+Run burrito playbook with system tag.::
+
+    $ ./run.sh burrito --tags=system
+
+Upgrade openstack infra components
++++++++++++++++++++++++++++++++++++
+
+Upgrade ingress (v1.1.3 -> v1.8.2).::
+
+    $ ./scripts/burrito.sh install ingress
+
+Check if ingress pods are running and ready.::
+
+    root@btx-0:/# k get po -l application=ingress,component=server
+    NAME        READY   STATUS    RESTARTS   AGE
+    ingress-0   1/1     Running   0          2m
+    ingress-1   1/1     Running   0          96s
+    ingress-2   1/1     Running   0          57s
+Upgrade mariadb (10.6.16 -> 10.11.7).::
+
+    $ ./scripts/burrito.sh install mariadb
+
+Check if mariadb server pods are running and ready.::
+
+    root@btx-0:/# k get po -l application=mariadb,component=server
+    NAME               READY   STATUS    RESTARTS   AGE
+    mariadb-server-0   1/1     Running   0          4m53s
+    mariadb-server-1   1/1     Running   0          4m53s
+    mariadb-server-2   1/1     Running   0          4m53s
+
+Upgrade rabbitmq (3.11.28 -> 3.12.11).::
+
+    $ ./scripts/burrito.sh install rabbitmq
+
+Check if rabbitmq server pods are running and ready.::
+
+    root@btx-0:/# k get po -l application=rabbitmq,component=server
+    NAME                  READY   STATUS    RESTARTS      AGE
+    rabbitmq-rabbitmq-0   1/1     Running   0             4m25s
+    rabbitmq-rabbitmq-1   1/1     Running   0             4m25s
+    rabbitmq-rabbitmq-2   1/1     Running   1 (60s ago)   4m25s
+
+Upgrade memcached (1.6.17 -> 1.6.22).::
+
+    $ ./scripts/burrito.sh install memcached
+
+Check if memcached pod is running and ready.::
+
+    root@btx-0:/# k get po -l application=memcached
+    NAME                                   READY   STATUS    RESTARTS   AGE
+    memcached-memcached-5cd8fc7496-cpx5m   1/1     Running   0          22s
+
+Upgrade libvirt (6.0.0 -> 8.0.0).::
+
+    $ ./scripts/burrito.sh install libvirt
+
+Check if libvirt pods are running and ready.::
+
+    root@btx-0:/# k get po -l application=libvirt
+    NAME                            READY   STATUS    RESTARTS   AGE
+    libvirt-libvirt-default-rq85p   1/1     Running   0          74s
+
+Upgrade openstack components
+++++++++++++++++++++++++++++++
+
+Upgrade keystone (21.0.2.dev3 -> 23.0.2.dev10).::
+
+    $ ./scripts/burrito.sh install keystone
+
+Check if keystone pods are running and ready.::
+
+    root@btx-0:/# k get po -l application=keystone,component=api
+    NAME                            READY   STATUS    RESTARTS   AGE
+    keystone-api-786c7866d6-crzsz   1/1     Running   0          2m9s
+    keystone-api-786c7866d6-gzc9g   1/1     Running   0          2m9s
+
+Upgrade glance (24.2.2.dev1 -> 26.0.1.dev2).::
+
+    $ ./scripts/burrito.sh install glance
+
+One of glance-api pods is stuck in init state.::
+
+    root@btx-0:/# k get po -l application=glance,component=api
+    NAME                          READY   STATUS     RESTARTS   AGE
+    glance-api-596d7cf6c8-5srzp   2/2     Running    0          7m22s
+    glance-api-596d7cf6c8-z4lnr   0/2     Init:0/2   0          7m22s
+
+Sometimes one of glance-api pods would be in Init state. 
+Just delete the Init-state pod. Then it will be running okay.
+
+Check if glance pods are running and ready.::
+
+    root@btx-0:/# k delete po glance-api-596d7cf6c8-z4lnr
+    root@btx-0:/# k get po -l application=glance,component=api
+    NAME                          READY   STATUS    RESTARTS   AGE
+    glance-api-596d7cf6c8-5srzp   2/2     Running   0          9m23s
+    glance-api-596d7cf6c8-g7s7c   2/2     Running   0          94s
+
+Upgrade placement (7.0.1 -> 9.0.1).::
+
+    $ ./scripts/burrito.sh install placement
+
+Check if placement pods are running and ready.::
+
+    root@btx-0:/# k get po -l application=placement,component=api
+    NAME                             READY   STATUS    RESTARTS   AGE
+    placement-api-6d7948d754-9lfrg   1/1     Running   0          2m41s
+
+Upgrade neutron (20.5.1.dev28 -> 22.1.1.dev110).::
+
+    $ ./scripts/burrito.sh install neutron
+
+Some neutron pods will be in Init state. 
+That's okay since they are waiting for nova pods.
+
+Before upgrading nova, you need to delete the old compute node db entry and
+resource provider.
+
+Get mariadb root password using ansible-vault command.::
+
+    $ . ~/.envs/burrito/bin/activate
+    (burrito) $ ansible-vault view group_vars/all/vault.yml |grep mariadb
+    vault_mariadb_root_password: '<mariadb_root_password>'
+
+Delete db entry in nova@compute_nodes table.::
+
+    (burrito) $ btx -d
+    Enter password:
+    MariaDB [(none)]> use nova;
+    MariaDB [nova]> delete from compute_nodes;
+
+Get compute node uuid from resource provider list.::
+
+    root@btx-0:/# o  resource provider list --name aster-compute -c uuid -f value
+    9bb7834e-2eda-4252-90af-ab84dac13f43
+
+Get allocations uuid.::
+
+    root@btx-0:/# o resource provider show --allocations 9bb7834e-2eda-4252-90af-ab84dac13f43 -c allocations -f value
+    {'b4341e48-6eaa-4edd-8a70-bdbd6ea72116': {'resources': {'DISK_GB': 1, 'MEMORY_MB': 512, 'VCPU': 1}, 'consumer_generation': 1}}
+
+Unset all allocations.::
+
+    root@btx-0:/# o --os-placement-api-version 1.12 resource provider allocation unset --provider 9bb7834e-2eda-4252-90af-ab84dac13f43 b4341e48-6eaa-4edd-8a70-bdbd6ea72116
+
+Check allocations are empty.::
+
+    root@btx-0:/# o resource provider show --allocations 9bb7834e-2eda-4252-90af-ab84dac13f43 -c allocations -f value
+    {}
+
+Delete resource provider.::
+
+    root@btx-0:/# o resource provider delete 9bb7834e-2eda-4252-90af-ab84dac13f43
+
+Upgrade nova (25.3.1.dev1 -> nova-27.2.1.dev19).::
+
+    $ ./scripts/burrito.sh install nova
+
+Check if nova pods are running and ready.::
+
+    root@btx-0:/# k get po -l application=nova,component=compute
+    NAME                         READY   STATUS    RESTARTS        AGE
+    nova-compute-default-2vn7r   1/1     Running   0               10m
+
+Upgrade cinder (20.3.3.dev2 -> 22.1.2.dev10).::
+
+    $ ./scripts/burrito.sh install cinder
+
+Check if cinder pods are running and ready.::
+
+    root@btx-0:/# k get po -l application=cinder,component=volume
+    NAME                            READY   STATUS     RESTARTS   AGE
+    cinder-volume-86cf778db-2469r   1/1     Running    0          6m2s
+    cinder-volume-86cf778db-mhg7b   0/1     Init:0/4   0          6m2s
+
+One of cinder-volume is stuck at Init state. This is the same problem as
+glance-api.
+Just delete the second cinder-volume and it will be okay.::
+
+    root@btx-0:/# k delete po cinder-volume-86cf778db-mhg7b
+    root@btx-0:/# k get po -l application=cinder,component=volume
+    NAME                            READY   STATUS    RESTARTS   AGE
+    cinder-volume-86cf778db-2469r   1/1     Running   0          7m33s
+    cinder-volume-86cf778db-pxf5v   1/1     Running   0          28s
+
+Upgrade horizon (22.1.0 -> 23.1.1.dev14).::
+
+    $ ./scripts/burrito.sh install horizon
+
+Check if horizon pods are running and ready.::
+
+    root@btx-0:/# k get po -l application=horizon,component=server
+    NAME                      READY   STATUS    RESTARTS   AGE
+    horizon-bfdcc7bd6-4n655   1/1     Running   0          84s
+    horizon-bfdcc7bd6-w9wqh   0/1     Running   0          84s
+
+The second horizon pod could not be ready so I deleted it and all are okay.::
+
+    root@btx-0:/# k get po -l application=horizon,component=server
+    NAME                      READY   STATUS    RESTARTS   AGE
+    horizon-bfdcc7bd6-4n655   1/1     Running   0          5m59s
+    horizon-bfdcc7bd6-pg589   1/1     Running   0          76s
+
+Last but not least, upgrade btx (1.2.3 -> 2.0.1).::
+
+    $ ./scripts/burrito.sh uninstall btx
+    $ ./scripts/burrito.sh install btx
+
+Check btx is running.::
+
+    $ kubectl get po btx-0 -n openstack
+    NAME    READY   STATUS    RESTARTS   AGE
+    btx-0   1/1     Running   0          79s
+
+Go to btx shell and check openstack services.::
+
+    $ bts
+    root@btx-0:/# o compute service list
+    root@btx-0:/# o volume service list
+    root@btx-0:/# o network agent list
+
+If everything is okay, start the previously stopped VM instances.::
+
+    root@btx-0:/# o server start <VM_NAME> [<VM_NAME> ...]
+
+
+OpenStack Upgrade is Done!!!
