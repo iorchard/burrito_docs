@@ -1,0 +1,11 @@
+2.0.6 Begonia
+==============
+
+This is the 6th patch in the Begonia 2.0 series.
+
+Changelog
+----------
+
+* upgrade btx to 2.0.2; btx: add persistentVolumeClaimRetentionPolicy to Retain in statefulset.yaml; (jijisa@iorchard.net)
+* fix(openstack): add enable_multipath variable in vars.yml.sample; it is used by libvirt in nova.conf; (jijisa@iorchard.net)
+
