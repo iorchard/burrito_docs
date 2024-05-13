@@ -92,15 +92,6 @@ restart keepalived service on the second control node.::
 
 Then the keepalived_vip will be moved to the first control node.
 
-Remove registry, localrepo, and asklepios pods.::
-
-    $ sudo kubectl delete deploy registry localrepo asklepios -n kube-system
-    deployment.apps "registry" deleted
-    deployment.apps "localrepo" deleted
-    deployment.apps "asklepios" deleted
-
-These pods will be recreated while upgrading.
-
 Modify --anonymous-auth to true in
 /etc/kubernetes/manifests/kube-apiserver.yaml on every control node.::
 
@@ -118,6 +109,15 @@ Check if we can connect to each kube-apiserver.::
     ok
     $ curl -sk https://192.168.21.113:6443/healthz
     ok
+
+Remove registry, localrepo, and asklepios pods.::
+
+    $ sudo kubectl delete deploy registry localrepo asklepios -n kube-system
+    deployment.apps "registry" deleted
+    deployment.apps "localrepo" deleted
+    deployment.apps "asklepios" deleted
+
+These pods will be recreated while upgrading.
 
 You are ready to upgrade kubernetes cluster now.
 
@@ -138,13 +138,9 @@ Check if the kubernetes version is v1.29.2.::
     Kustomize Version: v5.0.4-0.20230601165947-6ce0bf390ce3
     Server Version: v1.29.2
 
-Run asklepios playbook.::
+Run patch playbook.::
 
-    $ ./run.sh patch --tags=asklepios
-
-Run k8spatch playbook.::
-
-    $ ./run.sh patch --tags=k8spatch
+    $ ./run.sh patch
 
 Run registry playbook.::
 
@@ -183,7 +179,21 @@ Before upgrade, we need to do the following tasks.
 Stop all VM instances.::
 
     root@btx-0:/# o server stop <VM_NAME> [<VM_NAME> ...]
-    
+
+Get all compute node id.::
+
+    root@btx-0:/# o hypervisor list
+    +--------------------------------------+---------------------+-----------------+----------------+-------+
+    | ID                                   | Hypervisor Hostname | Hypervisor Type | Host IP        | State |
+    +--------------------------------------+---------------------+-----------------+----------------+-------+
+    | 5febbf97-71dc-4ae0-a902-2217ee97cd3b | aster-compute       | QEMU            | 192.168.21.114 | up    |
+    +--------------------------------------+---------------------+-----------------+----------------+-------+
+
+Create /var/lib/nova/compute_id on each compute node.::
+
+    $ echo 5febbf97-71dc-4ae0-a902-2217ee97cd3b | sudo -u nova tee /var/lib/nova/compute_id
+
+(For netapp nfs)
 Preserve nova-instances PVC if NetApp NFS is the default storage backend.
 
 Patch nova-instances PVC.::
@@ -196,20 +206,22 @@ Patch nova-instances PVC.::
         '{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}'
     persistentvolume/pvc-cc0d533d-eaaf-4a8f-81a0-3e11d9720944 patched
 
-Uninstall the following components
-since these components cannot be upgraded while they are running.::
+Uninstall the following components.
+These components cannot be upgraded while they are running.::
 
     $ ./scripts/burrito.sh uninstall nova
     $ ./scripts/burrito.sh uninstall ingress
     $ ./scripts/burrito.sh uninstall mariadb
     $ ./scripts/burrito.sh uninstall rabbitmq
 
+(For netapp nfs)
 Patch nova-instances PVC to nullify claim.::
 
     $ sudo kubectl patch pv $NOVA_INSTANCES_PVC -p \
         '{"spec":{"claimRef": {"resourceVersion": null, "uid": null}}}'
     persistentvolume/pvc-cc0d533d-eaaf-4a8f-81a0-3e11d9720944 patched
 
+(For netapp nfs)
 Add volumeName in openstack-helm/nova/templates/pvc-instances.yaml.::
 
     spec:
@@ -221,6 +233,7 @@ Add volumeName in openstack-helm/nova/templates/pvc-instances.yaml.::
       volumeName: pvc-cc0d533d-eaaf-4a8f-81a0-3e11d9720944
     {{- end }}
 
+(For netapp nfs)
 Detach all volumes that ingress, mariadb, and rabbitmq are using
 :download:`remove_volumeattachment script
 <../_static/remove_volumeattachment.sh>`.::
@@ -238,6 +251,7 @@ Detach all volumes that ingress, mariadb, and rabbitmq are using
     rabbitmq-2 volumeattachment id: csi-b52b24c2da084ea89f816b2d9bb9417836937784ef9c65d0c36292b3302288bf
     volumeattachment.storage.k8s.io "csi-b52b24c2da084ea89f816b2d9bb9417836937784ef9c65d0c36292b3302288bf" deleted
 
+(For netapp nfs)
 Unmount /var/lib/nova/instances in every compute node
 if netapp NFS is the default storage backend.::
 
@@ -261,6 +275,7 @@ Check if ingress pods are running and ready.::
     ingress-0   1/1     Running   0          2m
     ingress-1   1/1     Running   0          96s
     ingress-2   1/1     Running   0          57s
+
 Upgrade mariadb (10.6.16 -> 10.11.7).::
 
     $ ./scripts/burrito.sh install mariadb
@@ -319,27 +334,46 @@ Check if keystone pods are running and ready.::
     keystone-api-786c7866d6-crzsz   1/1     Running   0          2m9s
     keystone-api-786c7866d6-gzc9g   1/1     Running   0          2m9s
 
+If glance-api is a type of statefulset
+(i.e. if the default storage is not netapp),
+uninstall glance first.::
+
+    $ k get po -l application=glance,component=api
+    glance-api-0                 2/2     Running     0          72m
+    glance-api-1                 2/2     Running     0          72m
+    $ ./scripts/burrito.sh uninstall glance
+
 Upgrade glance (24.2.2.dev1 -> 26.0.1.dev2).::
 
     $ ./scripts/burrito.sh install glance
 
-One of glance-api pods is stuck in init state.::
+One of glance-api pods can be stuck in init state (netapp nfs only).::
 
     root@btx-0:/# k get po -l application=glance,component=api
     NAME                          READY   STATUS     RESTARTS   AGE
     glance-api-596d7cf6c8-5srzp   2/2     Running    0          7m22s
     glance-api-596d7cf6c8-z4lnr   0/2     Init:0/2   0          7m22s
 
-Sometimes one of glance-api pods would be in Init state. 
 Just delete the Init-state pod. Then it will be running okay.
 
-Check if glance pods are running and ready.::
+Check if glance pods are running and ready.
+
+If glance-api is a type of deployment
+(i.e. if the default storage is netapp)::
 
     root@btx-0:/# k delete po glance-api-596d7cf6c8-z4lnr
     root@btx-0:/# k get po -l application=glance,component=api
     NAME                          READY   STATUS    RESTARTS   AGE
     glance-api-596d7cf6c8-5srzp   2/2     Running   0          9m23s
     glance-api-596d7cf6c8-g7s7c   2/2     Running   0          94s
+
+If glance-api is a type of statefulset
+(i.e. if the default storage is not netapp)::
+
+    root@btx-0:/# k get po -l application=glance,component=api
+    NAME           READY   STATUS    RESTARTS   AGE
+    glance-api-0   2/2     Running   0          25m
+    glance-api-1   2/2     Running   0          25m
 
 Upgrade placement (7.0.1 -> 9.0.1).::
 
@@ -355,47 +389,19 @@ Upgrade neutron (20.5.1.dev28 -> 22.1.1.dev110).::
 
     $ ./scripts/burrito.sh install neutron
 
-Some neutron pods will be in Init state. 
+Some pods(neutron-{dhcp,l3,meata}-agent) will be in Init state.
 That's okay since they are waiting for nova pods.
 
-Before upgrading nova, you need to delete the old compute node db entry and
-resource provider.
+Before upgrading nova, we need to preserve images_type variable value.
+It is `qcow2` in Aster 1.4.2 and earlier while it is `rbd` in Begonia.
 
-Get mariadb root password using ansible-vault command.::
+Set `images_type` to `qcow2` in
+roles/burrito.openstack/templates/osh/nova.yml.j2.::
 
-    $ . ~/.envs/burrito/bin/activate
-    (burrito) $ ansible-vault view group_vars/all/vault.yml |grep mariadb
-    vault_mariadb_root_password: '<mariadb_root_password>'
-
-Delete db entry in nova@compute_nodes table.::
-
-    (burrito) $ btx -d
-    Enter password:
-    MariaDB [(none)]> use nova;
-    MariaDB [nova]> delete from compute_nodes;
-
-Get compute node uuid from resource provider list.::
-
-    root@btx-0:/# o  resource provider list --name aster-compute -c uuid -f value
-    9bb7834e-2eda-4252-90af-ab84dac13f43
-
-Get allocations uuid.::
-
-    root@btx-0:/# o resource provider show --allocations 9bb7834e-2eda-4252-90af-ab84dac13f43 -c allocations -f value
-    {'b4341e48-6eaa-4edd-8a70-bdbd6ea72116': {'resources': {'DISK_GB': 1, 'MEMORY_MB': 512, 'VCPU': 1}, 'consumer_generation': 1}}
-
-Unset all allocations.::
-
-    root@btx-0:/# o --os-placement-api-version 1.12 resource provider allocation unset --provider 9bb7834e-2eda-4252-90af-ab84dac13f43 b4341e48-6eaa-4edd-8a70-bdbd6ea72116
-
-Check allocations are empty.::
-
-    root@btx-0:/# o resource provider show --allocations 9bb7834e-2eda-4252-90af-ab84dac13f43 -c allocations -f value
-    {}
-
-Delete resource provider.::
-
-    root@btx-0:/# o resource provider delete 9bb7834e-2eda-4252-90af-ab84dac13f43
+    libvirt:
+      volume_use_multipath: {{ enable_multipath }}
+      connection_uri: "qemu+tcp://127.0.0.1/system"
+      images_type: "qcow2"
 
 Upgrade nova (25.3.1.dev1 -> nova-27.2.1.dev19).::
 
@@ -407,11 +413,18 @@ Check if nova pods are running and ready.::
     NAME                         READY   STATUS    RESTARTS        AGE
     nova-compute-default-2vn7r   1/1     Running   0               10m
 
+If cinder-volume is a type of statefulset
+(i.e. if the default storage is not netapp),
+uninstall cinder first.::
+
 Upgrade cinder (20.3.3.dev2 -> 22.1.2.dev10).::
 
     $ ./scripts/burrito.sh install cinder
 
-Check if cinder pods are running and ready.::
+Check if cinder pods are running and ready.
+
+If cinder-volume is a type of deployment
+(i.e. if the default storage is netapp)::
 
     root@btx-0:/# k get po -l application=cinder,component=volume
     NAME                            READY   STATUS     RESTARTS   AGE
@@ -428,6 +441,14 @@ Just delete the second cinder-volume and it will be okay.::
     cinder-volume-86cf778db-2469r   1/1     Running   0          7m33s
     cinder-volume-86cf778db-pxf5v   1/1     Running   0          28s
 
+If cinder-volume is a type of statefulset
+(i.e. if the default storage is not netapp)::
+
+    root@btx-0:/# k get po -l application=cinder,component=volume
+    NAME              READY   STATUS    RESTARTS   AGE
+    cinder-volume-0   1/1     Running   0          5m20s
+    cinder-volume-1   1/1     Running   0          5m20s
+
 Upgrade horizon (22.1.0 -> 23.1.1.dev14).::
 
     $ ./scripts/burrito.sh install horizon
@@ -439,7 +460,8 @@ Check if horizon pods are running and ready.::
     horizon-bfdcc7bd6-4n655   1/1     Running   0          84s
     horizon-bfdcc7bd6-w9wqh   0/1     Running   0          84s
 
-The second horizon pod could not be ready so I deleted it and all are okay.::
+Sometimes One of horizon pods could not be ready.
+Just delete it and it's all good.::
 
     root@btx-0:/# k get po -l application=horizon,component=server
     NAME                      READY   STATUS    RESTARTS   AGE
@@ -470,3 +492,4 @@ If everything is okay, start the previously stopped VM instances.::
 
 
 OpenStack Upgrade is Done!!!
+
