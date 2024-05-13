@@ -171,6 +171,26 @@ Upgrade OpenStack
 
 We will upgrade each openstack component one by one.
 
+Here is a version table.
+
+===============  ============ ==============
+Components       Aster 1.4.2  Begonia 2.0.5
+===============  ============ ==============
+ingress          v1.1.3       v1.8.2
+mariadb          10.6.16      10.11.7
+rabbitmq         3.11.28      3.12.11
+memcached        1.6.17       1.6.22
+libvirt          6.0.0        8.0.0
+keystone         21.0.2.dev3  23.0.2.dev10
+glance           24.2.2.dev1  26.0.1.dev2
+placement        7.0.1        9.0.1
+neutron          20.5.1.dev28 22.1.1.dev110
+nova             25.3.1.dev1  27.2.1.dev19
+cinder           20.3.3.dev2  22.1.2.dev10
+horizon          22.1.0       23.1.1.dev14
+btx              1.2.3        2.0.1
+===============  ============ ==============
+
 Before upgrading openstack
 ++++++++++++++++++++++++++++
 
@@ -403,7 +423,7 @@ roles/burrito.openstack/templates/osh/nova.yml.j2.::
       connection_uri: "qemu+tcp://127.0.0.1/system"
       images_type: "qcow2"
 
-Upgrade nova (25.3.1.dev1 -> nova-27.2.1.dev19).::
+Upgrade nova (25.3.1.dev1 -> 27.2.1.dev19).::
 
     $ ./scripts/burrito.sh install nova
 
