@@ -254,10 +254,11 @@ Add volumeName in openstack-helm/nova/templates/pvc-instances.yaml.::
     {{- end }}
 
 (For netapp nfs)
-Detach all volumes that ingress, mariadb, and rabbitmq are using
-:download:`remove_volumeattachment script
-<../_static/remove_volumeattachment.sh>`.::
+Detach all volumes that ingress, mariadb, and rabbitmq are using.
 
+:download:`remove_volumeattachment script <../_static/remove_volumeattachment.sh>`.::
+
+    $ chmod +x remove_volumeattachment.sh
     $ ./remove_volumeattachment.sh
     ingress-0 pvc: pvc-28fb7360-cef8-4d64-9edb-08636f6c2e6b
     ingress-0 volumeattachment id: csi-63fe882673981ce326e6eb7fbf1da194300e1bed9a30a2a5f7366172f5247887
