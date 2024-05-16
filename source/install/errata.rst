@@ -1,27 +1,28 @@
 Errata
 =======
 
-Uncordon issue when gnsh.service starts
-----------------------------------------
+VM live migration issue when heartbeat_in_pthread is true
+--------------------------------------------------------------
 
-* Affected version: 1.3.3 and earlier
+* Affected versions: 1.4.0 to 1.4.2
 
-Gnsh is the Graceful Node Shutdown Helper program.
-It cordons and drains the node when the node is gracefully powered off and
-uncordons the node when the node is booted.
+The configuration `heartbeat_in_pthread` is set to true in nova.conf from
+Begonia version 2.0.1 by default.
 
-When gnsh systemd service starts at boot,
-/usr/bin/gnsh script tries to uncordon the node only once and 
-can fail if kube-apiserver is not ready yet.
+It is for a wsgi service like nova-api but nova-compute,
+nova-conductor, and nova-scheduler are not running as a wsgi service.
+This setting makes the non-wsgi services unstable.
+The VM instance live-migration fails due to this setting.
 
-I modified /usr/bin/gnsh script to try to uncordon the node 
-10 times over 30 seconds if the node is not uncordoned.
+So it is better to set `heartbeat_in_pthread` to false.
 
-Download :download:`the modified gnsh script <../_static/gnsh>` and
-put it in /usr/bin/ directory on all kubernetes nodes.::
+Edit roles/burrito.openstack/templates/osh/nova.yml.j2.::
 
-    $ chmod +x gnsh
-    $ sudo cp gnsh /usr/bin/
+    heartbeat_timeout_threshold: {{ heartbeat_timeout_threshold }}
+    heartbeat_rate: {{ heartbeat_rate }}
+    heartbeat_in_pthread: false
 
-Then, It will be applied on next boot.
+Redeploy nova.::
+
+    $ ./scripts/burrito.sh install nova
 
