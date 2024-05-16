@@ -1,5 +1,5 @@
-Upgrade
-========
+Upgrade from 1.4.x
+===================
 
 This is a guide to upgrade Burrito Aster to Burrito Begonia.
 
@@ -26,6 +26,29 @@ metallb             v0.13.9     v0.13.9
 registry            2.8.2       2.8.3
 ===============  ============ ==============
 
+Modify kube-apiserver manifest
+--------------------------------
+
+First,
+we need to modify kube-apiserver manifest to upgrade kubernetes,
+
+Modify --anonymous-auth to true in
+/etc/kubernetes/manifests/kube-apiserver.yaml on every control node.::
+
+    $ sudo vi /etc/kubernetes/manifests/kube-apiserver.yaml
+    ...
+        - --anonymous-auth=true
+
+Wait until kube-apiserver is restarted on each control node.
+
+Check if we can connect to each kube-apiserver.::
+
+    $ curl -sk https://192.168.21.111:6443/healthz
+    ok
+    $ curl -sk https://192.168.21.112:6443/healthz
+    ok
+    $ curl -sk https://192.168.21.113:6443/healthz
+    ok
 
 Prepare Begonia iso
 --------------------
@@ -92,24 +115,6 @@ restart keepalived service on the second control node.::
 
 Then the keepalived_vip will be moved to the first control node.
 
-Modify --anonymous-auth to true in
-/etc/kubernetes/manifests/kube-apiserver.yaml on every control node.::
-
-    $ sudo vi /etc/kubernetes/manifests/kube-apiserver.yaml
-    ...
-        - --anonymous-auth=true
-
-Wait until kube-apiserver is restarted on each control node.
-
-Check if we can connect to each kube-apiserver.::
-
-    $ curl -sk https://192.168.21.111:6443/healthz
-    ok
-    $ curl -sk https://192.168.21.112:6443/healthz
-    ok
-    $ curl -sk https://192.168.21.113:6443/healthz
-    ok
-
 Remove registry, localrepo, and asklepios pods.::
 
     $ sudo kubectl delete deploy registry localrepo asklepios -n kube-system
@@ -118,6 +123,10 @@ Remove registry, localrepo, and asklepios pods.::
     deployment.apps "asklepios" deleted
 
 These pods will be recreated while upgrading.
+
+Run preflight playbook.::
+
+    $ ./run.sh preflight
 
 You are ready to upgrade kubernetes cluster now.
 
@@ -437,6 +446,11 @@ Check if nova pods are running and ready.::
 If cinder-volume is a type of statefulset
 (i.e. if the default storage is not netapp),
 uninstall cinder first.::
+
+    $ k get po -l application=cinder,component=volume
+    cinder-volume-0                   1/1     Running     0          3h16m
+    cinder-volume-1                   1/1     Running     0          3h16m
+    $ ./scripts/burrito.sh uninstall cinder
 
 Upgrade cinder (20.3.3.dev2 -> 22.1.2.dev10).::
 
