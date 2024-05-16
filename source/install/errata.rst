@@ -48,7 +48,7 @@ Edit roles/burrito.openstack/templates/osh/nova.yml.j2.::
     heartbeat_rate: {{ heartbeat_rate }}
     heartbeat_in_pthread: false
 
-Redeploy nova.::
+Redeploy nova if you already installed nova.::
 
     $ ./scripts/burrito.sh install nova
 
