@@ -4,7 +4,7 @@ Errata
 1. Nova configuration issue when netapp is the default storage
 ----------------------------------------------------------------
 
-* Affected version: 2.0.5, 2.0.4, and 2.0.3
+* Affected versions: 2.0.3 to 2.0.5
 
 We changed the default glance store type from `file` to `cinder`
 When netapp is the default storage.
@@ -30,7 +30,7 @@ If you already installed nova component, install nova again.::
 2. VM live migration issue when heartbeat_in_pthread is true
 --------------------------------------------------------------
 
-* Affected version: 2.0.1 to 2.0.6
+* Affected versions: 2.0.1 to 2.0.6
 
 The configuration `heartbeat_in_pthread` is set to true in nova.conf from
 Begonia version 2.0.1 by default.
