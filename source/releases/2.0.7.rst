@@ -1,0 +1,27 @@
+2.0.7 Begonia
+==============
+
+This is the 7th patch in the Begonia 2.0 series.
+
+Notable Changes
+----------------
+
+Set the value of `heartbeat_in_pthread` depending on the service types.
+It should be true for wsgi services and false for non-wsgi services.
+
+* Set heartbeat_in_pthread to true for wsgi services like keystone, 
+  cinder-api, and nova-api.
+* Set heartbeat_in_pthread to false in nova-compute, nova-conductor, and
+  nova-scheduler since these services are not wsgi services.
+* Set heartbeat_in_pthread to false in cinder-scheduler and
+  cinder-volume since these services are not wsgi services.
+
+Changelog
+----------
+
+* modify changelog.sh; (jijisa@iorchard.net)
+* override heartbeat_in_pthread to false in cinder-scheduler and cinder-volume; (jijisa@iorchard.net)
+* fix(openstack): override heartbeat_in_pthread to false for nova-{compute,conductor,scheduler}; (jijisa@iorchard.net)
+* Moved `notification_format: versioned` to notifications from DEFAULT. ; Removed `bdms_in_notifications: true` in notifications section. ; Removed AvailabilityZoneFilter from enabled_filters which is deprecated.; (jijisa@iorchard.net)
+* changed kube_pods_subnet to the default value - 10.233.64.0/18; (jijisa@iorchard.net)
+
