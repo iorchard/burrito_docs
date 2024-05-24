@@ -1081,6 +1081,34 @@ Check if hitachi storageclass is created.::
    NAME                PROVISIONER            RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
    hitachi (default)   hspc.csi.hitachi.com   Delete          Immediate           true                   30s
 
+Step.5.4 LVM
++++++++++++++
+
+Skip this step if lvm is **not** in storage_backends.
+
+The LVM installation step implements the following tasks.
+
+* Install lvm2 and iscsi packages for the first control node and all compute
+  nodes.
+* Set up kernel modules for lvm.
+* Create a volume group `cinder-volume`.
+
+Install
+^^^^^^^
+
+Run a lvm playbook.::
+
+   $ ./run.sh lvm
+
+Verify
+^^^^^^
+
+Check if a volume group is created.::
+
+    $ sudo vgs
+      VG            #PV #LV #SN Attr   VSize    VFree
+      cinder-volume   1   7   0 wz--n- <100.00g <4.81g
+
 Step.6 Patch
 +++++++++++++
 
