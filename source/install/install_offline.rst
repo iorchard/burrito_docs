@@ -436,18 +436,25 @@ Edit vars.yml
    k8s_ha_level: "moderato"
    
    ### storage
-   # storage backends: ceph and(or) netapp
+   # storage backends
    # If there are multiple backends, the first one is the default backend.
+   # Warning) Never use lvm backend for production service!!!
+   # lvm backend is for test or demo only.
+   # lvm backend cannot be used as a primary backend
+   #   since we does not support it for k8s storageclass yet.
+   # lvm backend is only used by openstack cinder volume.
    storage_backends:
      - ceph
      - netapp
      - powerflex
      - hitachi
+     - lvm
    
    # ceph: set ceph configuration in group_vars/all/ceph_vars.yml
    # netapp: set netapp configuration in group_vars/all/netapp_vars.yml
    # powerflex: set powerflex configuration in group_vars/all/powerflex_vars.yml
    # hitachi: set hitachi configuration in group_vars/all/hitachi_vars.yml
+   # lvm: set LVM configuration in group_vars/all/lvm_vars.yml
 
    ###################################################
    ## Do not edit below if you are not an expert!!!  #
@@ -696,6 +703,42 @@ Contact a Hitachi engineer to get the information of the storage.
   to the control nodes
 * hitachi_compute_target_ports: IDs of the storage ports used to attach 
   volumes to control and compute nodes
+
+lvm
+^^^^
+
+.. warning::
+   The lvm backend is not for production use.
+   Use it only for test or demo.
+
+If lvm is in storage_backends,
+run `lsblk` command on the first control node to get the device name.
+
+.. code-block:: shell
+
+   control1$ lsblk -p
+   NAME                           MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+   /dev/sda                         8:0    0  100G  0 disk 
+   └─/dev/sda1                      8:1    0  100G  0 part /
+   /dev/sdb                         8:16   0  100G  0 disk 
+
+In this case, /dev/sdb is the lvm device.
+
+Edit group_vars/all/lvm_vars.yml.
+
+.. code-block::
+   :linenos:
+
+   ---
+   # Physical volume devices
+   # if you want to use multiple devices,
+   #   use comma to list devices (e.g. "/dev/sdb,/dev/sdc,/dev/sdd")
+   lvm_devices: "/dev/sdb"
+   
+   ########################
+   # Do Not Edit below!!! #
+   ########################
+
 
 Create a vault secret file
 +++++++++++++++++++++++++++

@@ -1,0 +1,22 @@
+1.4.4 Aster
+============
+
+This is the 4th patch in the Aster 1.4 series.
+
+Notable changes
+----------------
+
+Add cinder LVM backend support.
+
+The LVM backend has the following limits.
+
+* It is not for production use. It is only for test or demo.
+* It cannot be the primary backend.
+* It is only used by openstack cinder volume. (no kubernetes PVC yet)
+* The number of replicas for cinder-volume is fixed to 1.
+* The cinder-volume pod runs only on the first control node.
+
+Changelogs
+-----------
+
+* feature(openstack): support cinder LVM backend; (jijisa@iorchard.net)
