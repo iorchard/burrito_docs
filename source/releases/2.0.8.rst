@@ -1,0 +1,23 @@
+2.0.8 Begonia
+==============
+
+This is the 8th patch in the Begonia 2.0 series.
+
+Notable Changes
+----------------
+
+Add cinder LVM backend support.
+
+The LVM backend has the following limits.
+
+* It is not for production use. It is only for test or demo.
+* It cannot be the primary backend.
+* It is only used by openstack cinder volume. (no kubernetes PVC yet)
+* The number of replicas for cinder-volume is fixed to 1.
+* The cinder-volume pod runs only on the first control node.
+
+Changelog
+----------
+
+* remove .trafis.yml in burrit.lvm role; (jijisa@iorchard.net)
+* feature(openstack): support cinder LVM backend; (jijisa@iorchard.net)

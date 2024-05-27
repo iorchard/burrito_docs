@@ -424,18 +424,25 @@ Edit vars.yml
    ### storage
    # storage backends
    # If there are multiple backends, the first one is the default backend.
+   # Warning) Never use lvm backend for production service!!!
+   # lvm backend is for test or demo only.
+   # lvm backend cannot be used as a primary backend
+   #   since we does not support it for k8s storageclass yet.
+   # lvm backend is only used by openstack cinder volume.
    storage_backends:
      - ceph
      - netapp
      - powerflex
      - hitachi
      - primera
+     - lvm
    
    # ceph: set ceph configuration in group_vars/all/ceph_vars.yml
    # netapp: set netapp configuration in group_vars/all/netapp_vars.yml
    # powerflex: set powerflex configuration in group_vars/all/powerflex_vars.yml
    # hitachi: set hitachi configuration in group_vars/all/hitachi_vars.yml
    # primera: set HP primera configuration in group_vars/all/primera_vars.yml
+   # lvm: set LVM configuration in group_vars/all/lvm_vars.yml
    
    ###################################################
    ## Do not edit below if you are not an expert!!!  #
@@ -664,6 +671,41 @@ If HPE Primera is in storage_backends, edit group_vars/all/primera_vars.yml.
 * primera_openstack_cpg: Primera Common Provisioning Group for openstack cinder
 
 If you do not know what these variables are, contact a HPE engineer.
+
+lvm
+^^^^
+
+.. warning::
+   The lvm backend is not for production use.
+   Use it only for test or demo.
+
+If lvm is in storage_backends,
+run `lsblk` command on the first control node to get the device name.
+
+.. code-block:: shell
+
+   control1$ lsblk -p
+   NAME                           MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+   /dev/sda                         8:0    0  100G  0 disk 
+   └─/dev/sda1                      8:1    0  100G  0 part /
+   /dev/sdb                         8:16   0  100G  0 disk 
+
+In this case, /dev/sdb is the lvm device.
+
+Edit group_vars/all/lvm_vars.yml.
+
+.. code-block::
+   :linenos:
+
+   ---
+   # Physical volume devices
+   # if you want to use multiple devices,
+   #   use comma to list devices (e.g. "/dev/sdb,/dev/sdc,/dev/sdd")
+   lvm_devices: "/dev/sdb"
+   
+   ########################
+   # Do Not Edit below!!! #
+   ########################
 
 Create a vault secret file
 +++++++++++++++++++++++++++
@@ -984,6 +1026,34 @@ The HPE Primera installation step implements the following tasks.
 * Install the necessary packages.
 * Install HPE Primera CSI drivers in hpe-storage namespace
 * Create a HPE Primera storageclass.
+
+Step.5.4 LVM
++++++++++++++
+
+Skip this step if lvm is **not** in storage_backends.
+
+The LVM installation step implements the following tasks.
+
+* Install lvm2 and iscsi packages for the first control node and all compute
+  nodes.
+* Set up kernel modules for lvm.
+* Create a volume group `cinder-volume`.
+
+Install
+^^^^^^^
+
+Run a lvm playbook.::
+
+   $ ./run.sh lvm
+
+Verify
+^^^^^^
+
+Check if a volume group is created.::
+
+    $ sudo vgs
+      VG            #PV #LV #SN Attr   VSize    VFree
+      cinder-volume   1   7   0 wz--n- <100.00g <4.81g
 
 Install
 ^^^^^^^
