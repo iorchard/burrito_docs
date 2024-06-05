@@ -856,8 +856,8 @@ Create rgw.yml and apply it.::
     EOF
     $ sudo ceph orch apply -i rgw.yml
 
-Check the upgrade
-++++++++++++++++++++
+Check 
+++++++
 
 Check ceph health status.::
 
