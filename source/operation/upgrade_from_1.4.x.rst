@@ -603,7 +603,7 @@ Set the default container image in ceph configuration.::
 Adoption process
 +++++++++++++++++
 
-Run the following command on all each node.::
+Run the following command on all ceph nodes.::
 
     $ sudo ceph config assimilate-conf -i /etc/ceph/ceph.conf
 
