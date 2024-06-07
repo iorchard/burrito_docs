@@ -6,7 +6,22 @@ This is a guide to upgrade Burrito Aster to Burrito Begonia.
 I assume Burrito Aster 1.3.x is already installed and running.
 This guide will show you how to upgrade it to Burrito Begonia 2.0.8.
 
-This is a version table.
+
+Here is the example node ip address table.
+
+===============     ================
+Hostname            management IP
+===============     ================
+control1            192.168.21.111
+control2            192.168.21.112
+control3            192.168.21.113
+compute1            192.168.21.114
+compute2            192.168.21.115
+===============     ================
+
+* KeepAlived VIP: 192.168.21.110
+
+This is a k8s cluster version table.
 
 ===============  ============ ==============
 Components       Aster 1.3.x  Begonia 2.0.8

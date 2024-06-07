@@ -725,7 +725,7 @@ Adopt all OSDs in the cluster.::
                         --image 192.168.21.110:5000/ceph/ceph:v18.2.1 \
                         adopt --style legacy --name osd.6
 
-Wait a minute while all adoption is done by cephadm.
+Wait a minute while all adoptions are done by cephadm.
 
 Check all mon, mgr, and osd daemons are running.
 Never proceed if there is a problem with this check.::
