@@ -4,7 +4,7 @@ Upgrade from 1.3.x
 This is a guide to upgrade Burrito Aster to Burrito Begonia.
 
 I assume Burrito Aster 1.3.x is already installed and running.
-This guide will show you how to upgrade it to Burrito Begonia 2.0.8.
+This guide will show you how to upgrade it to Burrito Begonia 2.0.9.
 
 
 Here is the example node ip address table.
@@ -24,7 +24,7 @@ compute2            192.168.21.115
 This is a k8s cluster version table.
 
 ===============  ============ ==============
-Components       Aster 1.3.x  Begonia 2.0.8
+Components       Aster 1.3.x  Begonia 2.0.9
 ===============  ============ ==============
 containerd          v1.7.7      v1.7.13
 kubernetes          v1.28.3     v1.29.2
@@ -68,16 +68,16 @@ Check if we can connect to each kube-apiserver.::
 Prepare Begonia iso
 --------------------
 
-We will use Burrito Begonia 2.0.8 iso to upgrade the existing Burrito
+We will use Burrito Begonia 2.0.9 iso to upgrade the existing Burrito
 Aster cluster.
 
-Mount burrito-2.0.8_8.9.iso in /mnt.::
+Mount burrito-2.0.9_8.9.iso in /mnt.::
 
-    $ sudo mount -o loop,ro burrito-2.0.8_8.9.iso /mnt
+    $ sudo mount -o loop,ro burrito-2.0.9_8.9.iso /mnt
 
-Unarchive burrito-2.0.8 tarball from the iso.::
+Unarchive burrito-2.0.9 tarball from the iso.::
 
-    $ tar xzf /mnt/burrito-2.0.8.tar.gz
+    $ tar xzf /mnt/burrito-2.0.9.tar.gz
 
 Back up localrepo.cfg and registry.cfg in /etc/haproxy/conf.d/.::
 
@@ -92,7 +92,7 @@ Reload haproxy.service on the first control node.::
 
 Run prepare.sh script.::
 
-    $ cd burrito-2.0.8
+    $ cd burrito-2.0.9
     $ ./prepare.sh offline
 
 Copy files from the existing burrito dir (e.g. $HOME/burrito-1.3.x).::
@@ -205,7 +205,7 @@ We will upgrade each openstack component one by one.
 Here is a version table.
 
 ===============  ============ ==============
-Components       Aster 1.3.x  Begonia 2.0.8
+Components       Aster 1.3.x  Begonia 2.0.9
 ===============  ============ ==============
 ingress          v1.1.3       v1.8.2
 mariadb          10.6.16      10.11.7
