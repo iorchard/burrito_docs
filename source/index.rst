@@ -30,7 +30,6 @@ Welcome to Burrito's documentation!
    operation/openstack_volume_resize
    operation/openstack_ha_test
    operation/add_compute_node
-   operation/graceful_node_shutdown
 
 .. toctree::
    :caption: Releases
