@@ -1,23 +1,84 @@
-2.0.9 Begonia
+2.1.0 Begonia
 ==============
 
-This is the 9th patch in the Begonia 2.0 series.
+This is the first release in the Begonia 2.1 series.
 
 Notable Changes
 ----------------
 
-* Set image_upload_use_cinder_backend to true in cinder configuration 
-  for all storage backends that use cinder as a glance store.
-* Fix an issue with keepalived VIP not moving when haproxy service is down.
+* Support Debian 12 (Bookworm) for online installation.
+  Offline installation will be available soon.
+* Upgrade kubernetes to 1.30.3.
+* Upgrade ansible-core version to 2.16.9.
+* Upgrade python version in virtual environment to 3.11.9.
+* Support Pure Storage Flash Array as a storage backend.
+  Portworx is used for kubernetes Persistent Volume Storage.
+* Add TLS support for seed/local/genesis registries.
+  All registries are using https protocol.
+* Integrate multiple storage playbooks into one.
+
 
 Changelog
 ----------
 
-* feature(cinder): add image upload use cinder backend config; (jijisa@iorchard.net)
-* feature(netapp): add nfsclient.conf in burrito.netapp role; (jijisa@iorchard.net)
-* feature(ceph): add labels on each node; (jijisa@iorchard.net)
-* fix(ha): change keepalived state when haproxy is stopped; (jijisa@iorchard.net)
-* config(k8s): adjust image gc high/low threshold; (jijisa@iorchard.net)
-* feature(ceph): remove service_id on osd spec.; (jijisa@iorchard.net)
-* fix(ceph): remove packages when ceph is purged; (jijisa@iorchard.net)
-
+* change keepalived vip label; (jijisa@iorchard.co.kr)
+* add storage.yml playbook and move ceph-csi run from patch.yml to storage.yml; (jijisa@iorchard.co.kr)
+* add check purestorage api server is reachable in checklist playbook; (jijisa@iorchard.co.kr)
+* rename ceph_rgw.cfg.j2 to ceph.cfg.j2 in burrito.ceph role; (jijisa@iorchard.net)
+* revert back ha and ceph playbook order; (jijisa@iorchard.net)
+* move ceph rgw haproxy config from burrito.haproxy to burrito.ceph role; (jijisa@iorchard.net)
+* change PKG_MGR and PYTHON_CMD in prepare.sh; (jijisa@iorchard.net)
+* add kubelet_secure_addresses and keepalived interface netmask prefix variables in vars.yml.sample; (jijisa@iorchard.net)
+* add debian specific variable file; (jijisa@iorchard.net)
+* add debian support in run.sh; (jijisa@iorchard.net)
+* modify task name in burrito.rgw-user role; (jijisa@iorchard.net)
+* keepalived: add subnet mask prefix and interface label; (jijisa@iorchard.net)
+* modify when clause in sshkey.yml; (jijisa@iorchard.net)
+* modify ceph-csi manifest file list from with_fileglob to loop; (jijisa@iorchard.net)
+* add check installation type (online/offline) in registry.yml; (jijisa@iorchard.net)
+* fix: exit playbook text in purestorage_uninstall.yml; (jijisa@iorchard.net)
+* remove gnsh; add check installation type (online/offline); (jijisa@iorchard.net)
+* add debian bookworm support in nova_vnc_cert submodule; (jijisa@iorchard.net)
+* Remove packages when uninstalling purestorage; (jijisa@iorchard.co.kr)
+* add flush handler task in burrito.purestorage setup tasks; (jijisa@iorchard.co.kr)
+* add retry/delay/until on applying ca-issure manifest; (jijisa@iorchard.co.kr)
+* add workarounds settings in nova.yml.j2 to skip a cpu comparison when live-migrating; (jijisa@iorchard.co.kr)
+* update setuptools version to 72.1.0 in requirements.txt; (jijisa@iorchard.net)
+* feature(cert-manager): add debian bookworm support; (jijisa@iorchard.net)
+* feature(ceph): ceph_osd_use_all: true is default now; (jijisa@iorchard.net)
+* upgrade setuptools to 72.1.0; (jijisa@iorchard.net)
+* update burrito.{haproxy,keepalived,ceph} to support debian bookworm; (jijisa@iorchard.net)
+* update VERSIONS; (jijisa@iorchard.net)
+* remove unnessary patch files; (jijisa@iorchard.net)
+* add debian support in burrito.common and burrito.ntp roles; (jijisa@iorchard.net)
+* feature(patch): update patches script; (jijisa@iorchard.net)
+* feature(k8s): upgrade k8s to v1.30.3; (jijisa@iorchard.net)
+* feature(ansible): upgrade ansible to 9.8.0 and ansible-core to 2.16.9; (jijisa@iorchard.net)
+* fix(prepare): remove gnutls-utils package since it should be already installed.; (jijisa@iorchard.net)
+* update 12th patch; (jijisa@iorchard.net)
+* feature(k8s): upgrade k8s to 1.30.3; (jijisa@iorchard.net)
+* fix(patch): skip 15th patch since it is no longer needed; (jijisa@iorchard.net)
+* feature(k8s): upgrade requirements.txt; (jijisa@iorchard.net)
+* Upgrade python3 to 3.11; (jijisa@iorchard.net)
+* upgrade kubernetes to v1.30.2; (jijisa@iorchard.net)
+* fix(patches): new file patch for 18-patch-kubespray-registry-template-registry-certs-yml.txt; (jijisa@iorchard.net)
+* fix(prepare): install packages before running offline_services.sh script; (jijisa@iorchard.net)
+* fix: typo in main.yml; (jijisa@iorchard.net)
+* Add 3 patch files for kubespray to support registry TLS; (jijisa@iorchard.net)
+* add registry_tls_secret variable in vars.yml.sample; (jijisa@iorchard.net)
+* remove burrito.cert-manager role in burrito playbook; burrito.cert-manager role runs in kubespray playbook; (jijisa@iorchard.net)
+* remove unused patch files; (jijisa@iorchard.net)
+* fix(purestorage): versions.yaml fix; (jijisa@iorchard.net)
+* fix(purestorage): uninstall resources; (jijisa@iorchard.net)
+* fix(purestorage): remove registry url part in versions.yaml.j2 since it is prepended by customImageRegistry; (jijisa@iorchard.net)
+* feature(storage): add portworx node and kvdb health check; (jijisa@iorchard.net)
+* feature: add tls support for seed and genesis registry; (jijisa@iorchard.net)
+* add px-enterprise image in purestorage_images.txt; (jijisa@iorchard.net)
+* fix: adjust indent in portworx_storagecluster.yml.j2; (jijisa@iorchard.net)
+* feature(purestorage): enable snapshot controller; (jijisa@iorchard.net)
+* nuke purestorage api token sample; (jijisa@iorchard.net)
+* add libstoragemgmt udev rule; (jijisa@iorchard.net)
+* update csi related image versions; (jijisa@iorchard.net)
+* fix(purestorage): add px-versions configmap only for offline installation; (jijisa@iorchard.net)
+* fix: typo in hitachi setup task name; (jijisa@iorchard.net)
+* feature(storage): add purestorage/portworx backend; (jijisa@iorchard.net)

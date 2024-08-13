@@ -27,7 +27,7 @@ If you have more resources, consider allocating more resources to each node.
 Networks
 -----------
 
-The standard number of networks for burrito is 5.
+These are the standard networks for burrito.
 
 * service network: Public service network (e.g. 192.168.20.0/24)
 * management network: Management and internal network (e.g. 192.168.21.0/24)
@@ -566,12 +566,16 @@ Edit group_vars/all/ceph_vars.yml.
    :linenos:
 
    ---
-   # ceph config
-   lvm_volumes:
-     - data: /dev/sdb
-     - data: /dev/sdc
-     - data: /dev/sdd
+   ceph_osd_use_all: true
+   data_devices:
+     - path: /dev/sdb
+     - path: /dev/sdc
+     - path: /dev/sdd
    ...
+
+If `ceph_osd_use_all` is true, all unused devices will be used by ceph as osd
+disks. 
+If `ceph_osd_use_all` is false, specify device names in `data_devices`.
 
 netapp
 ^^^^^^^
@@ -735,7 +739,7 @@ If purestorage is in storage_backends, edit group_vars/all/purestorage_vars.yml.
 * purestorage_mgmt_ip: IP address of Pure Storage API endpoint
 * purestorage_api_token: pureuser's API token 
 * purestorage_transport_protocol: Transport protocol
-  (Currently burrito supports fc protocol only.)
+  (Burrito supports fc protocol only.)
 
 If you do not know what these variables are, contact a Pure Storage engineer.
 
@@ -859,13 +863,13 @@ Check if keepalived_vip is created on the management interface
 in the first control node.::
 
    $ ip -br -4 address show dev eth1
-   eth1             UP             192.168.21.101/24 192.168.21.100/32 
+   eth1             UP             192.168.21.101/24 192.168.21.100/24
 
 Check if keepalived_vip_svc is created on the service interface 
 in the first control node if you set it up.::
 
    $ ip -br -4 address show dev eth0
-   eth0             UP             192.168.20.101/24 192.168.20.100/32 
+   eth0             UP             192.168.20.101/24 192.168.20.100/24
 
 Step.3 Ceph
 +++++++++++
@@ -941,11 +945,11 @@ Check if all nodes are in ready state.::
 
    $ sudo kubectl get nodes
    NAME       STATUS   ROLES           AGE   VERSION
-   compute1   Ready    <none>          15m   v1.28.3
-   compute2   Ready    <none>          15m   v1.28.3
-   control1   Ready    control-plane   17m   v1.28.3
-   control2   Ready    control-plane   16m   v1.28.3
-   control3   Ready    control-plane   16m   v1.28.3
+   compute1   Ready    <none>          15m   v1.29.3
+   compute2   Ready    <none>          15m   v1.29.3
+   control1   Ready    control-plane   17m   v1.29.3
+   control2   Ready    control-plane   16m   v1.29.3
+   control3   Ready    control-plane   16m   v1.29.3
 
 
 Step.5 Storage
