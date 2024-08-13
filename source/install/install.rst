@@ -945,11 +945,11 @@ Check if all nodes are in ready state.::
 
    $ sudo kubectl get nodes
    NAME       STATUS   ROLES           AGE   VERSION
-   compute1   Ready    <none>          15m   v1.29.3
-   compute2   Ready    <none>          15m   v1.29.3
-   control1   Ready    control-plane   17m   v1.29.3
-   control2   Ready    control-plane   16m   v1.29.3
-   control3   Ready    control-plane   16m   v1.29.3
+   compute1   Ready    <none>          15m   v1.30.3
+   compute2   Ready    <none>          15m   v1.30.3
+   control1   Ready    control-plane   17m   v1.30.3
+   control2   Ready    control-plane   16m   v1.30.3
+   control3   Ready    control-plane   16m   v1.30.3
 
 
 Step.5 Storage
@@ -958,7 +958,7 @@ Step.5 Storage
 The Storage installation step implements the following tasks.
 
 * Install kubernetes csi driver for the defined storage backends.
-* Create storageclasses for the defined storage backends.
+* Create storage classes for the defined storage backends.
 
 Prerequisite for powerflex backend
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -1106,8 +1106,12 @@ check if all pods are running and ready in portworx namespace.::
    portworx-api-d2lq8                   2/2     Running   0             20h
    portworx-api-hflfh                   2/2     Running   0             20h
    portworx-kvdb-ktlrc                  1/1     Running   0             21h
+   portworx-kvdb-falsf                  1/1     Running   0             21h
+   portworx-kvdb-owfsl                  1/1     Running   0             21h
    portworx-operator-5cc97cbc66-bzvd6   1/1     Running   0             20h
+   px-cluster-flaow                     1/1     Running   0             20h
    px-cluster-csf2n                     1/1     Running   0             20h
+   px-cluster-faowf                     1/1     Running   0             20h
    px-cluster-htr9s                     1/1     Running   0             20h
    px-cluster-hvkpb                     1/1     Running   0             21h
    px-csi-ext-7b5b7f75d-7zbfq           4/4     Running   0             20h
@@ -1188,8 +1192,8 @@ You've just finished the installation of kubernetes platform.
 
 Next you will install OpenStack on kubernetes platform.
 
-Step.7 Burrito
-+++++++++++++++
+Step.7 Burrito (OpenStack playbook)
++++++++++++++++++++++++++++++++++++++
 
 The Burrito installation step implements the following tasks.
 

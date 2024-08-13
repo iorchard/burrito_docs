@@ -25,8 +25,6 @@ Welcome to Burrito's documentation!
    :caption: Operation
    :maxdepth: 2
 
-   operation/upgrade_from_1.4.x
-   operation/upgrade_from_1.3.x
    operation/openstack_volume_resize
    operation/openstack_ha_test
    operation/add_compute_node
@@ -35,6 +33,7 @@ Welcome to Burrito's documentation!
    :caption: Releases
    :maxdepth: 2
 
+   releases/2.1.0
    releases/2.0.9
    releases/2.0.8
    releases/2.0.7
