@@ -1,11 +1,12 @@
 Burrito Installation
 ====================
 
-This is a guide to install Burrito in online environment.
+This is a guide to install Burrito online.
 
 Supported OS
 -------------
 
+* Debian 12 (Bookworm)
 * Rocky Linux 8.x
 
 System requirements
@@ -92,7 +93,7 @@ Install git package on the deployer if not already installed.::
 
    $ sudo dnf -y install git
 
-Get the burrito source.::
+Get the latest burrito source.::
 
    $ git clone --recursive https://github.com/iorchard/burrito.git
 
@@ -138,7 +139,7 @@ There are sample inventory files.
 
 .. warning::
     You need to get the powerflex rpm packages from Dell if you want to install
-    powerflex in burrito.
+    powerflex.
 
 When you run prepare.sh script, the default hosts.sample is copied to 
 *hosts* file.
@@ -436,6 +437,7 @@ Edit vars.yml
      - hitachi
      - primera
      - lvm
+     - purestorage
    
    # ceph: set ceph configuration in group_vars/all/ceph_vars.yml
    # netapp: set netapp configuration in group_vars/all/netapp_vars.yml
@@ -443,6 +445,7 @@ Edit vars.yml
    # hitachi: set hitachi configuration in group_vars/all/hitachi_vars.yml
    # primera: set HP primera configuration in group_vars/all/primera_vars.yml
    # lvm: set LVM configuration in group_vars/all/lvm_vars.yml
+   # purestorage: set Pure Storage configuration in group_vars/all/purestorage_vars.yml
    
    ###################################################
    ## Do not edit below if you are not an expert!!!  #
@@ -707,6 +710,35 @@ Edit group_vars/all/lvm_vars.yml.
    # Do Not Edit below!!! #
    ########################
 
+Pure Storage
+^^^^^^^^^^^^
+
+If purestorage is in storage_backends, edit group_vars/all/purestorage_vars.yml.
+
+.. code-block::
+   :linenos:
+
+   ---
+   # pure storage management ip address
+   purestorage_mgmt_ip: "192.168.100.233"
+   # pureuser's API token.
+   # You can create a token with 'pureadmin create pureuser --api-token' command
+   # on Flash Array.
+   purestorage_api_token: ""
+   # transport protocol: iscsi, fc, or nvme
+   purestorage_transport_protocol: "fc"
+
+   ########################
+   # Do Not Edit below!!! #
+   ########################
+
+* purestorage_mgmt_ip: IP address of Pure Storage API endpoint
+* purestorage_api_token: pureuser's API token 
+* purestorage_transport_protocol: Transport protocol
+  (Currently burrito supports fc protocol only.)
+
+If you do not know what these variables are, contact a Pure Storage engineer.
+
 Create a vault secret file
 +++++++++++++++++++++++++++
 
@@ -916,69 +948,25 @@ Check if all nodes are in ready state.::
    control3   Ready    control-plane   16m   v1.28.3
 
 
-Step.5.1 Netapp
+Step.5 Storage
 ++++++++++++++++
 
-Skip this step if netapp is **not** in storage_backends.
+The Storage installation step implements the following tasks.
 
-The Netapp installation step implements the following tasks.
+* Install kubernetes csi driver for the defined storage backends.
+* Create storageclasses for the defined storage backends.
 
-* Install trident components in trident namespace.
-* Set up a netapp backend.
-* Create a netapp storageclass.
+Prerequisite for powerflex backend
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Install
-^^^^^^^
-
-Run a netapp playbook.::
-
-   $ ./run.sh netapp
-
-Verify
-^^^^^^
-
-Check if all pods are running and ready in trident namespace.::
-
-   $ sudo kubectl get pods -n trident
-   NAME                           READY   STATUS    RESTARTS   AGE
-   trident-csi-6b96bb4f87-tw22r   6/6     Running   0          43s
-   trident-csi-84g2x              2/2     Running   0          42s
-   trident-csi-f6m8w              2/2     Running   0          42s
-   trident-csi-klj7h              2/2     Running   0          42s
-   trident-csi-kv9mw              2/2     Running   0          42s
-   trident-csi-r8gqv              2/2     Running   0          43s
-
-Check if netapp storageclass is created.::
-
-   $ sudo kubectl get storageclass netapp
-   NAME               PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
-   netapp (default)   csi.trident.netapp.io   Delete          Immediate           true                   20h
-
-
-Step.5.2 Powerflex
-+++++++++++++++++++
-
-Skip this step if powerflex is **not** in storage_backends.
-
-The powerflex installation step implements the following tasks.
-
-* Install powerflex rpm packages.
-* Create powerflex MDM cluster.
-* Configure gateway and presentation services.
-* Set up Protection Domain, Storage Pool, and SDS devices.
-* Install vxflexos controller and node in vxflexos namespace.
-* Create a powerflex storageclass.
-
-Prepare
-^^^^^^^^
-
-To install powerflex, you need to have powerflex rpm packages.
+If `powerflex` is in storage_backends, 
+you need to have powerflex rpm packages in advance.
 
 Create the rpm package tarball powerflex_pkgs.tar.gz in /mnt.
 
 .. code-block:: shell
 
-   $ ls 
+   $ ls
    EMC-ScaleIO-gateway-3.6-700.103.x86_64.rpm
    EMC-ScaleIO-lia-3.6-700.103.el8.x86_64.rpm
    EMC-ScaleIO-mdm-3.6-700.103.el8.x86_64.rpm
@@ -990,17 +978,77 @@ Create the rpm package tarball powerflex_pkgs.tar.gz in /mnt.
 .. warning::
    The tarball should be placed in /mnt.
 
+Prerequisite for purestorage backend
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If `purestorage` is in storage_backends, 
+you need to assign a volume for each control node.
+The volumes will be used by portworx kvdb.
+
+I assume you already set up Pure Storage Flash Array to each control node.
+Log into Pure Storage Flash Array to create a volume and connect the volume to
+each control node.::
+
+    $ ssh pureuser@<purestorage_mgmt_ip>
+    Password:
+    pureuser@PURE-X20R2> purevol create --size 30G kvdb1
+    Name   Size  Source  Created                  Serial           Protection
+    kvdb1  30G   -       2024-08-07 05:07:12 UTC  8030D13A6E894E7F00011440  -
+    pureuser@PURE-X20R2> purevol connect --host control1 kvdb1
+    Name          Host Group  Host               LUN
+    kvdb1         -           control1           1
+
+Do the same things for control2 and control3.
+
 Install
 ^^^^^^^
 
-Run a powerflex playbook.::
+Run a storage playbook.::
 
-   $ ./run.sh powerflex
+   $ ./run.sh storage
 
 Verify
 ^^^^^^
 
-Check if all pods are running and ready in vxflexos namespace.::
+Check the pods for each storage backend you set up.
+
+If ceph is in storage_backends, 
+check if all pods are running and ready in ceph-csi namespace.::
+
+    $ sudo kubectl get pods -n ceph-csi
+    NAME                                         READY   STATUS    RESTARTS      AGE
+    csi-rbdplugin-bj4lw                          3/3     Running   0             20m
+    csi-rbdplugin-ffxzn                          3/3     Running   0             20m
+    csi-rbdplugin-provisioner-845fc9b644-lhbst   7/7     Running   0             22m
+    csi-rbdplugin-provisioner-845fc9b644-x9ssq   7/7     Running   0             22m
+    csi-rbdplugin-zrbrl                          3/3     Running   0             20m
+
+and check if ceph storageclass is created.::
+
+    $ sudo kubectl get storageclasses
+    NAME             PROVISIONER        RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
+    ceph (default)   rbd.csi.ceph.com   Delete          Immediate           true                   20m
+
+If netapp is in storage_backends,
+check if all pods are running and ready in trident namespace.::
+
+   $ sudo kubectl get pods -n trident
+   NAME                           READY   STATUS    RESTARTS   AGE
+   trident-csi-6b96bb4f87-tw22r   6/6     Running   0          43s
+   trident-csi-84g2x              2/2     Running   0          42s
+   trident-csi-f6m8w              2/2     Running   0          42s
+   trident-csi-klj7h              2/2     Running   0          42s
+   trident-csi-kv9mw              2/2     Running   0          42s
+   trident-csi-r8gqv              2/2     Running   0          43s
+
+and check if netapp storageclass is created.::
+
+   $ sudo kubectl get storageclass netapp
+   NAME               PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
+   netapp (default)   csi.trident.netapp.io   Delete          Immediate           true                   20h
+
+If powerflex is in storage_backends,
+check if all pods are running and ready in vxflexos namespace.::
 
    $ sudo kubectl get pods -n vxflexos
    NAME                                   READY   STATUS    RESTARTS   AGE
@@ -1010,62 +1058,15 @@ Check if all pods are running and ready in vxflexos namespace.::
    vxflexos-node-k7kpb                    2/2     Running   0          18h
    vxflexos-node-tk7hd                    2/2     Running   0          18h
 
-Check if powerflex storageclass is created.::
+and check if powerflex storageclass is created.::
 
    $ sudo kubectl get storageclass powerflex
    NAME                  PROVISIONER                RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
    powerflex (default)   csi-vxflexos.dellemc.com   Delete          WaitForFirstConsumer   true                   20h
 
-Step.5.3 HPE Primera
-+++++++++++++++++++++
 
-Skip this step if HPE Primera is **not** in storage_backends.
-
-The HPE Primera installation step implements the following tasks.
-
-* Install the necessary packages.
-* Install HPE Primera CSI drivers in hpe-storage namespace
-* Create a HPE Primera storageclass.
-
-Step.5.4 LVM
-+++++++++++++
-
-Skip this step if lvm is **not** in storage_backends.
-
-The LVM installation step implements the following tasks.
-
-* Install lvm2 and iscsi packages for the first control node and all compute
-  nodes.
-* Set up kernel modules for lvm.
-* Create a volume group `cinder-volume`.
-
-Install
-^^^^^^^
-
-Run a lvm playbook.::
-
-   $ ./run.sh lvm
-
-Verify
-^^^^^^
-
-Check if a volume group is created.::
-
-    $ sudo vgs
-      VG            #PV #LV #SN Attr   VSize    VFree
-      cinder-volume   1   7   0 wz--n- <100.00g <4.81g
-
-Install
-^^^^^^^
-
-Run a primera playbook.::
-
-   $ ./run.sh primera
-
-Verify
-^^^^^^
-
-Check if all pods are running and ready in hpe-storage namespace.::
+If primera is in storage_backends,
+check if all pods are running and ready in hpe-storage namespace.::
 
     $ sudo kubectl get po -n hpe-storage  -o wide
     NAME                                  READY   STATUS    RESTARTS      AGE   IP               NODE                NOMINATED NODE   READINESS GATES
@@ -1075,18 +1076,52 @@ Check if all pods are running and ready in hpe-storage namespace.::
     hpe-csi-node-xplt8                    2/2     Running   1 (53s ago)   74s   192.168.172.31   hitachi-control-1   <none>           <none>
     primera3par-csp-78bf8d479d-flkxs      1/1     Running   0             74s   10.205.161.8     hitachi-control-1   <none>           <none>
 
-Check if a storageclass is created.::
+and check if a storageclass is created.::
 
    $ sudo kubectl get storageclass primera
    NAME                PROVISIONER   RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
    primera (default)   csi.hpe.com   Delete          Immediate           true                   30s
+
+If lvm is in storage_backends,
+check if a volume group is created.::
+
+    $ sudo vgs
+      VG            #PV #LV #SN Attr   VSize    VFree
+      cinder-volume   1   7   0 wz--n- <100.00g <4.81g
+
+.. warning::
+   The lvm backend is only for openstack cinder backend.
+   It does not support a kubernetes storageclass.
+
+If purestorage is in storage_backends,
+check if all pods are running and ready in portworx namespace.::
+
+   $ sudo kubectl get pods -n portworx
+   NAME                                 READY   STATUS    RESTARTS      AGE
+   portworx-api-c2qd4                   2/2     Running   0             20h
+   portworx-api-d2lq8                   2/2     Running   0             20h
+   portworx-api-hflfh                   2/2     Running   0             20h
+   portworx-kvdb-ktlrc                  1/1     Running   0             21h
+   portworx-operator-5cc97cbc66-bzvd6   1/1     Running   0             20h
+   px-cluster-csf2n                     1/1     Running   0             20h
+   px-cluster-htr9s                     1/1     Running   0             20h
+   px-cluster-hvkpb                     1/1     Running   0             21h
+   px-csi-ext-7b5b7f75d-7zbfq           4/4     Running   0             20h
+   px-csi-ext-7b5b7f75d-b8nvm           4/4     Running   1 (20h ago)   20h
+   px-csi-ext-7b5b7f75d-g84bz           4/4     Running   0             20h
+
+and check if a storageclass is created.::
+
+   $ sudo kubectl get storageclasses
+   NAME                    PROVISIONER        RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
+   purestorage (default)   pxd.portworx.com   Delete          Immediate           true                   21h
+
 
 Step.6 Patch
 +++++++++++++
 
 The Patch installation step implements the following tasks.
 
-* Install ceph-csi driver if ceph is in storage_backends.
 * Install asklepios auto-healing service.
 * Patch kube-apiserver.
 
@@ -1145,9 +1180,9 @@ Check if all pods are running and ready in kube-system namespace.
 
 Congratulations! 
 
-You've just finished the installation of burrito kubernetes platform.
+You've just finished the installation of kubernetes platform.
 
-Next you will install OpenStack on burrito kubernetes platform.
+Next you will install OpenStack on kubernetes platform.
 
 Step.7 Burrito
 +++++++++++++++

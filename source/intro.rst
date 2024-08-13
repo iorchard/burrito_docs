@@ -3,9 +3,10 @@ Introduction
 
 Burrito is a security-hardened OpenStack on Kubernetes Platform.
 
-Currently, the only operating system supported by this software is 
-`Rocky Linux 8.x <https://rockylinux.org/>`_.
-We will be adding support for other operating systems soon.
+Currently, the operating system supported by this software is 
+
+* `Debian 12 (bookworm) <https://www.debian.org/>`_.
+* `Rocky Linux 8.x <https://rockylinux.org/>`_.
 
 Burrito includes the following main open source software.
 
