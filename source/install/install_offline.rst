@@ -585,8 +585,7 @@ k8s_ha_level
     the duration used to terminate critical pods during a node shutdown
 
 storage_backends
-  Burrito supports the following storage backends -
-  ceph, netapp, powerflex, and hitachi.
+  List of the supported storage backends
 
   If there are multiple backends, the first one is the default backend.
   It means the default storageclass, glance store and the default cinder 

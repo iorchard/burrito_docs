@@ -524,9 +524,7 @@ k8s_ha_level
     the duration used to terminate critical pods during a node shutdown
 
 storage_backends
-  Burrito supports the following storage backends -
-  ceph, netapp, powerflex, and hitachi (hitachi storage cannot be
-  used for online installation).
+  List of the supported storage backends
 
   If there are multiple backends, the first one is the default backend.
   It means the default storageclass, glance store and the default cinder 
@@ -537,6 +535,10 @@ storage_backends
 
   The volumes in openstack are created on the default backend
   if you do not specify the volume type.
+
+.. warning::
+   Ceph is the only storage backend for Debian 12 that is tested and verified.
+   The other storage backends are not verified for Debian 12.
 
 storage variables
 +++++++++++++++++
