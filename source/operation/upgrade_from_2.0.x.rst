@@ -95,8 +95,7 @@ Download two patch files.
   
 Put them in patches directory.::
 
-    $ cp 12-patch-*.txt \
-        burrito-2.1.0/patches/   
+    $ cp 12-patch-*.txt burrito-2.1.0/patches/   
 
 Run prepare.sh script.::
 
