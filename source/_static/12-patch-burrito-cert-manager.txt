@@ -1,0 +1,12 @@
+--- roles/burrito.cert-manager/tasks/cert_manager.yml	2024-08-22 19:11:37.448967704 +0900
++++ patches/roles/burrito.cert-manager/tasks/cert_manager.yml	2024-08-22 19:10:58.073967704 +0900
+@@ -37,7 +37,7 @@
+           secretName: ca-key-pair
+   become: true
+   register: result
+-  retries: 3
+-  delay: 5
++  retries: 18
++  delay: 10
+   until: not result.failed
+ ...
