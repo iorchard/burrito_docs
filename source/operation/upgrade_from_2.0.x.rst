@@ -88,14 +88,13 @@ Reload haproxy.service on the first control node.::
 
     $ sudo systemctl reload haproxy.service
 
-Download two patch files.
+Download this patch file.
 
-* :download:`12-patch-kubespray-control-plane-kubeadm-upgrade.txt <../_static/12-patch-kubespray-control-plane-kubeadm-upgrade.txt>` 
-* :download:`12-patch-burrito-cert-manager.txt <../_static/12-patch-burrito-cert-manager.txt>` 
+* :download:`12-patch-issue-222.txt <../_static/12-patch-issue-222.txt>` 
   
-Put them in patches directory.::
+Put it in patches directory.::
 
-    $ cp 12-patch-*.txt burrito-2.1.0/patches/   
+    $ cp 12-patch-issue-222.txt burrito-2.1.0/patches/   
 
 Run prepare.sh script.::
 
