@@ -98,6 +98,10 @@ Run prepare.sh script.::
     $ cd burrito-2.1.0
     $ ./prepare.sh offline
 
+Copy the patched vars.yml.sample to vars.yml.::
+
+    $ cp vars.yml.sample vars.yml
+
 Copy files from the existing burrito dir (e.g. $HOME/burrito-2.0.x).::
 
     $ cp $HOME/burrito-2.0.x/.vaultpass .

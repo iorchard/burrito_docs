@@ -120,6 +120,11 @@ Run prepare.sh script with offline flag.::
 It will prompt for the management network interface name. 
 Enter the management network interface name. (e.g. eth1)
 
+Copy the patched vars.yml.sample to vars.yml.::
+
+    $ cp vars.yml.sample vars.yml
+
+
 inventory hosts and variables
 +++++++++++++++++++++++++++++
 
