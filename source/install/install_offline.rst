@@ -106,12 +106,14 @@ Untar the burrito tarball to user's home directory.::
 
    $ tar xzf /mnt/burrito-<version>.tar.gz
 
-Go to burrito directory.::
+Before running prepare.sh script, you need to download patch files and
+put them in patches directory.
 
-   $ cd burrito-<version>
+See :doc:`errata page <errata>`.
 
 Run prepare.sh script with offline flag.::
 
+   $ cd burrito-<version>
    $ ./prepare.sh offline
    Enter management network interface name: eth1
 

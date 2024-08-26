@@ -1,0 +1,35 @@
+--- kubespray/roles/kubernetes/control-plane/tasks/kubeadm-secondary.yml	2024-08-26 15:50:12.512679682 +0900
++++ patches/kubespray/roles/kubernetes/control-plane/tasks/kubeadm-secondary.yml	2024-08-26 15:57:28.060679682 +0900
+@@ -83,6 +83,7 @@
+     - kubeadm_use_file_discovery
+     - kubeadm_already_run is not defined or not kubeadm_already_run.stat.exists
+ 
++
+ - name: Joining control plane node to the cluster.
+   command: >-
+     {{ bin_dir }}/kubeadm join
+@@ -98,3 +99,24 @@
+   when:
+     - inventory_hostname != first_kube_control_plane
+     - kubeadm_already_run is not defined or not kubeadm_already_run.stat.exists
++
++- name: patch kube-apiserver.yaml in joining control nodes.
++  ansible.builtin.lineinfile:
++    path: "{{ kube_config_dir }}/manifests/kube-apiserver.yaml"
++    search_string: "{{ item.search }}"
++    line: "{{ item.replace }}"
++  loop:
++    - {search: "--bind-address=", replace: "    - --bind-address={{ ip }}"}
++    - {search: "--etcd-certfile=", replace: "    - --etcd-certfile=/etc/ssl/etcd/ssl/node-{{ inventory_hostname }}.pem"}
++    - {search: "--etcd-keyfile=", replace: "    - --etcd-keyfile=/etc/ssl/etcd/ssl/node-{{ inventory_hostname }}-key.pem"}
++  when:
++    - inventory_hostname != first_kube_control_plane
++    - kubeadm_already_run is not defined or not kubeadm_already_run.stat.exists
++
++- name: restart kubelet to apply kube-apiserver patch.
++  ansible.builtin.service:
++    name: "kubelet.service"
++    state: "restarted"
++  when:
++    - inventory_hostname != first_kube_control_plane
++    - kubeadm_already_run is not defined or not kubeadm_already_run.stat.exists
