@@ -91,7 +91,7 @@ Reload haproxy.service on the first control node.::
 Before running prepare.sh script, you need to download patch files and
 put them in patches directory.
 
-See :doc:`errata page <errata>`.
+See :doc:`errata page <install/errata>`.
 
 Run prepare.sh script.::
 
