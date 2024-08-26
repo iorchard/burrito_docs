@@ -88,13 +88,10 @@ Reload haproxy.service on the first control node.::
 
     $ sudo systemctl reload haproxy.service
 
-Download this patch file.
+Before running prepare.sh script, you need to download patch files and
+put them in patches directory.
 
-* :download:`12-patch-issue-222.txt <../_static/12-patch-issue-222.txt>` 
-  
-Put it in patches directory.::
-
-    $ cp 12-patch-issue-222.txt burrito-2.1.0/patches/   
+See :doc:`errata page <errata>`.
 
 Run prepare.sh script.::
 
