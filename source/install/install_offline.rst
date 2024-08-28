@@ -106,10 +106,11 @@ Untar the burrito tarball to user's home directory.::
 
    $ tar xzf /mnt/burrito-<version>.tar.gz
 
-Before running prepare.sh script, you need to download patch files and
-put them in patches directory.
-
-See :doc:`errata page <errata>`.
+.. warning::
+   Before running prepare.sh script, you need to download patch files and
+   put them in patches directory.
+   
+   See :doc:`errata page <errata>`.
 
 Run prepare.sh script with offline flag.::
 
