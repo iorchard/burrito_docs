@@ -1,10 +1,10 @@
 Upgrade from 2.0.x
 ===================
 
-This is a guide to upgrade Burrito Begonia 2.0.x to 2.1.0
+This is a guide to upgrade Burrito Begonia 2.0.x to 2.1.1
 
 I assume Burrito Begonia 2.0.x is already installed and running.
-This guide will show you how to upgrade it to Burrito Begonia 2.1.0.
+This guide will show you how to upgrade it to Burrito Begonia 2.1.1.
 
 Here is the example node ip address table.
 
@@ -23,7 +23,7 @@ compute2            192.168.21.115
 This is a k8s cluster version table.
 
 ===============  ============= ==============
-Components       Begonia 2.0.x  Begonia 2.1.0
+Components       Begonia 2.0.x  Begonia 2.1.1
 ===============  ============= ==============
 containerd          v1.7.13     v1.7.16
 kubernetes          v1.29.2     v1.30.3
@@ -64,19 +64,19 @@ Check if we can connect to each kube-apiserver.::
     $ curl -sk https://192.168.21.113:6443/healthz
     ok
 
-Prepare 2.1.0 iso
+Prepare 2.1.1 iso
 --------------------
 
-We will use Burrito 2.1.0 iso to upgrade the existing Burrito
+We will use Burrito 2.1.1 iso to upgrade the existing Burrito
 2.0.x cluster.
 
-Mount burrito-2.1.0_8.10.iso in /mnt.::
+Mount burrito-2.1.1_8.10.iso in /mnt.::
 
-    $ sudo mount -o loop,ro burrito-2.1.0_8.10.iso /mnt
+    $ sudo mount -o loop,ro burrito-2.1.1_8.10.iso /mnt
 
-Unarchive burrito-2.1.0 tarball from the iso.::
+Unarchive burrito-2.1.1 tarball from the iso.::
 
-    $ tar xzf /mnt/burrito-2.1.0.tar.gz
+    $ tar xzf /mnt/burrito-2.1.1.tar.gz
 
 Remove localrepo.cfg and registry.cfg in /etc/haproxy/conf.d/.::
 
@@ -88,15 +88,9 @@ Reload haproxy.service on the first control node.::
 
     $ sudo systemctl reload haproxy.service
 
-.. warning::
-   Before running prepare.sh script, you need to download patch files and
-   put them in patches directory.
-   
-   See :doc:`errata page <../install/errata>`.
-
 Run prepare.sh script.::
 
-    $ cd burrito-2.1.0
+    $ cd burrito-2.1.1
     $ ./prepare.sh offline
 
 Copy the patched vars.yml.sample to vars.yml.::
