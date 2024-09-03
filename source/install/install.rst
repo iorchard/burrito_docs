@@ -97,12 +97,6 @@ Get the latest burrito source.::
 
    $ git clone --recursive https://github.com/iorchard/burrito.git
 
-.. warning::
-   Before running prepare.sh script, you need to download patch files and
-   put them in patches directory.
-   
-   See :doc:`errata page <errata>`.
-
 Run prepare.sh script.::
 
    $ cd burrito
