@@ -1207,6 +1207,12 @@ The Burrito installation step implements the following tasks.
 * Deploy openstack components.
 * Create a nova ssh keypair and copy them on every compute nodes.
 
+.. warning::
+   There is a `cinder as a glance store` bug in powerflex cinder driver.
+   (See `bug report <https://bugs.launchpad.net/cinder/+bug/2068548>`).
+   So Burrito automatically configure local filesystem as a glance store
+   if powerflex is the default storage backend.
+
 Install
 ^^^^^^^
 

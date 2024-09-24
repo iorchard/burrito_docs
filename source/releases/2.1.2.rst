@@ -1,0 +1,46 @@
+2.1.2 Begonia
+==============
+
+This is the second patch in the Begonia 2.1 series.
+
+Notable Changes
+----------------
+
+* Upgrade: powerflex to support kubernetes v1.30.x.
+  (`issue #227 <https://github.com/iorchard/burrito/issues/227>`)
+
+* Fix: cannot open novnc console.
+  (`issue #231 <https://github.com/iorchard/burrito/issues/231>`)
+
+* Fix: podman is removed when ceph nodes are in kubernetes node group
+  (`issue #234 <https://github.com/iorchard/burrito/issues/234>`)
+
+* Fix: nova-storage-init job is pulling an image from docker.io 
+  in offline environment. 
+  (`issue #235 <https://github.com/iorchard/burrito/issues/235>`)
+
+
+Changelog
+----------
+
+* change ownership of helm plugin directory in run.sh script; (jijisa@iorchard.net)
+* set glance-api replicas to 1 if default backend is file; (jijisa@iorchard.net)
+* add pfx_sdc_version variable in vars.yml.sample; (jijisa@iorchard.net)
+* add sdc image in pfx_images.txt; (jijisa@iorchard.net)
+* Change run.sh to install helm diff plugin if there is helm command.; (jijisa@iorchard.net)
+* add sdc image which is used by vxflexos-node daemonset; (jijisa@iorchard.net)
+* change powerflex patch method; use vxflexos-artifacts; (jijisa@iorchard.net)
+* fix(powerflex): add 'pod-security.kubernetes.io/enforce: privileged' label in vxflexos namespace; (jijisa@iorchard.net)
+* update kubespray runc patch; (jijisa@iorchard.net)
+* Change powerflex glance store to file due to the bug (see https://bugs.launchpad.net/cinder/+bug/2068548); (jijisa@iorchard.net)
+* upgrade csi-vxflexos to v2.11.0 which supports k8s v1.30.x; (jijisa@iorchard.net)
+* upgrade powerflex to v2.11.0; (jijisa@iorchard.net)
+* update patch for runc tasks; (jijisa@iorchard.net)
+* add comment on ceph variables.; (jijisa@iorchard.net)
+* override bin_dir for debian OS; (jijisa@iorchard.net)
+* patch runc tasks in kubespray not to delete runc rpm package in HCI mode; (jijisa@iorchard.net)
+* fix: add nova_storage_init image to nova.yml.j2; (jijisa@iorchard.net)
+* fix: nova vnc console configuration; (jijisa@iorchard.net)
+* feature(script): send error messages to stderr; (jijisa@iorchard.net)
+* Create config.yaml; (jijisa@iorchard.net)
+
