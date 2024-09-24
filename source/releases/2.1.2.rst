@@ -6,7 +6,8 @@ This is the second patch in the Begonia 2.1 series.
 Notable Changes
 ----------------
 
-* Upgrade: powerflex to support kubernetes v1.30.x.
+* Upgrade: powerflex SDC and csi driver upgrade
+  to support kubernetes v1.30.x.
   (`issue #227 <https://github.com/iorchard/burrito/issues/227>`_)
 
 * Fix: cannot open novnc console.
