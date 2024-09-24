@@ -1209,7 +1209,7 @@ The Burrito installation step implements the following tasks.
 
 .. warning::
    There is a `cinder as a glance store` bug in powerflex cinder driver.
-   (See `bug report <https://bugs.launchpad.net/cinder/+bug/2068548>`).
+   (See `bug report <https://bugs.launchpad.net/cinder/+bug/2068548>`_).
    So Burrito automatically configure local filesystem as a glance store
    if powerflex is the default storage backend.
 

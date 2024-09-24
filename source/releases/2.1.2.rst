@@ -7,17 +7,17 @@ Notable Changes
 ----------------
 
 * Upgrade: powerflex to support kubernetes v1.30.x.
-  (`issue #227 <https://github.com/iorchard/burrito/issues/227>`)
+  (`issue #227 <https://github.com/iorchard/burrito/issues/227>`_)
 
 * Fix: cannot open novnc console.
-  (`issue #231 <https://github.com/iorchard/burrito/issues/231>`)
+  (`issue #231 <https://github.com/iorchard/burrito/issues/231>`_)
 
 * Fix: podman is removed when ceph nodes are in kubernetes node group
-  (`issue #234 <https://github.com/iorchard/burrito/issues/234>`)
+  (`issue #234 <https://github.com/iorchard/burrito/issues/234>`_)
 
 * Fix: nova-storage-init job is pulling an image from docker.io 
   in offline environment. 
-  (`issue #235 <https://github.com/iorchard/burrito/issues/235>`)
+  (`issue #235 <https://github.com/iorchard/burrito/issues/235>`_)
 
 
 Changelog
