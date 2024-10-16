@@ -274,6 +274,7 @@ Run localrepo_haproxy_setup playbook.::
 
 Check the localrepo.cfg file is in /etc/haproxy/conf.d/.::
 
-    $ sudo ls -l /etc/haproxy/conf.d/localrepo.cfg
+    $ sudo ls -1 /etc/haproxy/conf.d/localrepo.cfg
+    /etc/haproxy/conf.d/localrepo.cfg
 
 
