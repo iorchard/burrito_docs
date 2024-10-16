@@ -27,6 +27,7 @@ Welcome to Burrito's documentation!
    :maxdepth: 2
 
    operation/install_asklepios
+   operation/add_control_plane_node
    operation/add_compute_node
    operation/graceful_node_shutdown
    operation/preserve_glance_image_pv
