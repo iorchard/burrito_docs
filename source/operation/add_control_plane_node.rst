@@ -1,5 +1,5 @@
-Add control planes
-=====================
+Add control plane nodes
+========================
 
 This is a guide to add control planes in the existing burrito cluster.
 
