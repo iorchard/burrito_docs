@@ -278,3 +278,97 @@ Check the localrepo.cfg file is in /etc/haproxy/conf.d/.::
     /etc/haproxy/conf.d/localrepo.cfg
 
 
+Patch burrito.system role.::
+
+    $ patch -Np0 < burrito_system_tasks_main.patch
+
+
+Run burrito playbook with --tags=system.::
+
+    $ ./run.sh burrito --tags=system
+
+Reinstall each openstack component for HA.
+
+Install ingress.::
+
+    $ ./scripts/burrito.sh install ingress
+
+Check the ingress pods.::
+
+    root@btx-0:/# k get po -l application=ingress,component=server
+    NAME                                   READY   STATUS    RESTARTS   AGE
+    ingress-0                              1/1     Running   0          24h
+    ingress-1                              1/1     Running   0          2m4s
+    ingress-2                              1/1     Running   0          86s
+
+Install mariadb.::
+
+    $ ./scripts/burrito.sh install mariadb
+
+Check the mariadb pods.::
+
+    root@btx-0:/# k get po -l application=mariadb,component=server
+    NAME               READY   STATUS    RESTARTS   AGE
+    mariadb-server-0   1/1     Running   0          76s
+    mariadb-server-1   1/1     Running   0          3m27s
+    mariadb-server-2   1/1     Running   0          3m27s
+
+Install rabbitmq.::
+
+    $ ./scripts/burrito.sh install rabbitmq
+
+Check the rabbitmq pods.::
+
+    root@btx-0:/# k get po -l application=rabbitmq,component=server
+    NAME                  READY   STATUS    RESTARTS   AGE
+    rabbitmq-rabbitmq-0   1/1     Running   0          25h
+    rabbitmq-rabbitmq-1   1/1     Running   0          4m26s
+    rabbitmq-rabbitmq-2   1/1     Running   0          4m26s
+
+Install keystone.::
+
+    $ ./scripts/burrito.sh install keystone
+
+Check the keystone pods.::
+
+    root@btx-0:/# k get po -l application=keystone,component=api
+    NAME                            READY   STATUS    RESTARTS   AGE
+    keystone-api-667dfbb9bd-bjt6f   1/1     Running   0          112s
+    keystone-api-667dfbb9bd-f5kjn   1/1     Running   0          112s
+
+Install glance.::
+
+    $ ./scripts/burrito.sh install glance
+
+Check the glance pods.::
+
+    root@btx-0:/# k get po -l application=glance,component=api
+    NAME           READY   STATUS    RESTARTS   AGE
+    glance-api-0   2/2     Running   0          61m
+    glance-api-1   2/2     Running   0          62m
+
+Install neutron.::
+
+    $ ./scripts/burrito.sh install neutron
+
+Check the neutron pods.::
+
+    root@btx-0:/# k get po -l application=neutron,component=server
+    NAME                              READY   STATUS    RESTARTS   AGE
+    neutron-server-567dfbfd84-p8vdr   2/2     Running   0          128m
+    neutron-server-567dfbfd84-wjsmr   2/2     Running   0          128m
+
+Install nova.::
+
+    $ ./scripts/burrito.sh install nova
+
+Check the nova pods.::
+
+    root@btx-0:/# k get po -l application=nova,component=os-api
+    NAME                              READY   STATUS    RESTARTS   AGE
+    nova-api-osapi-7d95bf7f85-h2prv   1/1     Running   0          6m26s
+    nova-api-osapi-7d95bf7f85-twhvg   1/1     Running   0          6m26s
+
+
+    $ ./scripts/burrito.sh install cinder
+    $ ./scripts/burrito.sh install horizon
