@@ -1,10 +1,10 @@
 Add control plane nodes
 ========================
 
-This is a guide to add control planes in the existing burrito cluster.
+This is a guide to add the control plane nodes in the existing burrito cluster.
 
-There is a single control plane in the burrito cluster 
-and I want to add two control plane nodes.
+There is a single control plane node in the burrito cluster 
+and we want to add two control plane nodes.
 
 This is the current host inventory.::
 
@@ -53,8 +53,11 @@ This is the current host inventory.::
 
 
 There is only one control plane node.
-
 I will add two control plane nodes.
+
+
+Edit hosts inventory file
+--------------------------
 
 Add extend-control{2,3} in hosts.::
 
@@ -102,7 +105,24 @@ Add extend-control{2,3} in hosts.::
     ## Do not touch below if you are not an expert!!! #
     ###################################################
 
-* Run preflight playbook with --limit parameter.::
+
+Patch
+------
+
+Download a patch script 
+:download:`extend_control_patch.sh <../static/extend_control_patch.sh>` and
+put it in burrito top directory on the first control plane node.
+
+Run the patch script.::
+
+    $ chmod +x extend_control_patch.sh
+    $ ./extend_control_patch.sh
+    patching file roles/burrito.system/tasks/main.yml
+
+Preflight
+----------
+
+Run the preflight playbook with --limit parameter.::
 
     $ ./run.sh preflight --limit=extend-control2,extend-control3
 
@@ -139,8 +159,10 @@ Check time is synced.::
    Update interval : 0.0 seconds
    Leap status     : Normal
 
+HA
+---
 
-* Run ha playbook to install keepalived and haproxy on new nodes.::
+Run the ha playbook to install keepalived and haproxy on new nodes.::
 
     $ ./run.sh ha
 
@@ -153,6 +175,7 @@ Check the keepalived VIP is on the first control plane node.::
     FIRST_CONTROL_PLANE_NODE$ ip -br a s dev MGMT_IFACE
 
 MGMT_IFACE is the management interface name (e.g. eth1).
+
 The keepalived VIP could be moved to the other control plane node.
 If it is moved, move it back to the first control plane node by restarting
 keepalived service on the node.::
@@ -160,8 +183,12 @@ keepalived service on the node.::
     $ sudo systemctl restart keepalived.service
 
 
-* If ceph is in storage backends, 
-  run ceph with 'ceph_client' tag to install ceph client on the new nodes.::
+Ceph
+-----
+
+If ceph is in storage backends, 
+run the ceph playbook with 'ceph_client' tag to install ceph client 
+on the new nodes.::
 
     $ ./run.sh ceph --tags=ceph_client
 
@@ -187,7 +214,10 @@ Check 'ceph -s' command works on the new nodes.::
       io:
         client:   61 KiB/s wr, 0 op/s rd, 9 op/s wr
 
-Before running k8s playbook, we need to change kube-apiserver parameter
+K8S
+----
+
+Before running the k8s playbook, we need to change kube-apiserver parameter
 in the first control plane node.::
 
     $ sudo vi /etc/kubernetes/manifests/kube-apiserver.yaml
@@ -201,9 +231,9 @@ Check if we can connect to kube-apiserver on the first control plane node.::
     $ curl -sk https://THE_FIRST_CONTROL_PLANE_NODE_IP:6443/healthz
     ok
 
-* Run k8s playbook.::
+Run a k8s playbook.::
 
-    $ ./run.sh k8s --extra-vars=registry_enabled=false
+    $ ./run.sh k8s --extra-vars="registry_enabled="
 
 Check the node list.::
 
@@ -214,61 +244,25 @@ Check the node list.::
     extend-control2   Ready    control-plane   110m    v1.28.3
     extend-control3   Ready    control-plane   110m    v1.28.3
 
-* Run patch playbook.::
+Patch
+------
+
+Run the patch playbook.::
 
     $ ./run.sh patch
 
-* Run landing playbook.::
+Landing
+--------
+
+Run the landing playbook.::
 
     $ ./run.sh landing --tags=genesisregistry
 
-Check the genesis registry service is running on the added nodes.
+Check the genesis registry service is running on the added nodes.::
 
-* Add haproxy.yml task file in burrito.localrepo role.::
+    $ sudo systemctl status genesis_registry.service
 
-    $ vi roles/burrito.localrepo/tasks/haproxy.yml
-    ---
-    - name: Local Repo | template local repo
-      ansible.builtin.template:
-        dest: "{{ item.dest }}"
-        src: "{{ ansible_os_family | lower }}{{ item.dest + '.j2' }}"
-        owner: "root"
-        group: "root"
-        mode: "0644"
-      loop:
-        - {dest: "/etc/yum.repos.d/burrito.repo"}
-      become: true
-    
-    - name: Local Repo | add localrepo haproxy config
-      ansible.builtin.template:
-        dest: "{{ item.dest }}"
-        src: "{{ ansible_os_family | lower }}{{ item.dest + '.j2' }}"
-        owner: "{{ item.owner }}"
-        group: "{{ item.group }}"
-        mode: "{{ item.mode }}"
-      loop: "{{ service_conf }}"
-      become: true
-      when: inventory_hostname in groups['kube_control_plane']
-      notify:
-        - haproxy reload service
-    ...
-
-Add localrepo_haproxy_setup.yml.::
-
-    $ vi localrepo_haproxy_setup.yml
-    ---
-    - name: Set up local repo haproxy
-      hosts: kube_control_plane
-      any_errors_fatal: true
-      tasks:
-        - name: Set up local repo haproxy
-          include_role:
-            name: burrito.localrepo
-            tasks_from: haproxy_setup
-    ...
-
-
-Run localrepo_haproxy_setup playbook.::
+Run the localrepo_haproxy_setup playbook.::
 
     $ ./run.sh localrepo_haproxy_setup
 
@@ -277,17 +271,17 @@ Check the localrepo.cfg file is in /etc/haproxy/conf.d/.::
     $ sudo ls -1 /etc/haproxy/conf.d/localrepo.cfg
     /etc/haproxy/conf.d/localrepo.cfg
 
+Burrito.system
+---------------
 
-Patch burrito.system role.::
-
-    $ patch -Np0 < burrito_system_tasks_main.patch
-
-
-Run burrito playbook with --tags=system.::
+Run the burrito playbook with --tags=system.::
 
     $ ./run.sh burrito --tags=system
 
-Reinstall each openstack component for HA.
+OpenStack
+----------
+
+Reinstall each openstack component.
 
 Install ingress.::
 
@@ -369,6 +363,27 @@ Check the nova pods.::
     nova-api-osapi-7d95bf7f85-h2prv   1/1     Running   0          6m26s
     nova-api-osapi-7d95bf7f85-twhvg   1/1     Running   0          6m26s
 
+Install cinder.::
 
     $ ./scripts/burrito.sh install cinder
+
+Check the cinder pods.::
+
+    root@btx-0:/# k get po -l application=cinder,component=api
+    NAME                          READY   STATUS    RESTARTS   AGE
+    cinder-api-7549d5dbb7-4j5tt   1/1     Running   0          2m10s
+    cinder-api-7549d5dbb7-v9mw7   1/1     Running   0          2m10s
+
+Install horizon.::
+
     $ ./scripts/burrito.sh install horizon
+
+Check the horizon pods.::
+
+    root@btx-0:/# k get po -l application=horizon,component=server
+    NAME                       READY   STATUS    RESTARTS   AGE
+    horizon-56454f565f-5tdgv   1/1     Running   0          2m27s
+    horizon-56454f565f-vc2vg   1/1     Running   0          2d
+
+We have finished adding the control plane nodes in burrito cluster.
+
