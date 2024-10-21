@@ -110,7 +110,7 @@ Patch
 ------
 
 Download a patch script 
-:download:`add_control_patch.sh <../static/add_control_patch.sh>` and
+:download:`add_control_patch.sh <../static/add_control_patch.sh>_` and
 put it in burrito top directory on the first control plane node.
 
 Run the patch script.::
