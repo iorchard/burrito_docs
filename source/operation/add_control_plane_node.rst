@@ -1,10 +1,11 @@
 Add control plane nodes
 ========================
 
-This is a guide to add the control plane nodes in the existing burrito cluster.
+You have a single control plane node in a Burrito cluster and
+you want to add two control plane nodes.
 
-There is a single control plane node in the burrito cluster 
-and we want to add two control plane nodes.
+This guide shows you how to add the control plane nodes 
+in an existing Burrito cluster.
 
 This is the current host inventory.::
 
@@ -53,8 +54,7 @@ This is the current host inventory.::
 
 
 There is only one control plane node.
-I will add two control plane nodes.
-
+I will add two control plane nodes in the host inventory.
 
 Edit hosts inventory file
 --------------------------
@@ -62,8 +62,8 @@ Edit hosts inventory file
 Add extend-control{2,3} in hosts.::
 
     $ diff -u hosts.old hosts
-    --- hosts.old	2024-10-16 11:09:39.412476505 +0900
-    +++ hosts	2024-10-16 11:09:32.814476505 +0900
+    --- hosts.old
+    +++ hosts
     @@ -1,4 +1,6 @@
      extend-control1 ip=192.168.21.131 ansible_connection=local ansible_python_interpreter=/usr/bin/python3
     +extend-control2 ip=192.168.21.132
@@ -110,14 +110,15 @@ Patch
 ------
 
 Download a patch script 
-:download:`extend_control_patch.sh <../static/extend_control_patch.sh>` and
+:download:`add_control_patch.sh <../static/add_control_patch.sh>` and
 put it in burrito top directory on the first control plane node.
 
 Run the patch script.::
 
-    $ chmod +x extend_control_patch.sh
-    $ ./extend_control_patch.sh
+    $ chmod +x add_control_patch.sh
+    $ ./add_control_patch.sh
     patching file roles/burrito.system/tasks/main.yml
+    patching file run.sh
 
 Preflight
 ----------
@@ -126,7 +127,7 @@ Run the preflight playbook with --limit parameter.::
 
     $ ./run.sh preflight --limit=extend-control2,extend-control3
 
-Check burrito repo is set up.::
+Check if the yum repository is set up on the new control plane nodes.::
 
    [clex@extend-control2 ~]$ sudo dnf repoinfo
    Last metadata expiration check: 0:03:01 ago on Wed 16 Oct 2024 11:28:42 AM KST.
@@ -142,7 +143,7 @@ Check burrito repo is set up.::
    Repo-filename      : /etc/yum.repos.d/burrito.repo
    Total packages: 620
 
-Check time is synced.::
+Check if time is synced.::
 
    [clex@extend-control2 ~]$ chronyc tracking
    Reference ID    : C0A81583 (extend-control1)
@@ -166,11 +167,11 @@ Run the ha playbook to install keepalived and haproxy on new nodes.::
 
     $ ./run.sh ha
 
-Check keepalived and haproxy service are running on the new nodes.::
+Check if keepalived and haproxy service are running on the new nodes.::
 
     $ sudo systemctl status keepalived haproxy
 
-Check the keepalived VIP is on the first control plane node.::
+Check if the keepalived VIP is on the first control plane node.::
 
     FIRST_CONTROL_PLANE_NODE$ ip -br a s dev MGMT_IFACE
 
@@ -178,10 +179,9 @@ MGMT_IFACE is the management interface name (e.g. eth1).
 
 The keepalived VIP could be moved to the other control plane node.
 If it is moved, move it back to the first control plane node by restarting
-keepalived service on the node.::
+keepalived service on the node having the keepalived VIP.::
 
     $ sudo systemctl restart keepalived.service
-
 
 Ceph
 -----
@@ -214,6 +214,7 @@ Check 'ceph -s' command works on the new nodes.::
       io:
         client:   61 KiB/s wr, 0 op/s rd, 9 op/s wr
 
+
 K8S
 ----
 
@@ -231,7 +232,7 @@ Check if we can connect to kube-apiserver on the first control plane node.::
     $ curl -sk https://THE_FIRST_CONTROL_PLANE_NODE_IP:6443/healthz
     ok
 
-Run a k8s playbook.::
+Run the k8s playbook.::
 
     $ ./run.sh k8s --extra-vars="registry_enabled="
 
@@ -258,7 +259,7 @@ Run the landing playbook.::
 
     $ ./run.sh landing --tags=genesisregistry
 
-Check the genesis registry service is running on the added nodes.::
+Check if the genesis registry service is running on the added nodes.::
 
     $ sudo systemctl status genesis_registry.service
 
@@ -266,7 +267,7 @@ Run the localrepo_haproxy_setup playbook.::
 
     $ ./run.sh localrepo_haproxy_setup
 
-Check the localrepo.cfg file is in /etc/haproxy/conf.d/.::
+Check if the localrepo.cfg file is in /etc/haproxy/conf.d/ on the added nodes.::
 
     $ sudo ls -1 /etc/haproxy/conf.d/localrepo.cfg
     /etc/haproxy/conf.d/localrepo.cfg
@@ -278,16 +279,30 @@ Run the burrito playbook with --tags=system.::
 
     $ ./run.sh burrito --tags=system
 
+Check if you can run kubectl command on the added nodes.::
+
+    $ kubectl get po -n kube-system
+
+
 OpenStack
 ----------
 
 Reinstall each openstack component.
 
+There are two types of replicas - the HA replica and the quorum replica.
+
+The HA replica type sets up two pods for high availability. 
+The quorum replica type sets up three pods for quorum membership.
+
+The mariadb and rabbitmq are the quorum replica type.
+The others are the HA replica type except the ingress.
+The ingress is a special replica type that works like a daemonset.
+
 Install ingress.::
 
     $ ./scripts/burrito.sh install ingress
 
-Check the ingress pods.::
+Check if there are three ingress pods.::
 
     root@btx-0:/# k get po -l application=ingress,component=server
     NAME                                   READY   STATUS    RESTARTS   AGE
@@ -299,7 +314,7 @@ Install mariadb.::
 
     $ ./scripts/burrito.sh install mariadb
 
-Check the mariadb pods.::
+Check if there are three mariadb server pods.::
 
     root@btx-0:/# k get po -l application=mariadb,component=server
     NAME               READY   STATUS    RESTARTS   AGE
@@ -311,7 +326,7 @@ Install rabbitmq.::
 
     $ ./scripts/burrito.sh install rabbitmq
 
-Check the rabbitmq pods.::
+Check if there are three rabbitmq pods.::
 
     root@btx-0:/# k get po -l application=rabbitmq,component=server
     NAME                  READY   STATUS    RESTARTS   AGE
@@ -323,7 +338,7 @@ Install keystone.::
 
     $ ./scripts/burrito.sh install keystone
 
-Check the keystone pods.::
+Check if there are two keystone-api pods.::
 
     root@btx-0:/# k get po -l application=keystone,component=api
     NAME                            READY   STATUS    RESTARTS   AGE
@@ -334,7 +349,7 @@ Install glance.::
 
     $ ./scripts/burrito.sh install glance
 
-Check the glance pods.::
+Check if there are two glance-api pods.::
 
     root@btx-0:/# k get po -l application=glance,component=api
     NAME           READY   STATUS    RESTARTS   AGE
@@ -345,7 +360,7 @@ Install neutron.::
 
     $ ./scripts/burrito.sh install neutron
 
-Check the neutron pods.::
+Check if there are two neutron server pods.::
 
     root@btx-0:/# k get po -l application=neutron,component=server
     NAME                              READY   STATUS    RESTARTS   AGE
@@ -356,7 +371,7 @@ Install nova.::
 
     $ ./scripts/burrito.sh install nova
 
-Check the nova pods.::
+Check if there are two nova-api pods.::
 
     root@btx-0:/# k get po -l application=nova,component=os-api
     NAME                              READY   STATUS    RESTARTS   AGE
@@ -367,7 +382,7 @@ Install cinder.::
 
     $ ./scripts/burrito.sh install cinder
 
-Check the cinder pods.::
+Check if there are two cinder-api pods.::
 
     root@btx-0:/# k get po -l application=cinder,component=api
     NAME                          READY   STATUS    RESTARTS   AGE
@@ -378,12 +393,13 @@ Install horizon.::
 
     $ ./scripts/burrito.sh install horizon
 
-Check the horizon pods.::
+Check if there are two horizon pods.::
 
     root@btx-0:/# k get po -l application=horizon,component=server
     NAME                       READY   STATUS    RESTARTS   AGE
     horizon-56454f565f-5tdgv   1/1     Running   0          2m27s
     horizon-56454f565f-vc2vg   1/1     Running   0          2d
+
 
 We have finished adding the control plane nodes in burrito cluster.
 

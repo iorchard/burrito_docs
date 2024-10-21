@@ -68,8 +68,8 @@ cat <<EOF | patch -p0
 +    backrefs: true
    when: etcd_deployment_type != "kubeadm"
 EOF
-# patch kubespray
-cat <<EOF | patch -p0
+# patch run.sh
+cat <<'EOF' | patch -p0
 --- run.sh.bak
 +++ run.sh
 @@ -67,7 +67,7 @@
