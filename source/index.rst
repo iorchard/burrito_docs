@@ -28,6 +28,7 @@ Welcome to Burrito's documentation!
    operation/upgrade_from_2.0.x
    operation/openstack_volume_resize
    operation/openstack_ha_test
+   operation/add_control_plane_node
    operation/add_compute_node
 
 .. toctree::
