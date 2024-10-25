@@ -1,0 +1,29 @@
+2.1.3 Begonia
+==============
+
+This is the third patch in the Begonia 2.1 series.
+
+Notable Changes
+----------------
+
+* Feature: Support Dell/EMC PowerStore storage backend.
+  (`issue #232 <https://github.com/iorchard/burrito/issues/232>`_)
+
+* Enhancement: Use PVC for glance store if PowerFlex is the storage backend 
+  (`issue #246 <https://github.com/iorchard/burrito/issues/246>`_)
+
+
+Changelog
+----------
+
+* add powerstore to storage_backends in vars.yml.sample; (jijisa@iorchard.net)
+* put the second bind in localrepo haproxy config only on the first control plane node; it is needed by adding control plane nodes; (jijisa@iorchard.net)
+* modify powerstore config in cinder.yml.j2; (jijisa@iorchard.net)
+* add a patch file - 12-patch-kubespray-control-plane-kubeadm-fix-apiserver.txt; (jijisa@iorchard.net)
+* fix glance_api_jobs_dependencies variable typo; (jijisa@iorchard.net)
+* remove client_cert is changed condition when writing client certificate file on servers. The task is skipped when the new control plane node is added due to this condition.; (jijisa@iorchard.net)
+* remove the second bind in localrepo haproxy configuration; it is not necessary.; (jijisa@iorchard.net)
+* move haproxy setup tasks off of main tasks for modularity; (jijisa@iorchard.net)
+* add tags to burrito.ceph tasks to run tasks seletively; (jijisa@iorchard.net)
+* feature/storage/powerstore (#252); (jijisa@iorchard.net)
+* Use PVC for glance store if powerflex is the storage backend (#248); (jijisa@iorchard.net)

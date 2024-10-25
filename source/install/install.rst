@@ -141,7 +141,12 @@ There are sample inventory files.
 
 .. warning::
     You need to get the powerflex rpm packages from Dell if you want to install
-    powerflex.
+    PowerFlex.
+
+.. warning::
+    You need to get the dellfcopy package from Dell if you want to 
+    use PowerStore as a storage backend in burrito.
+
 
 When you run prepare.sh script, the default hosts.sample is copied to 
 *hosts* file.
@@ -413,17 +418,8 @@ Edit vars.yml
    # IP range: 192.168.20.95-192.168.20.98 (4 IPs can be assigned.)
    # CIDR: 192.168.20.128/26 (192.168.20.128 - 191 can be assigned.)
    # Only one IP: 192.168.20.95/32
-   metallb_ip_range:
-     - "192.168.20.95-192.168.20.98"
+   metallb_ip_range: "192.168.20.95-192.168.20.98"
    
-   ### HA tuning
-   # ha levels: moderato, allegro, and vivace
-   # moderato: default liveness update and failover response
-   # allegro: faster liveness update and failover response
-   # vivace: fastest liveness update and failover response
-   ha_level: "moderato"
-   k8s_ha_level: "moderato"
-    
    ### storage
    # storage backends
    # If there are multiple backends, the first one is the default backend.
@@ -440,6 +436,7 @@ Edit vars.yml
      - primera
      - lvm
      - purestorage
+     - powerstore
    
    # ceph: set ceph configuration in group_vars/all/ceph_vars.yml
    # netapp: set netapp configuration in group_vars/all/netapp_vars.yml
@@ -448,6 +445,7 @@ Edit vars.yml
    # primera: set HP primera configuration in group_vars/all/primera_vars.yml
    # lvm: set LVM configuration in group_vars/all/lvm_vars.yml
    # purestorage: set Pure Storage configuration in group_vars/all/purestorage_vars.yml
+   # powerstore: set PowerStore configuration in group_vars/all/powerstore_vars.yml
    
    ###################################################
    ## Do not edit below if you are not an expert!!!  #
@@ -491,39 +489,6 @@ metallb_ip_range
   * IP range: 192.168.20.95-192.168.20.98 (4 IPs can be assigned.)
   * CIDR: 192.168.20.128/26 (192.168.20.128 - 191 can be assigned.)
   * Only one IP: 192.168.20.95/32 (192.168.20.95 can be assigned.)
-
-ha_level
-  Set KeepAlived/HAProxy HA level.
-  It should be one of moderato(default), allegro, and vivace.
-  Each level sets the following parameters.
-
-  * interval: health check interval in seconds
-  * timeout: health check timeout in seconds
-  * rise: required number of success
-  * fall: required number of failure 
-
-k8s_ha_level
-  Set kubernetes HA level.
-  It should be one of moderato(default), allegro, and vivace.
-  Each level sets the following parameters.
-
-  * node_status_update_frequency: 
-    Specifies how often kubelet posts node status to master.
-  * node_monitor_period:
-    The period for syncing NodeStatus in NodeController.
-  * node_monitor_grace_period:
-    Amount of time which we allow running Node to be unresponsive before
-    marking it unhealthy.
-  * not_ready_toleration_seconds:
-    the tolerationSeconds of the toleration for notReady:NoExecute that is 
-    added by default to every pod that does not already have such a toleration
-  * unreachable_toleration_seconds:
-    the tolerationSeconds of the toleration for unreachable:NoExecute that is
-    added by default to every pod that does not already have such a toleration
-  * kubelet_shutdown_grace_period:
-    the total duration that the node should delay the shutdown by
-  * kubelet_shutdown_grace_period_critical_pods:
-    the duration used to terminate critical pods during a node shutdown
 
 storage_backends
   List of the supported storage backends
@@ -746,6 +711,69 @@ If purestorage is in storage_backends, edit group_vars/all/purestorage_vars.yml.
   (Burrito supports fc protocol only.)
 
 If you do not know what these variables are, contact a Pure Storage engineer.
+
+PowerStore
+^^^^^^^^^^^
+
+If powerstore is in storage_backends, edit group_vars/all/powerstore_vars.yml.
+
+.. code-block::
+   :linenos:
+
+   ### powerstore configuration
+   ## name: powerstore name
+   # Warn: The name of the first entry should be fixed to 'powerstore'
+   # since it should be the same as the storage backend name in vars.yml.
+   # Even if you change the name in the first entry, it will set to 'powerstore'.
+   ## globalID: powerstore global ID
+   # Retrieve the globalID of the PowerStore array by login into
+   # your PowerStore settings > properties
+   ## apiserver: powerstore api server ip address
+   ## username: powerstore api username
+   ## password:  powerstore api password
+   ## isDefault: Is this array the default array?
+   ## blockProtocol: FC, ISCSI, NVMeTCP, NVMeFC, None, or auto
+   ## fstype: ext4, xfs, or nfs
+   ## nasName: powerstore nas server name
+   # Get the nas server name by logging into your PowerStore
+   # and go to Storage > Nas Servers.
+   ## volume_driver: cinder volume driver - used in cinder configuration
+   ## nas_host: PowerStore NAS host IP address - used in cinder configuration
+   # Get the nas server IP address by logging into your PowerStore
+   # and go to Storage > NAS Servers (see Preferred IPv4 Interface column)
+   ## nas_share_path: PowerStore NFS export path - used in cinder configuration
+   # Get the nas share path by logging into your PowerStore
+   # and go to Storage > File Systems > NFS EXPORTS
+   # (see path part in NFS Export Path column)
+   ## This example shows the NFS and FC storage configurations.
+   powerstore:
+     - name: "powerstore"
+       globalID: "PS76bd0a91c4e3"
+       apiserver: "192.168.172.40"
+       username: "admin"
+       password: "<password>"
+       isDefault: true
+       blockProtocol: "None"
+       fstype: "nfs"
+       nasName: "PS_NAS"
+       volume_driver: "{{ powerstore_nfs_volume_driver }}"
+       nas_host: "192.168.173.40"
+       nas_share_path: "/cinderNFS"
+     - name: "powerstore-fc"
+       globalID: "PS76bd0a91c4e3"
+       apiserver: "192.168.172.40"
+       username: "admin"
+       password: "<password>"
+       isDefault: true
+       blockProtocol: "FC"
+       fstype: "ext4"
+       volume_driver: "{{ powerstore_fc_volume_driver }}"
+   
+   ########################
+   # Do Not Edit below!!! #
+   ########################
+
+If you do not know what these variables are, contact a Dell engineer.
 
 Create a vault secret file
 +++++++++++++++++++++++++++
@@ -1031,7 +1059,7 @@ check if all pods are running and ready in ceph-csi namespace.::
     csi-rbdplugin-provisioner-845fc9b644-x9ssq   7/7     Running   0             22m
     csi-rbdplugin-zrbrl                          3/3     Running   0             20m
 
-and check if ceph storageclass is created.::
+And check if ceph storageclass is created.::
 
     $ sudo kubectl get storageclasses
     NAME             PROVISIONER        RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
@@ -1049,7 +1077,7 @@ check if all pods are running and ready in trident namespace.::
    trident-csi-kv9mw              2/2     Running   0          42s
    trident-csi-r8gqv              2/2     Running   0          43s
 
-and check if netapp storageclass is created.::
+And check if netapp storageclass is created.::
 
    $ sudo kubectl get storageclass netapp
    NAME               PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
@@ -1066,7 +1094,7 @@ check if all pods are running and ready in vxflexos namespace.::
    vxflexos-node-k7kpb                    2/2     Running   0          18h
    vxflexos-node-tk7hd                    2/2     Running   0          18h
 
-and check if powerflex storageclass is created.::
+And check if powerflex storageclass is created.::
 
    $ sudo kubectl get storageclass powerflex
    NAME                  PROVISIONER                RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
@@ -1084,7 +1112,7 @@ check if all pods are running and ready in hpe-storage namespace.::
     hpe-csi-node-xplt8                    2/2     Running   1 (53s ago)   74s   192.168.172.31   hitachi-control-1   <none>           <none>
     primera3par-csp-78bf8d479d-flkxs      1/1     Running   0             74s   10.205.161.8     hitachi-control-1   <none>           <none>
 
-and check if a storageclass is created.::
+And check if primera storageclass is created.::
 
    $ sudo kubectl get storageclass primera
    NAME                PROVISIONER   RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
@@ -1122,11 +1150,27 @@ check if all pods are running and ready in portworx namespace.::
    px-csi-ext-7b5b7f75d-b8nvm           4/4     Running   1 (20h ago)   20h
    px-csi-ext-7b5b7f75d-g84bz           4/4     Running   0             20h
 
-and check if a storageclass is created.::
+And check if purestorage storageclass is created.::
 
    $ sudo kubectl get storageclasses
    NAME                    PROVISIONER        RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
    purestorage (default)   pxd.portworx.com   Delete          Immediate           true                   21h
+
+If powerstore is in storage_backends,
+check if all pods are running and ready in powerstore namespace.::
+
+   $ sudo kubectl get po -n powerstore
+   NAME                                         READY   STATUS    RESTARTS      AGE
+   csi-powerstore-controller-57489dcbc4-bk52h   6/6     Running   8 (18d ago)   18d
+   csi-powerstore-node-2pfvp                    2/2     Running   0             18d
+   csi-powerstore-node-n87mz                    2/2     Running   0             18d
+   csi-powerstore-node-v9prf                    2/2     Running   0             14d
+
+And check if powerstore storageclass is created.::
+
+    $ sudo kubectl get storageclasses
+    NAME                   PROVISIONER                  RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
+    powerstore (default)   csi-powerstore.dellemc.com   Delete          Immediate           true                   18d
 
 
 Step.6 Patch
@@ -1181,8 +1225,8 @@ Check if all pods are running and ready in kube-system namespace.
       kube-scheduler-control1                    1/1   Running   2             62m
       kube-scheduler-control2                    1/1   Running   1             62m
       kube-scheduler-control3                    1/1   Running   1             62m
-      nginx-proxy-compute1                       1/1   Running   0             60m
-      nginx-proxy-compute2                       1/1   Running   0             60m
+      kubelet-csr-approver-7bc8cd6f5-66ghc       1/1   Running   1             62m
+      kubelet-csr-approver-7bc8cd6f5-nwjrf       1/1   Running   1             62m
       nodelocaldns-5dbbw                         1/1   Running   0             59m
       nodelocaldns-cq2sd                         1/1   Running   0             59m
       nodelocaldns-dzcjr                         1/1   Running   0             59m
@@ -1212,6 +1256,28 @@ The Burrito installation step implements the following tasks.
    (See `bug report <https://bugs.launchpad.net/cinder/+bug/2068548>`_).
    So Burrito automatically configure local filesystem as a glance store
    if powerflex is the default storage backend.
+
+Prerequisite for powerstore backend
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If `powerstore` is in storage_backends,
+you need to copy dellfcopy binary into local repo pod.
+It is used by openstack cinder driver.
+
+Contact your Dell representative and get the dellfcopy rpm package.
+
+Extract the rpm package and copy dellfcopy binary to the localrepo pod.::
+
+    $ mkdir work
+    $ cp dellfcopy-1.4-0.x86_64.rpm work/
+    $ cd work
+    $ rpm2cpio dellfcopy-1.4-0.x86_64.rpm |cpio -idmv
+    ./dellfcopy
+    ./dellfcopy.1
+    ./libtirpc.so.3
+    900 blocks
+    $ sudo kubectl -n kube-system \
+        cp dellfcopy LOCALREPO_POD:/usr/share/nginx/html/
 
 Install
 ^^^^^^^
