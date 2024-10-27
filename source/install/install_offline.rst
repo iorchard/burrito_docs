@@ -161,7 +161,7 @@ There are sample inventory files.
 
 .. warning::
     You need to get the dellfcopy package from Dell if you want to 
-    use PowerStore as a storage backend. 
+    use PowerStore NFS as a storage backend. 
 
 When you run prepare.sh script, the default hosts.sample is copied to 
 *hosts* file.
@@ -1440,13 +1440,13 @@ The burrito installation step implements the following tasks.
 .. warning::
    There is a `cinder as a glance store` bug in powerflex cinder driver.
    (See `bug report <https://bugs.launchpad.net/cinder/+bug/2068548>`_).
-   So Burrito automatically configure local filesystem as a glance store
+   So Burrito automatically configure a PVC as a glance store
    if powerflex is the default storage backend.
 
 Prerequisite for powerstore backend
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-If `powerstore` is in storage_backends,
+If `powerstore` is in storage_backends and you use PowerStore NFS,
 you need to copy dellfcopy binary into local repo pod.
 It is used by openstack cinder driver.
 
