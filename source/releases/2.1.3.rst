@@ -6,6 +6,12 @@ This is the third patch in the Begonia 2.1 series.
 Notable Changes
 ----------------
 
+* Fix: kubernetes certificate renewal script (k8s-certs-renew.sh)
+  (`issue #254 <https://github.com/iorchard/burrito/issues/254>`_)
+
+* Enhancement: Upgrade NetApp Trident to 24.06.1.
+  (`issue #255 <https://github.com/iorchard/burrito/issues/255>`_)
+
 * Feature: Support Dell/EMC PowerStore storage backend.
   (`issue #232 <https://github.com/iorchard/burrito/issues/232>`_)
 
@@ -16,6 +22,17 @@ Notable Changes
 Changelog
 ----------
 
+* update patch file - 12-patch-kubespray-control-plane-k8s-certs-renew.sh.j2.txt; (jijisa@iorchard.co.kr)
+* update cinder.allowed_direct_url_schemes; (jijisa@iorchard.co.kr)
+* update NetApp trident-installer in bin.txt; (jijisa@iorchard.net)
+* add patch files to fix k8s-certs-renew.sh; (jijisa@iorchard.net)
+* update netapp trident version to 24.06.1; (jijisa@iorchard.net)
+* add Topology=false feature-gates since csi-provisioner 5+ enables it by default; (jijisa@iorchard.net)
+* add Topology=false feature-gates since csi-provisioner 5+ enables it by default; (jijisa@iorchard.net)
+* change fsType to csi.storage.k8s.io/fstype for netapp storageclass definition; (jijisa@iorchard.net)
+* update netapp tasks to remove both netapp artifacts and download directory; (jijisa@iorchard.net)
+* update 12-patch-kubespray-control-plane-kubeadm-secondary.txt for robustness; (jijisa@iorchard.net)
+* update cinder-volume.sh script to update powerstore nfs driver; (jijisa@iorchard.net)
 * add powerstore to storage_backends in vars.yml.sample; (jijisa@iorchard.net)
 * put the second bind in localrepo haproxy config only on the first control plane node; it is needed by adding control plane nodes; (jijisa@iorchard.net)
 * modify powerstore config in cinder.yml.j2; (jijisa@iorchard.net)
