@@ -26,6 +26,7 @@ Welcome to Burrito's documentation!
    :caption: Operation
    :maxdepth: 2
 
+   operation/errata
    operation/add_compute_node
    operation/graceful_node_shutdown
    operation/preserve_glance_image_pv
