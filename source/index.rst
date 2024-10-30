@@ -26,6 +26,7 @@ Welcome to Burrito's documentation!
    :caption: Operation
    :maxdepth: 2
 
+   operation/errata
    operation/openstack_volume_resize
    operation/openstack_ha_test
    operation/add_compute_node
