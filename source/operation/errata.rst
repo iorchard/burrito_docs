@@ -8,9 +8,28 @@ This is a regression bug.
 
 * Affected versions: 1.2.4 - 2.1.2
 
+Problem
+++++++++
+
+When the k8s-certs-renew.sh script runs, there are 3 steps.
+
+#. renew the certifcates.
+#. restart the kube-apiserver.
+#. check until the kube-apiserver service is up 
+   by connecting to 127.0.0.1:6443.
+
+But starting in version 1.2.4, we changed the bind address of kube-apiserver 
+from 0.0.0.0 to the node management ip address for haproxy load-balance.
+So the script is stuck at the third step forever.
+
+Fix
+++++
+
 Do the following tasks on the control plane nodes for the affected versions.
 
-1. Update k8s-certs-renew.sh script.
+1. Update k8s-certs-renew.sh script. 
+   The script is in /usr/bin for version 2.1.1 and
+   earler or in /usr/sbin for version 2.1.2.
 
 Before::
 
@@ -42,6 +61,5 @@ and renew the certifcate.
 
 Now that the k8s-certs-renew.sh script has been patched, 
 your next certificate renewal should work fine.
-
 
 
