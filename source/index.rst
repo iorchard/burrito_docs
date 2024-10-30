@@ -25,6 +25,7 @@ Welcome to Burrito's documentation!
    :caption: Operation
    :maxdepth: 2
 
+   operation/errata
    operation/openstack_volume_resize
    operation/install_asklepios
    operation/add_control_plane_node
