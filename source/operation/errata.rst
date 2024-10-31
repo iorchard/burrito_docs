@@ -11,6 +11,10 @@ This is a regression bug.
 Problem
 ++++++++
 
+The k8s-certs-renew.sh script runs between 3:00 AM and 3:30 AM 
+on the first Monday of the month by systemd timer 
+to renew the kubernetes certificate.
+
 When the k8s-certs-renew.sh script runs, there are 3 steps.
 
 #. renew the certifcates.
