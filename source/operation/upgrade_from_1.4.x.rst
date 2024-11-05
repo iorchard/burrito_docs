@@ -900,5 +900,9 @@ Check ceph versions.::
         }
     }
 
+Last but not least, upgrade ceph client package on all client nodes.::
+
+    $ sudo dnf upgrade ceph-common --allowerasing
+
 Ceph upgrade is done!
 
