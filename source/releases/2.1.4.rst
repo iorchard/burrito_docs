@@ -1,0 +1,51 @@
+2.1.4 Begonia
+==============
+
+This is the fourth patch in the Begonia 2.1 series.
+
+Notable Changes
+----------------
+
+* Feature: Upgrade btx image to 2.1.0.
+  (`btx image <https://hub.docker.com/r/jijisa/btx/tags>`_)
+
+    - Upgrade kubectl to v1.30.3.
+    - Upgrade krew from v0.4.3 to v0.4.4.
+    - Upgrade helm from v3.13.1 to v3.14.2.
+    - Upgrade netapp tridentctl from v24.02.0 to v24.06.1.
+
+* Feature: Support NetApp NFS over RDMA
+  (`issue #261 <https://github.com/iorchard/burrito/issues/261>`_)
+
+* Feature: Upgrade descheduler to v0.31.0
+  (`issue #257 <https://github.com/iorchard/burrito/issues/257>`_)
+
+* Bug: Modify allowed_direct_url_schemes and image_upload_use_cinder_backend
+  when powerflex is the storage backend.
+  (`issue #256 <https://github.com/iorchard/burrito/issues/256>`_)
+  (`issue #259 <https://github.com/iorchard/burrito/issues/259>`_)
+
+* Feature: Support multiple glance stores
+  (`issue #245 <https://github.com/iorchard/burrito/issues/245>`_)
+
+
+Changelog
+----------
+
+* modify nfs_mount_options to nova.nfs_mount_options in nova.yml.j2; (jijisa@iorchard.net)
+* add powerstore nfs protocol and nova.nfs_mount_options; (jijisa@iorchard.net)
+* ceph: add osd service_id in cluster.yml.j2; (jijisa@iorchard.net)
+* fix(cinder): duplicate mounts when enable_iscsi is true and powerflex is in storage_backends; (jijisa@iorchard.net)
+* add nfs_mount_options in libvirt section of nova.yml.j2; (jijisa@iorchard.net)
+* modify cinder nfs shares; (jijisa@iorchard.net)
+* move pod.security_context.cinder_volume in enable_iscsi block before powerflex mounts declaration; (jijisa@iorchard.net)
+* modify replicas.api in glance.yml.j2 since we support glance multi-stores; (jijisa@iorchard.net)
+* add cinder.volume_capabilities variable in vars.yml.sample; (jijisa@iorchard.net)
+* fix duplicate /dev mount in nova.yml.j2 when powerflex is in storage backends and enable_iscsi is true; (jijisa@iorchard.net)
+* fix cinder.yml.j2; (jijisa@iorchard.net)
+* image_volume_cache_enabled to true for powerflex; (jijisa@iorchard.net)
+* issue(#259): fix volume-to-image operation for powerflex (#260); (jijisa@iorchard.net)
+* feature/openstack/glance multi stores (#258); (jijisa@iorchard.net)
+* feature(issue #257): include and upgrade a descheduler image; (jijisa@iorchard.co.kr)
+* fix(issue #256): change cinder_allowed_direct_url_schemes.powerflex to null in vars.yml.sample; (jijisa@iorchard.co.kr)
+

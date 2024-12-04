@@ -30,11 +30,13 @@ Welcome to Burrito's documentation!
    operation/openstack_ha_test
    operation/add_control_plane_node
    operation/add_compute_node
+   operation/netapp_tcp_rdma_perf
 
 .. toctree::
    :caption: Releases
    :maxdepth: 2
 
+   releases/2.1.4
    releases/2.1.3
    releases/2.1.2
    releases/2.1.1
