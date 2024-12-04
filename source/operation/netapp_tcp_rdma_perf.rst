@@ -37,7 +37,7 @@ measure the only transport layer between TCP and RDMA.
 This is TCP vs. RoCE Sequential Read/Write IO TEST result.
 
 .. image:: ../_static/images/netapp/tcp_rdma_sequential_read_write_64k_iodepth_128.svg
-   :width: 400
+   :width: 600
    :alt: TCP vs. RDMA Sequential IO TEST
 
 In NFSv3, RoCE is 2.39 times better than TCP in sequential read and 
