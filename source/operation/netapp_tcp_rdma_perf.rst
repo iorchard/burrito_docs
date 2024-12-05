@@ -22,7 +22,7 @@ measure the performance of the transport layer in TCP and RDMA.
     - Model: HPE ProLiant DL360 Gen10
     - OS: Rocky Linux 8.10
     - CPU: Intel Xeon Silver 4110 CPU @ 2.10GHz * 2 Sockets (32 cores)
-    - RAM: 32GB DDR4 2666 MHz * 8 ea
+    - RAM: 32GB DDR4 2666 MHz * 8 ea (256GB)
     - Network: Nvidia Mellanox ConnectX-6 Dx 100GbE (Jumbo frame enabled)
 
 * Server
@@ -30,7 +30,7 @@ measure the performance of the transport layer in TCP and RDMA.
     - Model: HPE ProLiant DL360 Gen10
     - OS: Rocky Linux 8.10
     - CPU: Intel Xeon Gold 6142 CPU @ 2.60GHz * 2 Sockets (64 cores)
-    - RAM: 32GB DDR4 2666 MHz * 8 ea
+    - RAM: 32GB DDR4 2666 MHz * 8 ea (256 GB)
     - Network: Nvidia Mellanox ConnectX-6 Dx 100GbE (Jumbo frame enabled)
 
 NFSv3 TCP mount options::
