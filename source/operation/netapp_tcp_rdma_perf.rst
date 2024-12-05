@@ -164,8 +164,8 @@ other virtual machines act as fio servers.::
         |--------------------------------------------------------|
                  aggregate the io result from the fio servers
 
-When we run the fio client with the server list file and job-spec file.
-Then, the fio client sends the job-spec file to each server and run fio
+When we run the fio client with the server list file and job-spec file,
+the fio client sends the job-spec file to each server and the servers run fio
 processes concurrently.
 Here is the example.::
 
