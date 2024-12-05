@@ -260,7 +260,7 @@ since more jobs are running and distributed over the virtual machines.
 
 The maximum IOPS in NFSv4 at the virtual machines was 
 **136k IOPS in random read** and **75.6k random write IOPS**.
-This is much worse than NFSv3.
+These results are much worse than NFSv3.
 It is the same reason as sequential IO test.
 We could not use nconnect with NFSv4 RDMA.
 
