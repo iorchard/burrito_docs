@@ -13,9 +13,9 @@ We ran `fio Flexible I/O tester <https://github.com/axboe/fio>`_ and
 measured the throughput for sequential read/write and 
 the IOPS for the random read/write.
 
-This tests were performed on a linux client against a linux NFS server
+The tests were performed on a linux client against a linux NFS server
 using ramdisk so that the disk latency does not affect to the result and
-measure the only transport layer between TCP and RDMA.
+measure the performance of the transport layer in TCP and RDMA.
 
 * Server
 
@@ -139,7 +139,7 @@ We could not saturate RoCE network in NFSv4 since we could not use nconnect
 with NFSv4 RDMA.
 
 The maximum throughput in NFSv4 at the virtual machines was 
-**11342 MB/s in read** and **3628 MB/s in write**.
+**5752 MB/s in read** and **2385 MB/s in write**.
 
 
 This is NetApp NFSv3 RDMA Random IO TEST result.
