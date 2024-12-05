@@ -150,8 +150,8 @@ How to run the fio processes on the multiple virtual machines
 
 We created 6 debian virtual machines on the compute node.
 Let's say debvm1, debvm2, ..., debvm6.
-The debvm1 acts as both the fio client and the server and
-other virtual machines act as the fio server.::
+The debvm1 acts as both a fio client and a fio server and
+other virtual machines act as fio servers.::
 
         debvm1
         fio client -> fio server on debvm1 -> run fio processes -|
