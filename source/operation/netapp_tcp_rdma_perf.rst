@@ -207,6 +207,9 @@ This is NetApp NFSv3 RDMA Sequential IO TEST result.
    :width: 600
    :alt: NetApp NFSv3 RDMA Sequential IO TEST
 
+`nfsv3 host no options` means no `nconnect` and `remoteports` options are
+applied in nfs mount options.
+
 The IO Performance at the host is better than that of one virtual machine.
 As we increase the number of virtual machines, the sum of throughput is
 higher than the throughput of the host since more IO jobs are running
@@ -222,6 +225,9 @@ This is NetApp NFSv4 RDMA Sequential IO TEST result.
 .. image:: ../_static/images/netapp/netapp_nfsv4_rdma_seq_iotest.svg
    :width: 600
    :alt: NetApp NFSv4 RDMA Sequential IO TEST
+
+`nfsv4 host no options` means no `nconnect` and `remoteports` options are
+applied in nfs mount options.
 
 The IO performance at the host is better than that of one virtual machine.
 As we increase the number of virtual machines, the sum of throughput is
@@ -241,6 +247,9 @@ This is NetApp NFSv3 RDMA Random IO TEST result.
    :width: 600
    :alt: NetApp NFSv3 RDMA Random IO TEST
 
+`nfsv3 host no options` means no `nconnect` and `remoteports` options are
+applied in nfs mount options.
+
 The IO performance at the host is a lot better than that of one virtual machine.
 As we increase the number of virtual machines, the sum of IOPS is increased
 since more jobs are running and distributed over the virtual machines.
@@ -253,6 +262,9 @@ This is NetApp NFSv4 RDMA Random IO TEST result.
 .. image:: ../_static/images/netapp/netapp_nfsv4_rdma_random_iotest.svg
    :width: 600
    :alt: NetApp NFSv4 RDMA Random IO TEST
+
+`nfsv4 host no options` means no `nconnect` and `remoteports` options are
+applied in nfs mount options.
 
 The IO performance at the host is a lot better than that of one virtual machine.
 As we increase the number of virtual machines, the sum of IOPS is increased
