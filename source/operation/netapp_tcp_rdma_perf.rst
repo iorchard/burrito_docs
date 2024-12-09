@@ -110,8 +110,8 @@ that are connected to NetApp AFF A400 with NFS over RDMA (RoCE).
     - RAM: 32GB DDR4 2666 MHz * 8 ea
     - Network: Nvidia Mellanox ConnectX-6 Dx 100GbE (Jumbo frame enabled)
 
-We implemented NFS over RDMA IO test at the host and the virtual machines
-with NFSv3 and NFSv4.
+We implemented NFS over TCP and NFS over RDMA IO tests at the host and 
+the virtual machines with NFSv3 and NFSv4.
 
 We could use `nconnect` mount option with NFSv3 RDMA but we could not use
 it with NFSv4 RDMA.
@@ -198,17 +198,77 @@ Here is the example.::
          issued rwts: total=52005355,0,0,0 short=0,0,0,0 dropped=0,0,0,0
 
 
-IO test result
+IO tests cases
 ++++++++++++++++
+
+We need to mention each test is implemented with different nfs mount options 
+and environment.
+
+* nfsv3 host tcp no options: We mounted a NFS volume with tcp protocol and 
+  without `nconnect` and `remoteports` options. The Burrito system is not
+  installed when we run IO tests.
+
+* nfsv3 host tcp with options: We mounted a NFS volume with tcp protocol and
+  `nconnect=16` but without `remoteports` option. The Burrito system is not
+  installed when we run IO tests.
+
+* nfsv3 host rdma no options: We mounted a NFS volume with rdma protocol and
+  without `nconnect` and `remoteports` options. The Burrito system is not
+  installed when we run IO tests.
+
+* nfsv3 host rdma: We mounted a NFS volume with rdma protocol and
+  `nconnect=32` and `remoteports=2` options. The Burrito system is installed
+  when we run IO tests.
+
+* nfsv3 vm rdma: We mounted a NFS volume with rdma protocol and
+  `nconnect=32` and `remoteports=2` options. The Burrito system is installed
+  when we run IO tests.
+
+* nfsv4 host tcp no options: We mounted a NFS volume with tcp protocol and
+  without `nconnect` and `remoteports` options. The Burrito system is not
+  installed when we run IO tests.
+
+* nfsv4 host tcp with options: We mounted a NFS volume with tcp protocol,
+  `nconnect=32` and `remoteports=2` options. The Burrito system is not
+  installed when we run IO tests. 
+
+* nfsv4 host rdma no options: We mounted a NFS volume with rdma protocol and
+  without `nconnect` and `remoteports` options. The Burrito system is not
+  installed when we run IO tests.
+
+* nfsv4 host rdma: We mounted a NFS volume with rdma protocol and
+  `nconnect=2` and `remoteports=2` options. The Burrito system is not installed
+  when we run IO tests.
+
+* nfsv4 vm rdma: We mounted a NFS volume with rdma protocol and
+  `nconnect=2` and `remoteports=2` options. The Burrito system is installed
+  when we run IO tests.
+
+Table. test case names, nfs versions, and mount options
+
+=========================== ===========    ========    ========    ===========
+test case name              nfs version    protocol    nconnect    remoteports
+=========================== ===========    ========    ========    ===========
+nfsv3 host tcp no options   v3              tcp         -           -
+nfsv3 host tcp with options v3              tcp         16          -
+nfsv3 host rdma no options  v3              rdma        -           -
+nfsv3 host rdma             v3              rdma        32          2
+nfsv3 vm rdma               v3              rdma        32          2
+nfsv4 host tcp no options   v4              tcp         -           -
+nfsv4 host tcp with options v4              tcp         32          2
+nfsv4 host rdma no options  v4              rdma        -           -
+nfsv4 host rdma             v4              rdma        2           2
+nfsv4 vm rdma               v4              rdma        2           2
+=========================== ===========    ========    ========    ===========
+
+IO test results
++++++++++++++++++
 
 This is NetApp NFSv3 RDMA Sequential IO TEST result.
 
 .. image:: ../_static/images/netapp/netapp_nfsv3_rdma_seq_iotest.svg
    :width: 600
    :alt: NetApp NFSv3 RDMA Sequential IO TEST
-
-`nfsv3 host no options` means no `nconnect` and `remoteports` options are
-applied in nfs mount options.
 
 The IO Performance at the host is better than that of one virtual machine.
 As we increase the number of virtual machines, the sum of throughput is
@@ -226,8 +286,9 @@ This is NetApp NFSv4 RDMA Sequential IO TEST result.
    :width: 600
    :alt: NetApp NFSv4 RDMA Sequential IO TEST
 
-`nfsv4 host no options` means no `nconnect` and `remoteports` options are
-applied in nfs mount options.
+`NFSv4 host tcp with options` is better than `nfsv4 host RDMA`
+since it is configured with nconnect=32 and remoteports=2 
+while `nfsv4 host RDMA` is configured with nconnect=2 and remoteports=2.
 
 The IO performance at the host is better than that of one virtual machine.
 As we increase the number of virtual machines, the sum of throughput is
@@ -247,9 +308,6 @@ This is NetApp NFSv3 RDMA Random IO TEST result.
    :width: 600
    :alt: NetApp NFSv3 RDMA Random IO TEST
 
-`nfsv3 host no options` means no `nconnect` and `remoteports` options are
-applied in nfs mount options.
-
 The IO performance at the host is a lot better than that of one virtual machine.
 As we increase the number of virtual machines, the sum of IOPS is increased
 since more jobs are running and distributed over the virtual machines.
@@ -263,8 +321,9 @@ This is NetApp NFSv4 RDMA Random IO TEST result.
    :width: 600
    :alt: NetApp NFSv4 RDMA Random IO TEST
 
-`nfsv4 host no options` means no `nconnect` and `remoteports` options are
-applied in nfs mount options.
+`NFSv4 host tcp with options` is better than `nfsv4 host RDMA`
+since it is configured with nconnect=32 and remoteports=2 
+while `nfsv4 host RDMA` is configured with nconnect=2 and remoteports=2.
 
 The IO performance at the host is a lot better than that of one virtual machine.
 As we increase the number of virtual machines, the sum of IOPS is increased
