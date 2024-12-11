@@ -16,6 +16,8 @@ Notable Changes
 
 * Feature: Support NetApp NFS over RDMA
   (`issue #261 <https://github.com/iorchard/burrito/issues/261>`_)
+  We ran :doc:`NetApp TCP vs. RDMA Performance Test 
+  <../operation/netapp_tcp_rdma_perf>`.
 
 * Feature: Upgrade descheduler to v0.31.0
   (`issue #257 <https://github.com/iorchard/burrito/issues/257>`_)
@@ -25,13 +27,29 @@ Notable Changes
   (`issue #256 <https://github.com/iorchard/burrito/issues/256>`_)
   (`issue #259 <https://github.com/iorchard/burrito/issues/259>`_)
 
-* Feature: Support multiple glance stores
+* Feature: Support :doc:`multiple glance stores
+  <../operation/multiple_glance_stores>`
   (`issue #245 <https://github.com/iorchard/burrito/issues/245>`_)
 
 
 Changelog
 ----------
 
+* add nconnect=16 to NFSv4 options in netapp_vars.yml; (jijisa@iorchard.net)
+* add qemu kill ansible ad-hoc task in clean_openstack.sh script; (jijisa@iorchard.net)
+* modify replicas.api in glance.yml.j2; (jijisa@iorchard.net)
+* update nova.nfs_mount_options in vars.yml.sample; (jijisa@iorchard.net)
+* add unmount /var/lib/nova/instances on compute nodes task in clean_openstack.sh script; (jijisa@iorchard.net)
+* update ceph glance keyring in glance storage init script; (jijisa@iorchard.net)
+* update ceph cinder keyring in cinder storage init script; (jijisa@iorchard.net)
+* update netapp_vars.yml; (jijisa@iorchard.net)
+* update netapp_vars.yml; (jijisa@iorchard.net)
+* add nova_nfs_mount_options; (jijisa@iorchard.net)
+* apply rbd1: null in cinder.yml.j2 since it is renamed to ceph; (jijisa@iorchard.net)
+* add powerstore_nfs_mount_options in powerstore_vars.yml; (jijisa@iorchard.net)
+* update vars.yml.sample; (jijisa@iorchard.net)
+* openstack(cinder): change ceph volume type to ceph from rbd1; (jijisa@iorchard.net)
+* btx: upgrade to 2.1.0; (jijisa@iorchard.net)
 * modify nfs_mount_options to nova.nfs_mount_options in nova.yml.j2; (jijisa@iorchard.net)
 * add powerstore nfs protocol and nova.nfs_mount_options; (jijisa@iorchard.net)
 * ceph: add osd service_id in cluster.yml.j2; (jijisa@iorchard.net)

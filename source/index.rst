@@ -31,6 +31,7 @@ Welcome to Burrito's documentation!
    operation/add_control_plane_node
    operation/add_compute_node
    operation/netapp_tcp_rdma_perf
+   operation/multiple_glance_stores
 
 .. toctree::
    :caption: Releases

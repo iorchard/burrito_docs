@@ -591,7 +591,13 @@ Edit group_vars/all/ceph_vars.yml.
    :linenos:
 
    ---
+   # Use the all unused devices for osd disks on the host. Default: true
+   # If you want to use the specific devices, set this to false and
+   # specify device names in data_devices.
    ceph_osd_use_all: true
+   
+   # Set the osd data devices.
+   # This variable is ignored if ceph_osd_use_all is true.
    data_devices:
      - path: /dev/sdb
      - path: /dev/sdc
@@ -611,23 +617,26 @@ If netapp is in storage_backends, edit group_vars/all/netapp_vars.yml.
    :linenos:
 
    ---
+   # NFS protocols: tcp(default), rdma
+   netapp_nfs_protocol: tcp
+   ## NFS mount options - NFSv4(default). NFSv3
+   # For NFSv4
+   netapp_nfs_mount_options: "proto={{ netapp_nfs_protocol }},lookupcache=pos,nconnect=16"
+   # For NFSv3 
+   #netapp_nfs_mount_options: "proto={{ netapp_nfs_protocol }},lookupcache=pos,nfsvers=3,nconnect=16"
    netapp:
-     - name: netapp1
+     - name: netapp
        managementLIF: "192.168.100.230"
        dataLIF: "192.168.140.19"
        svm: "svm01"
        username: "admin"
        password: "<netapp_admin_password>"
-       nfsMountOptions: "lookupcache=pos"
+       nfsMountOptions: "{{ netapp_nfs_mount_options }}"
+       nas_secure_file_operations: false
+       nas_secure_file_permissions: false
        shares:
-         - /dev03
-   ...
-
-You can add nfsvers in nfsMountOptions to use the specific nfs version.
-
-For example, if you want to use nfs version 4.0, put nfsvers=4.0 in
-nfsMountOptions (nfsMountOptions: "nfsvers=4.0,lookupcache=pos").
-Then, you should check if nfs version 4 is enabled in NetApp NFS storage.
+         - 192.168.140.19:/dev03
+         - 192.168.140.20:/dev12
 
 If you do not know what these variables are, contact a Netapp engineer.
 

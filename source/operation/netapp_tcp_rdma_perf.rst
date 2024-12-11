@@ -1,5 +1,5 @@
-NetApp TCP vs. RDMA Performance test
-=======================================
+NetApp TCP vs. RDMA Performance
+================================
 
 TCP vs. RDMA Transport Layer Performance Test
 -----------------------------------------------
