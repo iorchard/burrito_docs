@@ -15,7 +15,7 @@ Notable Changes
     - Upgrade netapp tridentctl from v24.02.0 to v24.06.1.
 
 * Feature: Support NetApp NFS over RDMA
-  (`issue #261 <https://github.com/iorchard/burrito/issues/261>`_)
+  (`issue #261 <https://github.com/iorchard/burrito/issues/261>`_).
   We ran :doc:`NetApp TCP vs. RDMA Performance Test 
   <../operation/netapp_tcp_rdma_perf>`.
 
