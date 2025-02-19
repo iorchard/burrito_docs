@@ -102,11 +102,6 @@ Run prepare.sh script.::
    $ cd burrito
    $ ./prepare.sh
 
-Copy the patched vars.yml.sample to vars.yml.::
-
-    $ cp vars.yml.sample vars.yml
-
-
 inventory hosts and variables
 +++++++++++++++++++++++++++++
 
