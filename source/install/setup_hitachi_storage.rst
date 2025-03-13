@@ -1,5 +1,5 @@
-Hitachi Storage Manual Setup Guide
-===================================
+Hitachi Storage Setup Guide
+===========================
 
 Overview
 ---------
