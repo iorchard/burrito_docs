@@ -15,7 +15,7 @@ PFSP will be installed in HCI (HyperConverged Infrastructure) mode on the
 Burrito platform.
 PFMP will be installed as virtual machines on KVM hypervisor node.
 
-So you must have at least four available machines - 3 PFSP and 1 PFMP.
+So you must have at least four available machines - 3 PFSPs and 1 PFMP.
 
 Reference hardware spec.
 -------------------------
@@ -42,7 +42,7 @@ pfx-pfmp   32             88          600           N/A
 Four virtual machines are pfmp-installer, pfmp-mvm1, pfmp-mvm2, and
 pfmp-mvm3. 
 You do not need to create these virtual machines manually.
-They are created when you run powerflex_pfmp playbook.
+They are created when you run the powerflex_pfmp playbook.
 
 Networks
 ---------
@@ -53,16 +53,16 @@ This is a network information used in this document.
 hostname       service      management   provider     overlay      storage
 -------------- ------------ ------------ ------------ ------------ ------------
  .             eth0         eth1         eth2         eth3         eth4
- .             192.168.20.x 192.168.21.x 192.168.22.x 192.168.23.x 192.168.24.x
+ .             192.168.20.  192.168.21.  192.168.22.  192.168.23.  192.168.24.
 ============== ============ ============ ============ ============ ============
-pfx-1           71          71          no ip           71          71
-pfx-2           72          72          no ip           72          72
-pfx-3           73          73          no ip           73          73
-pfx-pfmp        N/A         74          N/A             N/A         74
-pfmp-installer  N/A         75          N/A             N/A         N/A
-pfmp-mvm1       N/A         76          N/A             N/A         76
-pfmp-mvm2       N/A         77          N/A             N/A         77
-pfmp-mvm3       N/A         78          N/A             N/A         78
+pfx-1           71          71           no ip           71          71
+pfx-2           72          72           no ip           72          72
+pfx-3           73          73           no ip           73          73
+pfx-pfmp        N/A         74           N/A             N/A         74
+pfmp-installer  N/A         75           N/A             N/A         N/A
+pfmp-mvm1       N/A         76           N/A             N/A         76
+pfmp-mvm2       N/A         77           N/A             N/A         77
+pfmp-mvm3       N/A         78           N/A             N/A         78
 ============== ============ ============ ============ ============ ============
 
 * KeepAlived VIP on management interface: 192.168.21.70
@@ -77,10 +77,10 @@ pfmp-mvm3       N/A         78          N/A             N/A         78
 * N/A means that the machine does not require the interface.
 
     - pfmp-installer virtual machine only needs the management IP address.
-    - pfmp-mvm virtual machines need the management and storage IP addreeses.
+    - pfmp-mvm virtual machines need the management and storage IP addresses.
 
 When you prepare the burrito installation with PowerFlex,
-Fill in the above network information before installing.
+Fill in the above network information for your network environment.
 
 Pre-requisite for PFMP
 -----------------------
@@ -110,7 +110,7 @@ The eth1 is the physical interface attached to the br_storage bridge.
     - PFMP installation tarball package (Contact your Dell representative 
       to get this file.)
     - File size: 25 GiB
-    - When you get this file from Dell, the filename will be like 
+    - When you get this file from Dell, the filename will be something like 
       PFMP2-4.6.1.0-715.tgz. Rename it to pfmp.tgz.
 
 * pfmp-installer.qcow2
@@ -134,13 +134,10 @@ File list::
     -rw-r--r-- 1 clex clex  25G Mar 11 16:38 pfmp.tgz
 
 .. warning::
-   **Never proceed to the next step before satisfying this PFMP pre-requisite.**
+   **Never proceed to the next step until you've met this PFMP pre-requisite.**
 
 Install
 --------
-
-Installation processes are almost the same as `Offline Installation` or `Online
-Installation`.
 
 I'll assume this is the offline installation.
 
@@ -181,6 +178,7 @@ Run prepare.sh script with offline flag.::
    $ cd burrito-<version>
    $ ./prepare.sh offline
    Enter management network interface name: eth1
+   ...
 
 It will prompt for the management network interface name. 
 Enter the management network interface name. (e.g. eth1)
@@ -320,10 +318,8 @@ Edit group_vars/all/powerflex_vars.yml.::
     # Do Not Edit below
     #
 
-The `pfmp_ip` is the first IP address in LoadBalancer management pool.
-The `pfmp_password` is the PFMP admin password you will set after finishing
-PFMP installation. The password policy is the combination of alphanumeric 
-including uppercase and lowercase letters, and special characters.
+* The `pfmp_ip` is the first IP address in LoadBalancer management pool.
+* The `pfmp_password` is the PFMP admin password you will set after finishing PFMP installation. The password policy is the combination of alphanumeric including uppercase and lowercase letters, and special characters.
 
 Create a vault secret file
 +++++++++++++++++++++++++++
@@ -357,16 +353,29 @@ There should be no *failed* tasks in *PLAY RECAP* on each playbook run.
 Each step has a verification process, so be sure to verify
 before proceeding to the next step.
 
+Verification processes are skipped in this document.
+See `Online Installation` or `Offline Installation` document for a
+verification process in each step.
+
 .. warning::
    **Never proceed to the next step if the verification fails.**
+
+Step.1 Preflight
+^^^^^^^^^^^^^^^^^
 
 Run a preflight playbook.::
 
    $ ./run.sh preflight
 
+Step.2 HA
+^^^^^^^^^^
+
 Run a HA stack playbook.::
 
    $ ./run.sh ha
+
+Step.3 PowerFlex PFMP
+^^^^^^^^^^^^^^^^^^^^^^
 
 Run a powerflex_pfmp playbook.::
 
@@ -428,12 +437,7 @@ Run install_PFMP.sh script.::
     Are the nodes used for the PFMP cluster, co-res nodes [Y]?:n
     ...
     2025-03-09 07:16:49,740 | INFO | Setting up the cluster
-    100%|##########################################################################|
-    2025-03-09 07:55:25,040 | INFO | Deploying the apps
-    100%|##########################################################################|
-    2025-03-09 10:07:30,190 | INFO | Trying to connect to node:192.168.21.76
-    2025-03-09 10:07:32,153 | INFO | UI can be accessed at:pfmp.cluster.local which needs to be resolved to 192.168.21.79
-    2025-03-09 10:07:32,153 | INFO | Deployed the cluster and applications.
+    74%|####################################                                       |
 
 
 It will take a long time.
@@ -445,13 +449,22 @@ pfmp-installer:/opt/dell/pfmp/atlantic/logs/bedrock.log.
 
 Now go back to pfx-1 and continue to install Burrito.
 
+Step.4 Kubernetes
+^^^^^^^^^^^^^^^^^^
+
 Run a k8s playbook.::
 
     $ ./run.sh k8s
 
+Step.5 Storage
+^^^^^^^^^^^^^^^
+
 Run a storage playbook.::
 
     $ ./run.sh storage
+
+Step.6 PowerFlex Importing PFSP
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Now go back to pfmp-installer and wait until install_PFMP.sh script is 
 finished.
@@ -485,7 +498,7 @@ Add pfmp.cluster.local IP address in /etc/hosts on your laptop.::
 
 Open your browser and go to https://pfmp.cluster.local/.
 It will give you a warning about security issue since the TLS certificate is
-self-signed certificate. Go ahead and accept the risk. Then you will see the
+a self-signed certificate. Go ahead and accept the risk. Then you will see the
 PFMP login page.
 
 The ID is `admin` and the default password is `Admin123!`.
@@ -493,19 +506,35 @@ Once you logged in, you will be forced to change the admin password.
 Change the admin password to `pfmp_password` value you set up in
 group_vars/all/powerflex_vars.yml.
 
-1. At the first login, you get the Initial Configuration Wizard. 
-   just click Next.
+1. At the first login, you get the welcome page in 
+   the Initial Configuration Wizard. just click Next.
+
+.. image:: ../_static/images/powerflex/01_welcome.png
+   :width: 1200
+   :alt: Welcome page
 
 2. SupportAssist (Optional): Click Next.
+
+.. image:: ../_static/images/powerflex/02_supportassist.png
+   :width: 1200
+   :alt: Support Assist
 
 3. Installation Type: Select "I have a PowerFlex instance to import" and
    click Next.
 
-Which version of PowerFlex is your system running on:
+.. image:: ../_static/images/powerflex/03_installation_type.png
+   :width: 1200
+   :alt: Installation Type
+
+.. image:: ../_static/images/powerflex/04_installation_type_import.png
+   :width: 1200
+   :alt: Installation Type Import
+
+Which version of PowerFlex is your system running on::
 
     Select PowerFlex 4.x
 
-MDM IP Addresses: Enter mdm management ip addresses:
+MDM IP Addresses: Enter mdm management ip addresses::
 
     192.168.21.71 -> Add IP
     192.168.21.72 -> Add IP
@@ -513,6 +542,7 @@ MDM IP Addresses: Enter mdm management ip addresses:
 System ID: You can get System ID by running 
 'sudo /opt/emc/scaleio/sdc/bin/drv_cfg --query_mdms'::
 
+    $ sudo /opt/emc/scaleio/sdc/bin/drv_cfg --query_mdms
     Retrieved 1 mdm(s)
     MDM-ID 65d20822f2b3420f SDC ID 147f83d700000001 INSTALLATION ID 5e9b0766027ccaed IPs [0]-192.168.24.70
 
@@ -531,29 +561,23 @@ Credentials:  Click '+' sign::
 LIA password is the openstack admin password you typed 
 when you run './run.sh vault'.
 
-4. Validation::
+.. image:: ../_static/images/powerflex/05_create_credentials.png
+   :width: 1200
+   :alt: Create Credentials
 
-    Versioning
-        Powerflex version compatibility: Passed
-        Existing PowerFlex version found: R4.0
+4. Validation
 
-Click Next
+.. image:: ../_static/images/powerflex/06_validation.png
+   :width: 1200
+   :alt: Validation
 
-5. Summary::
+Click Next.
 
-    Review the summary and click Finish to complete the initial setup.
-    
-    Compliance
-    Type                    I use RCM or IC to manage other components in my system
-    
-    Installation Type
-    
-    Import                                                  No
-    Which version of PowerFlex is your system running on:   PowerFlex 4.x
-    This PowerFlex instance to be used for:                 Production Storage
-    Metadata Manager (MDM) IP Addresses             192.168.21.71,192.168.21.72
-    System ID                                       65d20822f2b3420f
-    Credentials                                     lia
+5. Summary
+
+.. image:: ../_static/images/powerflex/07_summary.png
+   :width: 1200
+   :alt: Summary
 
 Click Finish.
 
@@ -561,8 +585,23 @@ See Running MGMT Jobs at the top icon.
 There will be jobs running.
 It takes about 2-3 minutes.
 
+.. image:: ../_static/images/powerflex/running_MGMT_jobs.png
+   :width: 1200
+   :alt: Running MGMT jobs
+
+.. image:: ../_static/images/powerflex/jobs.png
+   :width: 1200
+   :alt: Jobs
+
 When it is finished, go to Dashboard and you will see the PFSP information
 (Protection Domains, Storage Pools, Hosts)
+
+.. image:: ../_static/images/powerflex/dashboard.png
+   :width: 1200
+   :alt: Dashboard
+
+Step.7 PowerFlex CSI
+^^^^^^^^^^^^^^^^^^^^
 
 Run powerflex csi playbook.::
 
@@ -584,7 +623,8 @@ And check if powerflex storageclass is created.::
    NAME                  PROVISIONER                RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
    powerflex (default)   csi-vxflexos.dellemc.com   Delete          WaitForFirstConsumer   true                   20h
 
-From now on, the installation process is the same as `The installation guide`.
+From now on, the installation process is the same as 
+:doc:`The offline installation guide <install_offline>`.
 
 Run a patch playbook.::
 
@@ -601,7 +641,4 @@ Run a landing playbook.::
 Run a burrito playbook.::
 
     $ ./run.sh burrito
-
-
-
 
