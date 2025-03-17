@@ -133,6 +133,13 @@ File list::
     -rw-r--r-- 1 clex clex 2.0G Mar 11 16:38 pfmp.qcow2
     -rw-r--r-- 1 clex clex  25G Mar 11 16:38 pfmp.tgz
 
+3. (Online Install Only) Get pfmp_robot.git source on PFMP node.::
+
+    [clex@pfx-pfmp ~]$ git clone https://github.com/iorchard/pfmp_robot.git
+
+This is only needed when installing online.
+You do not need to do when installing offline.
+    
 .. warning::
    **Never proceed to the next step until you've met this PFMP pre-requisite.**
 
@@ -437,7 +444,7 @@ Run install_PFMP.sh script.::
     Are the nodes used for the PFMP cluster, co-res nodes [Y]?:n
     ...
     2025-03-09 07:16:49,740 | INFO | Setting up the cluster
-    74%|####################################                                       |
+    54%|####################################                                       |
 
 
 It will take a long time.
@@ -626,17 +633,29 @@ And check if powerflex storageclass is created.::
 From now on, the installation process is the same as 
 :doc:`The offline installation guide <install_offline>`.
 
+Step.8 Patch
+^^^^^^^^^^^^^^
+
 Run a patch playbook.::
 
     $ ./run.sh patch
+
+Step.9 Registry
+^^^^^^^^^^^^^^^^
 
 Run a registry playbook.::
 
     $ ./run.sh registry
 
+Step.10 Landing
+^^^^^^^^^^^^^^^^
+
 Run a landing playbook.::
 
     $ ./run.sh landing
+
+Step.11 Burrito (OpenStack)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Run a burrito playbook.::
 

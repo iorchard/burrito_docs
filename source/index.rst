@@ -19,8 +19,8 @@ Welcome to Burrito's documentation!
 
    Online Installation <install/install>
    Offline Installation <install/install_offline>
-   Hitachi Storage Setup Guide <install/setup_hitachi_storage>
    PowerFlex Installation <install/install_powerflex>
+   Hitachi Storage Setup Guide <install/setup_hitachi_storage>
 
 .. toctree::
    :caption: Operation

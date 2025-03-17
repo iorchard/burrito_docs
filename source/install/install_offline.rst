@@ -1431,8 +1431,8 @@ You've just finished the installation of burrito kubernetes platform.
 
 Next you will install OpenStack on burrito kubernetes platform.
 
-Step.9 Burrito (OpenStack playbook)
-++++++++++++++++++++++++++++++++++++
+Step.9 Burrito (OpenStack)
++++++++++++++++++++++++++++
 
 The burrito installation step implements the following tasks.
 
