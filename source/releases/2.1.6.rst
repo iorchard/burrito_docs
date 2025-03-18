@@ -1,7 +1,7 @@
-2.1.5 Begonia
+2.1.6 Begonia
 ==============
 
-This is the fifth patch in the Begonia 2.1 series.
+This is the sixth patch in the Begonia 2.1 series.
 
 Notable Changes
 ----------------
@@ -10,6 +10,7 @@ Notable Changes
 
 * Feature(storage): Support PowerFlex version 4.x 
   (PowerFlex Storage and Management Platform)
+  Refer to :doc:`PowerFlex Installation <../install/install_powerflex>`
 
 * Fix: Restore rabbitmq message-ttl config in openstack-helm.
 
