@@ -661,3 +661,11 @@ Run a burrito playbook.::
 
     $ ./run.sh burrito
 
+After you installed all, go to PFMP dashboard again and 
+you can see some activities in dashboard.
+
+.. image:: ../_static/images/powerflex/dashboard2.png
+   :width: 1200
+   :alt: Dashboard2
+
+
