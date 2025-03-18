@@ -1,0 +1,22 @@
+2.1.5 Begonia
+==============
+
+This is the fifth patch in the Begonia 2.1 series.
+
+Notable Changes
+----------------
+
+* Feature(ceph): Support non-default ssh port.
+
+* Feature(storage): Support PowerFlex version 4.x 
+  (PowerFlex Storage and Management Platform)
+
+* Fix: Restore rabbitmq message-ttl config in openstack-helm.
+
+Changelog
+----------
+
+* feature/storage/support powerflex4 (#271); (jijisa@iorchard.net)
+* ceph: support non-default ssh port (#270); (jijisa@iorchard.net)
+* feature/storage/support powerflex4 (#268); (jijisa@iorchard.net)
+

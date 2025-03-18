@@ -146,9 +146,8 @@ There are sample inventory files.
 When you run prepare.sh script, the default hosts.sample is copied to 
 *hosts* file.
 
-If you want to use powerflex, copy one of powerflex inventory files.::
-
-   $ cp hosts_powerflex_hci.sample hosts
+If you want to use powerflex,
+refer to :doc:`PowerFlex Installation <install_powerflex>`.
 
 If you want to use HPE Primera, copy primera inventory file.::
 
@@ -204,119 +203,6 @@ Here are the sample inventory files.
       
       [compute-node]
       compute[1:2]
-      
-      ###################################################
-      ## Do not touch below if you are not an expert!!! #
-      ###################################################
-
-.. collapse:: the powerflex inventory file
-
-   .. code-block::
-      :linenos:
-
-      control1 ip=192.168.21.101 ansible_connection=local ansible_python_interpreter=/usr/bin/python3
-      control2 ip=192.168.21.102
-      control3 ip=192.168.21.103
-      compute1 ip=192.168.21.104
-      compute2 ip=192.168.21.105
-      storage1 ip=192.168.21.106
-      storage2 ip=192.168.21.107
-      storage3 ip=192.168.21.108
-      
-      # ceph nodes
-      [mons]
-      [mgrs]
-      [osds]
-      [rgws]
-      [clients]
-      
-      # powerflex nodes
-      [mdm]
-      storage[1:3]
-      
-      [sds]
-      storage[1:3]
-      
-      [sdc]
-      control[1:3]
-      compute[1:2]
-      
-      [gateway]
-      storage[1:2]
-      
-      [presentation]
-      storage3
-      
-      # kubernetes nodes
-      [kube_control_plane]
-      control[1:3]
-      
-      [kube_node]
-      control[1:3]
-      compute[1:2]
-      
-      # openstack nodes
-      [controller-node]
-      control[1:3]
-      
-      [network-node]
-      control[1:3]
-      
-      [compute-node]
-      compute[1:2]
-      
-      ###################################################
-      ## Do not touch below if you are not an expert!!! #
-      ###################################################
-
-.. collapse:: the powerflex HCI inventory file
-
-   .. code-block::
-      :linenos:
-
-      pfx-1 ip=192.168.21.131 ansible_connection=local ansible_python_interpreter=/usr/bin/python3
-      pfx-2 ip=192.168.21.132
-      pfx-3 ip=192.168.21.133
-      
-      # ceph nodes
-      [mons]
-      [mgrs]
-      [osds]
-      [rgws]
-      [clients]
-      
-      # powerflex nodes
-      [mdm]
-      pfx-[1:3]
-      
-      [sds]
-      pfx-[1:3]
-      
-      [sdc]
-      pfx-[1:3]
-      
-      [gateway]
-      pfx-[1:2]
-      
-      [presentation]
-      pfx-3
-      
-      # kubernetes nodes
-      [kube_control_plane]
-      pfx-[1:3]
-      
-      [kube_node]
-      pfx-[1:3]
-      
-      # openstack nodes
-      [controller-node]
-      pfx-[1:3]
-      
-      [network-node]
-      pfx-[1:3]
-      
-      [compute-node]
-      pfx-[1:3]
       
       ###################################################
       ## Do not touch below if you are not an expert!!! #
@@ -583,43 +469,7 @@ powerflex
 ^^^^^^^^^^
 
 If powerflex is in storage_backends, 
-run lsblk command on storage nodes to get the device names.
-
-.. code-block::
-   :linenos:
-
-   storage1$ lsblk -p
-   NAME        MAJ:MIN RM SIZE RO TYPE MOUNTPOINT
-   /dev/sda      8:0    0  50G  0 disk 
-   └─/dev/sda1   8:1    0  50G  0 part /
-   /dev/sdb      8:16   0  50G  0 disk 
-   /dev/sdc      8:32   0  50G  0 disk 
-   /dev/sdd      8:48   0  50G  0 disk 
-
-In this case, /dev/sda is the OS disk and /dev/sd{b,c,d} are for powerflex
-SDS disks.
-
-Edit group_vars/all/powerflex_vars.yml and add /dev/sd{b,c,d} in it.
-
-.. code-block::
-   :linenos:
-
-   # MDM VIPs on storage networks
-   mdm_ip: 
-     - "192.168.24.100"
-   storage_iface_names:
-     - eth4
-   sds_devices:
-     - /dev/sdb
-     - /dev/sdc
-     - /dev/sdd
-   
-   #
-   # Do Not Edit below
-   #
-
-If you do not know what these variables are, contact a Dell engineer.
-
+go to :doc:`PowerFlex Installation <install_powerflex>`.
 
 HPE Primera
 ^^^^^^^^^^^^
@@ -1088,22 +938,7 @@ And check if netapp storageclass is created.::
    netapp (default)   csi.trident.netapp.io   Delete          Immediate           true                   20h
 
 If powerflex is in storage_backends,
-check if all pods are running and ready in vxflexos namespace.::
-
-   $ sudo kubectl get pods -n vxflexos
-   NAME                                   READY   STATUS    RESTARTS   AGE
-   vxflexos-controller-744989794d-92bvf   5/5     Running   0          18h
-   vxflexos-controller-744989794d-gblz2   5/5     Running   0          18h
-   vxflexos-node-dh55h                    2/2     Running   0          18h
-   vxflexos-node-k7kpb                    2/2     Running   0          18h
-   vxflexos-node-tk7hd                    2/2     Running   0          18h
-
-And check if powerflex storageclass is created.::
-
-   $ sudo kubectl get storageclass powerflex
-   NAME                  PROVISIONER                RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
-   powerflex (default)   csi-vxflexos.dellemc.com   Delete          WaitForFirstConsumer   true                   20h
-
+follow the instructions in :doc:`PowerFlex Installation <install_powerflex>`.
 
 If primera is in storage_backends,
 check if all pods are running and ready in hpe-storage namespace.::
