@@ -1,0 +1,26 @@
+2.1.7 Begonia
+==============
+
+This is the seventh patch in the Begonia 2.1 series.
+
+Notable Changes
+----------------
+
+* Feature(powerflex): Added support for installing on already-prepared 
+  PFMP nodes
+
+* Fix(ingress): upgrade nginx ingress controller to v1.12.1 to fix 
+  the following CVEs
+  
+    - CVE-2025-24513
+    - CVE-2025-24514
+    - CVE-2025-1097
+    - CVE-2025-1098
+    - CVE-2025-1974
+
+Changelog
+----------
+
+* fix(ingress): upgrade nginx ingress controller to v1.12.1 to fix the following CVEs: CVE-2025-24513 CVE-2025-24514 CVE-2025-1097 CVE-2025-1098 CVE-2025-1974; (jijisa@iorchard.net)
+* feature(powerflex): Added support for installing on already-prepared PFMP nodes; (jijisa@iorchard.net)
+

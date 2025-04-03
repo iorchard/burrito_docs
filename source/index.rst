@@ -19,7 +19,10 @@ Welcome to Burrito's documentation!
 
    Online Installation <install/install>
    Offline Installation <install/install_offline>
-   PowerFlex Installation <install/install_powerflex>
+   PowerFlex Installation On A Single Node
+     <install/install_powerflex_single_pfmp_node>
+   PowerFlex Installation On Already-Prepared Nodes
+     <install/install_powerflex_already_prepared_nodes>
    Hitachi Storage Setup Guide <install/setup_hitachi_storage>
 
 .. toctree::
@@ -38,6 +41,7 @@ Welcome to Burrito's documentation!
    :caption: Releases
    :maxdepth: 2
 
+   releases/2.1.7
    releases/2.1.6
    releases/2.1.5
    releases/2.1.4
