@@ -68,10 +68,10 @@ storage3                .108                                     .108
 Pre-requisites
 ---------------
 
-* Rocky Linux 8.x is installed on every node.
 * The python3 package should be already installed on every node.
 * The first node in control group is the ansible deployer.
-* Ansible user in every node has a sudo privilege.
+* Ansible user in every node has a sudo privilege. I assume the ansible user
+  is `clex` in this document.
 * All nodes should be in /etc/hosts on the deployer node.
 
 Here is the example of /etc/hosts on the deployer node.::
@@ -127,7 +127,9 @@ There are sample inventory files.
 * hosts_powerflex.sample:
     This is a sample file using powerflex as a storage backend.
 * hosts_powerflex_hci.sample:
-    This is a sample file using powerflex HCI (Hyper-Converged Infrastructure).
+    This is a sample file using powerflex HCI with a single PFMP node.
+* hosts_powerflex_with_pfmp_nodes.sample:
+    This is a sample file using powerflex HCI with already-prepared PFMP nodes.
 * hosts_hitachi.sample:
     This is a sample file using hitachi as a storage backend.
     But **burrito does not support hitachi storage for online installation.**
@@ -146,8 +148,9 @@ There are sample inventory files.
 When you run prepare.sh script, the default hosts.sample is copied to 
 *hosts* file.
 
-If you want to use powerflex,
-refer to :doc:`PowerFlex Installation <install_powerflex>`.
+If you want to use powerflex as a storage backend,
+go to :doc:`Install PowerFlex with a single PFMP node <install_powerflex_single_pfmp_node>` or
+go to :doc:`Install PowerFlex on Already-Prepared Nodes <install_powerflex_already_prepared_nodes>`.
 
 If you want to use HPE Primera, copy primera inventory file.::
 
@@ -469,7 +472,9 @@ powerflex
 ^^^^^^^^^^
 
 If powerflex is in storage_backends, 
-go to :doc:`PowerFlex Installation <install_powerflex>`.
+go to :doc:`Install PowerFlex with a single PFMP node <install_powerflex_single_pfmp_node>` or
+go to :doc:`Install PowerFlex on Already-Prepared Nodes <install_powerflex_already_prepared_nodes>`.
+
 
 HPE Primera
 ^^^^^^^^^^^^
@@ -635,11 +640,11 @@ Create a vault secret file
 Create a vault file to encrypt passwords.::
 
    $ ./run.sh vault
-   <user> password:
+   clex password:
    openstack admin password:
    Encryption successful
 
-Enter <user> password for ssh connection to other nodes.
+Enter `clex` password for ssh connection to other nodes.
 
 Enter openstack admin password which will be used when you connect to 
 openstack horizon dashboard.
@@ -857,12 +862,11 @@ Create the rpm package tarball powerflex_pkgs.tar.gz in /mnt.
 .. code-block:: shell
 
    $ ls
-   EMC-ScaleIO-gateway-3.6-700.103.x86_64.rpm
-   EMC-ScaleIO-lia-3.6-700.103.el8.x86_64.rpm
-   EMC-ScaleIO-mdm-3.6-700.103.el8.x86_64.rpm
-   EMC-ScaleIO-mgmt-server-3.6-700.101.noarch.rpm
-   EMC-ScaleIO-sdc-3.6-700.103.el8.x86_64.rpm
-   EMC-ScaleIO-sds-3.6-700.103.el8.x86_64.rpm
+   EMC-ScaleIO-activemq-5.18.3-73.noarch.rpm
+   EMC-ScaleIO-lia-4.5-3000.128.el8.x86_64.rpm
+   EMC-ScaleIO-mdm-4.5-3000.128.el8.x86_64.rpm
+   EMC-ScaleIO-sdc-4.5-3000.128.el8.x86_64.rpm
+   EMC-ScaleIO-sds-4.5-3000.128.el8.x86_64.rpm
    $ sudo tar cvzf /mnt/powerflex_pkgs.tar.gz EMC-*.rpm
 
 .. warning::
@@ -936,9 +940,6 @@ And check if netapp storageclass is created.::
    $ sudo kubectl get storageclass netapp
    NAME               PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
    netapp (default)   csi.trident.netapp.io   Delete          Immediate           true                   20h
-
-If powerflex is in storage_backends,
-follow the instructions in :doc:`PowerFlex Installation <install_powerflex>`.
 
 If primera is in storage_backends,
 check if all pods are running and ready in hpe-storage namespace.::
@@ -1089,12 +1090,6 @@ The Burrito installation step implements the following tasks.
 * Deploy nova vnc TLS certificate.
 * Deploy openstack components.
 * Create a nova ssh keypair and copy them on every compute nodes.
-
-.. warning::
-   There is a `cinder as a glance store` bug in powerflex cinder driver.
-   (See `bug report <https://bugs.launchpad.net/cinder/+bug/2068548>`_).
-   So Burrito automatically configure a PVC as a glance store
-   if powerflex is the default storage backend.
 
 Prerequisite for powerstore backend
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

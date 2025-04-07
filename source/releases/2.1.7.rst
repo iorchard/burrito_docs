@@ -21,6 +21,9 @@ Notable Changes
 Changelog
 ----------
 
-* fix(ingress): upgrade nginx ingress controller to v1.12.1 to fix the following CVEs: CVE-2025-24513 CVE-2025-24514 CVE-2025-1097 CVE-2025-1098 CVE-2025-1974; (jijisa@iorchard.net)
-* feature(powerflex): Added support for installing on already-prepared PFMP nodes; (jijisa@iorchard.net)
+* add powerfelx_pfmp and powerflex_csi playbook
+* feature(registry): change registry deployment strategy to Recreate
+* feature: change the way to patch registry (delete and create)
+* upgrade mariadb ingress controller to v1.12.1 in response to CVEs
+* feature/powerflex/support already prepared pfmp nodes (#273)
 

@@ -6,9 +6,9 @@ as a storage backend on the Burrito platform.
 
 There are two platforms in Dell/EMC PowerFlex.
 The first platform is PowerFlex Storage Platform which serves as a core
-storage service. I'll call it **PFSP** from now on.
+storage service. I'll call it **PFSP**.
 The second platform is PowerFlex Management Platform which serves as 
-API and monitoring services. I'll call it **PFMP** from now on.
+API and monitoring services. I'll call it **PFMP**.
 
 I will show you how to install PFSP with Burrito.
 PFSP will be installed in HCI (HyperConverged Infrastructure) mode on the
@@ -76,8 +76,8 @@ pfmp-mvm3       N/A         78           N/A             N/A         78
 
 * N/A means that the machine does not require the interface.
 
-    - pfmp-installer virtual machine only needs the management IP address.
-    - pfmp-mvm virtual machines need the management and storage IP addresses.
+    - pfmp-installer node only needs the management IP address.
+    - pfmp-mvm nodes need the management and storage IP addresses.
 
 When you prepare for the burrito installation with PowerFlex,
 Fill in the above network information for your network environment.
@@ -90,7 +90,7 @@ You should put the following files in the first control plane node
 
 * pfmp.tgz
   
-    - PFMP installation tarball package (Contact your Dell representative 
+    - PFMP installation tarball (Contact your Dell representative 
       to get this file.)
     - File size: 25 GiB
     - When you get this file from Dell, the filename will be something like 
@@ -124,7 +124,10 @@ Here is the example of /etc/hosts on the deployer node.::
     192.168.21.71 pfx-1
     192.168.21.72 pfx-2
     192.168.21.73 pfx-3
-    192.168.21.74 pfx-pfmp
+    192.168.21.75 pfmp-installer
+    192.168.21.76 pfmp-mvm1
+    192.168.21.77 pfmp-mvm2
+    192.168.21.78 pfmp-mvm3
 
 Prepare
 ++++++++
@@ -216,7 +219,7 @@ Edit hosts.::
     ###################################################
 
 The `pfmp` group is empty since it is for a single PFMP node.
-Instead, there are hosts in `pfmp_installer` and `pfmp_mvm` group.
+On the other hand, there are hosts in `pfmp_installer` and `pfmp_mvm` groups.
 
 Edit vars.yml.::
 
@@ -300,7 +303,8 @@ Edit group_vars/all/powerflex_vars.yml.::
     # Do Not Edit below
     #
 
-* The `pfmp_ip` is the first IP address in LoadBalancer management pool.
+* The `mdm_ip` is the VIP of PowerFlex MDM cluster.
+* The `pfmp_ip` is the first IP address in PFMP LoadBalancer management pool.
 * The `pfmp_hostname` is the PFMP hostname which is used when you connect to
   PFMP UI with your browser.
 * The `pfmp_password` is the PFMP admin password you will set after finishing
@@ -313,11 +317,11 @@ Create a vault secret file
 Create a vault file to encrypt passwords.::
 
    $ ./run.sh vault
-   <user> password:
+   clex password:
    openstack admin password:
    Encryption successful
 
-Enter <user> password for ssh connection to other nodes.
+Enter `clex` password for ssh connection to other nodes.
 
 Enter openstack admin password which will be used when you connect to
 openstack horizon dashboard.
@@ -339,7 +343,7 @@ There should be no *failed* tasks in *PLAY RECAP* on each playbook run.
 Each step has a verification process, so be sure to verify
 before proceeding to the next step.
 
-Verification processes are skipped in this document.
+Verification processes are not shown in this document.
 See `The Offline Installation` document for a
 verification process in each step.
 
@@ -363,7 +367,7 @@ Run a HA stack playbook.::
 Step.3 PowerFlex PFMP
 ^^^^^^^^^^^^^^^^^^^^^^
 
-Install PFMP on the already prepared virtual machines.
+Install PFMP on the already prepared nodes (pfmp-installer, pfmp-mvm{1,2,3}).
 
 Run a powerflex_pfmp playbook.::
 
@@ -414,8 +418,9 @@ Run install_PFMP.sh script.::
     2025-03-09 07:16:49,740 | INFO | Setting up the cluster
     54%|####################################                                       |
 
+It asks a few questions. Answer them as above.
 
-It will take a long time.
+It will take a long time to finish the installation.
 It creates a kubernetes cluster on pfmp-mvm nodes and installs
 PFMP application pods on the kubernetes cluster.
 
@@ -441,7 +446,7 @@ Run a storage playbook.::
 Step.6 PFMP Importing PFSP
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Now go back to pfmp-installer and wait until install_PFMP.sh script is 
+Go back to pfmp-installer and wait until install_PFMP.sh script is 
 finished.
 
 This is the shell output when it's done.::
@@ -473,7 +478,7 @@ Add pfmp.cluster.local IP address in /etc/hosts on your laptop.::
 
 Open your browser and go to https://pfmp.cluster.local/.
 It will give you a warning about security issue since the TLS certificate is
-a self-signed certificate. Go ahead and accept the risk. Then you will see the
+a self-signed certificate. Accept the risk and go ahead. Then you will see the
 PFMP login page.
 
 The ID is `admin` and the default password is `Admin123!`.
@@ -521,7 +526,8 @@ System ID: You can get System ID by running
     Retrieved 1 mdm(s)
     MDM-ID 65d20822f2b3420f SDC ID 147f83d700000001 INSTALLATION ID 5e9b0766027ccaed IPs [0]-192.168.24.70
 
-MDM-ID is the System ID. Type MDM-ID in System ID text box.
+MDM-ID (65d20822f2b3420f) is the System ID.
+Type your MDM-ID in System ID text box.
 
 Credentials:  Click '+' sign::
 
@@ -568,7 +574,7 @@ It takes about 2-3 minutes.
    :width: 1200
    :alt: Jobs
 
-When it is finished, go to Dashboard and you will see the PFSP information
+When it is finished, go to the dashboard and you will see the PFSP information
 (Protection Domains, Storage Pools, Hosts)
 
 .. image:: ../_static/images/powerflex/dashboard.png
@@ -578,7 +584,7 @@ When it is finished, go to Dashboard and you will see the PFSP information
 Step.7 PowerFlex CSI
 ^^^^^^^^^^^^^^^^^^^^
 
-Run powerflex csi playbook.::
+Run a powerflex csi playbook.::
 
     $ ./run.sh powerflex_csi
 
@@ -629,8 +635,8 @@ Run a burrito playbook.::
 
     $ ./run.sh burrito
 
-After you installed all, go to PFMP dashboard again and 
-you can see some activities in dashboard.
+After you've installed all, go back to the PFMP dashboard.
+You can see some activity on the dashboard.
 
 .. image:: ../_static/images/powerflex/dashboard2.png
    :width: 1200

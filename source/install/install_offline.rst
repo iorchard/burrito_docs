@@ -138,18 +138,14 @@ There are sample inventory files.
 
 * hosts.sample (default):
     This is a sample file using ceph as a storage backend.
-* hosts_powerflex.sample:
-    This is a sample file using powerflex as a storage backend.
 * hosts_powerflex_hci.sample:
-    This is a sample file using powerflex HCI (Hyper-Converged Infrastructure).
+    This is a sample file using powerflex HCI with a single PFMP node.
+* hosts_powerflex_with_pfmp_nodes.sample: 
+    This is a sample file using powerflex HCI with already-prepared PFMP nodes.
 * hosts_hitachi.sample:
     This is a sample file using hitachi as a storage backend.
 * hosts_primera.sample:
     This is a sample file using HPE Primera as a storage backend.
-
-.. warning::
-    You need to get the powerflex rpm packages from Dell if you want to install
-    PowerFlex.
 
 .. warning::
     You need to get the hitachi container images from Hitachi if you want to 
@@ -162,8 +158,9 @@ There are sample inventory files.
 When you run prepare.sh script, the default hosts.sample is copied to 
 *hosts* file.
 
-If you want to use powerflex storage,
-refer to :doc:`PowerFlex Installation <install_powerflex>`.
+If you want to use powerflex as a storage backend,
+go to :doc:`Install PowerFlex with a single PFMP node <install_powerflex_single_pfmp_node>` or
+go to :doc:`Install PowerFlex on Already-Prepared Nodes <install_powerflex_already_prepared_nodes>`.
 
 If you want to use hitachi storage, copy hitachi inventory file.::
 
@@ -745,11 +742,11 @@ Create a vault secret file
 Create a vault file to encrypt passwords.::
 
    $ ./run.sh vault
-   <user> password:
+   clex password:
    openstack admin password:
    Encryption successful
 
-Enter <user> password for ssh connection to other nodes.
+Enter `clex` password for ssh connection to other nodes.
 
 Enter openstack admin password which will be used when you connect to 
 openstack horizon dashboard.
@@ -1030,9 +1027,6 @@ And check if netapp storageclass is created.::
    NAME               PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
    netapp (default)   csi.trident.netapp.io   Delete          Immediate           true                   20h
 
-If powerflex is in storage_backends,
-follow the instructions in :doc:`PowerFlex Installation <install_powerflex>`.
-
 If primera is in storage_backends,
 check if all pods are running and ready in hpe-storage namespace.::
 
@@ -1278,12 +1272,6 @@ The burrito installation step implements the following tasks.
 * Deploy nova vnc TLS certificate.
 * Deploy OpenStack components.
 * Create a nova ssh keypair and copy them on every compute nodes.
-
-.. warning::
-   There is a `cinder as a glance store` bug in powerflex cinder driver.
-   (See `bug report <https://bugs.launchpad.net/cinder/+bug/2068548>`_).
-   So Burrito automatically configure a PVC as a glance store
-   if powerflex is the default storage backend.
 
 Prerequisite for powerstore backend
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

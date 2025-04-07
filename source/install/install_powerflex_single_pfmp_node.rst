@@ -6,14 +6,14 @@ as a storage backend on the Burrito platform.
 
 There are two platforms in Dell/EMC PowerFlex.
 The first platform is PowerFlex Storage Platform which serves as a core
-storage service. I'll call it **PFSP** from now on.
+storage service. I'll call it **PFSP**.
 The second platform is PowerFlex Management Platform which serves as 
-API and monitoring services. I'll call it **PFMP** from now on.
+API and monitoring services. I'll call it **PFMP**.
 
 We will show you how to install PFSP and PFMP with Burrito.
 PFSP will be installed in HCI (HyperConverged Infrastructure) mode on the
 Burrito platform.
-PFMP will be installed as virtual machines on KVM hypervisor node.
+PFMP will be installed on virtual machines in KVM hypervisor node.
 
 So you must have at least four available machines - 3 PFSPs and 1 PFMP.
 
@@ -32,7 +32,7 @@ pfx-3      8               16           50          100GB * 3 ea
 
 Those extra disks will be used by PowerFlex SDS.
 
-A PFMP node will run 4 virtual machines so it needs more resources.
+A PFMP node will run four virtual machines so it needs more resources.
 Here is the minimum hardware spec. for a PFMP node.
 
 =========  ============ ============ ============ ===================
@@ -88,7 +88,7 @@ Pre-requisite for PFMP
 -----------------------
 
 1. You should set up two bridges on a PFMP node to make the virtual machines
-   on a PFMP communicate with PFSP nodes.
+   communicate with PFSP nodes.
 
 * br_mgmt: a bridge on the management interface
 * br_storage: a bridge on the storage interface
@@ -105,11 +105,12 @@ Here are the example network setup on a PFMP node.::
 The eth0 is the physical interface attached to the br_mgmt bridge.
 The eth1 is the physical interface attached to the br_storage bridge.
 
-2. You should put the following files in clex@pfx-pfmp:~/images/ directory.
+2. You should put the following files in the PFMP node 
+   (clex@pfx-pfmp:~/images/) directory.
 
 * pfmp.tgz
   
-    - PFMP installation tarball package (Contact your Dell representative 
+    - PFMP installation tarball (Contact your Dell representative 
       to get this file.)
     - File size: 25 GiB
     - When you get this file from Dell, the filename will be something like 
@@ -329,6 +330,7 @@ Edit group_vars/all/powerflex_vars.yml.::
     # Do Not Edit below
     #
 
+* The `mdm_ip` is the VIP of PowerFlex MDM cluster.
 * The `pfmp_ip` is the first IP address in LoadBalancer management pool.
 * The `pfmp_hostname` is the PFMP hostname which is used when you connect to
   PFMP UI with your browser.
@@ -340,11 +342,11 @@ Create a vault secret file
 Create a vault file to encrypt passwords.::
 
    $ ./run.sh vault
-   <user> password:
+   clex password:
    openstack admin password:
    Encryption successful
 
-Enter <user> password for ssh connection to other nodes.
+Enter `clex` password for ssh connection to other nodes.
 
 Enter openstack admin password which will be used when you connect to
 openstack horizon dashboard.
@@ -366,7 +368,7 @@ There should be no *failed* tasks in *PLAY RECAP* on each playbook run.
 Each step has a verification process, so be sure to verify
 before proceeding to the next step.
 
-Verification processes are skipped in this document.
+Verification processes are not shown in this document.
 See `The Offline Installation` document for a
 verification process in each step.
 
@@ -453,6 +455,8 @@ Run install_PFMP.sh script.::
     54%|####################################                                       |
 
 
+It asks a few questions. Answer them as above.
+
 It will take a long time.
 It creates a kubernetes cluster on pfmp-mvm virtual machines and installs
 PFMP application pods on the kubernetes cluster.
@@ -479,7 +483,7 @@ Run a storage playbook.::
 Step.6 PFMP Importing PFSP
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Now go back to pfmp-installer and wait until install_PFMP.sh script is 
+Go back to pfmp-installer and wait until install_PFMP.sh script is 
 finished.
 
 This is the shell output when it's done.::
@@ -511,7 +515,7 @@ Add pfmp.cluster.local IP address in /etc/hosts on your laptop.::
 
 Open your browser and go to https://pfmp.cluster.local/.
 It will give you a warning about security issue since the TLS certificate is
-a self-signed certificate. Go ahead and accept the risk. Then you will see the
+a self-signed certificate. Accept the risk and go ahead. Then you will see the
 PFMP login page.
 
 The ID is `admin` and the default password is `Admin123!`.
@@ -606,7 +610,7 @@ It takes about 2-3 minutes.
    :width: 1200
    :alt: Jobs
 
-When it is finished, go to Dashboard and you will see the PFSP information
+When it is finished, go to the dashboard and you will see the PFSP information
 (Protection Domains, Storage Pools, Hosts)
 
 .. image:: ../_static/images/powerflex/dashboard.png
@@ -667,8 +671,8 @@ Run a burrito playbook.::
 
     $ ./run.sh burrito
 
-After you installed all, go to PFMP dashboard again and 
-you can see some activities in dashboard.
+After you've installed all, go back to the PFMP dashboard and 
+you can see some activity on the dashboard.
 
 .. image:: ../_static/images/powerflex/dashboard2.png
    :width: 1200
