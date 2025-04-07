@@ -23,7 +23,7 @@ Get the ingress-nginx controller v1.12.1 image.::
     $ sudo ctr -n k8s.io images pull \
         registry.k8s.io/ingress-nginx/controller:v1.12.1
 
-Exrpot the image to the tarball file.::
+Export the image as a tarball.::
 
     $ sudo ctr -n k8s.io images export ingress-nginx-v1.12.1.tar \
         registry.k8s.io/ingress-nginx/controller:v1.12.1
