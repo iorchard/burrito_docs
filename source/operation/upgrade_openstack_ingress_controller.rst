@@ -1,5 +1,5 @@
-Upgrade OpenStack Ingress Controller
-=====================================
+Upgrade Ingress Controller 
+===========================
 
 The version of nginx ingress controller in Burrito Aster Series is v1.1.3.
 
@@ -14,6 +14,9 @@ Several vulnerabilities are found in nginx ingress controller.
 You should upgrade it to at least v1.11.5 or v1.12.1.
 
 This is a guide about how to upgrade ingress controller to v1.12.1.
+
+Prepare Image
+--------------
 
 Get the ingress-nginx controller v1.12.1 image.::
 
@@ -41,6 +44,9 @@ Push the tagged image to your local registry.::
     $ sudo ctr -n k8s.io images push --skip-verify --platform linux/amd64 \
         <keepalived_vip>:5000/ingress-nginx/controller:v1.12.1
 
+Patch helm charts
+------------------
+
 Download :download:`a new ingress helm chart tarball
 <../_static/aster_ingress_helm_chart_upgrade.tar.gz>`.
 
@@ -52,6 +58,9 @@ Back up your current ingress helm chart.::
 Put the tarball in your burrito directory and extract it.::
 
     $ tar xvzf aster_ingress_helm_chart_upgrade.tar.gz
+
+Upgrade OpenStack Ingress Controller
+-------------------------------------
 
 Edit roles/burrito.openstack/templates/osh_infra/ingress.yml.j2.::
 
@@ -85,5 +94,35 @@ Check the ingress controller has a new version.::
       nginx version: nginx/1.25.5
     
     -------------------------------------------------------------------------------
+
+Upgrade MariaDB Ingress Controller
+-------------------------------------
+
+Edit roles/burrito.openstack/templates/osh_infra/mariadb.yml.j2.::
+
+    images:
+      tags:
+        ...
+        ingress: .../ingress-nginx/controller:v1.12.1
+                                              ^^^^^^^- changed image tag here
+
+Uninstall and install mariadb.::
+
+    $ ./scripts/burrito.sh uninstall mariadb
+    $ ./scripts/burrito.sh install mariadb
+
+
+Check the ingress controller has a new version.::
+
+    root@btx-0:/# k exec mariadb-ingress-5885866bb4-6p2pp -c ingress -- /nginx-ingress-controller --version
+    -------------------------------------------------------------------------------
+    NGINX Ingress controller
+      Release:       v1.12.1
+      Build:         51c2b819690bbf1709b844dbf321a9acf6eda5a7
+      Repository:    https://github.com/kubernetes/ingress-nginx
+      nginx version: nginx/1.25.5
+
+    -------------------------------------------------------------------------------
+
 
 That's all.
