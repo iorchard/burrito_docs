@@ -1,5 +1,5 @@
-Install PowerFlex on Already-Prepared Nodes
-============================================
+Install PowerFlex on Already-Prepared PFMP Nodes
+=================================================
 
 This document provides the installation guide for using Dell/EMC PowerFlex4 
 as a storage backend on the Burrito platform.
