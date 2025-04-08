@@ -25,7 +25,7 @@ Welcome to Burrito's documentation!
    :caption: Operation
    :maxdepth: 2
 
-   operation/upgrade_openstack_ingress_controller
+   operation/upgrade_ingress_controller
    operation/errata
    operation/openstack_volume_resize
    operation/install_asklepios
