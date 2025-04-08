@@ -68,13 +68,13 @@ Edit roles/burrito.openstack/templates/osh_infra/ingress.yml.j2.::
       tags:
         ...
         ingress: .../ingress-nginx/controller:v1.12.1
-                                              ^^^^^^^- changed image tag here
+                                             #^^^^^^^- changed image tag here
     deployment:
       type: StatefulSet
-      cluster:                                  -
-        class: "nginx"                           |
-        ingressClassByName: false                |- added these four lines
-        controllerClass: "k8s.io/nginx-ingress" -
+      cluster:                                  #-
+        class: "nginx"                          # |
+        ingressClassByName: false               # |- added these four lines
+        controllerClass: "k8s.io/nginx-ingress" #-
     network:
       host_namespace: true
 
