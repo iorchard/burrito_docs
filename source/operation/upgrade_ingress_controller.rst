@@ -41,19 +41,19 @@ it will be *<keepalived_vip>:5000*.::
 
 Push the tagged image to your local registry.::
 
-    $ sudo ctr -n k8s.io images push --skip-verify --platform linux/amd64 \
+    $ sudo ctr -n k8s.io images push --plain-http --platform linux/amd64 \
         <keepalived_vip>:5000/ingress-nginx/controller:v1.12.1
 
 Patch helm charts
 ------------------
 
-Download :download:`a new ingress helm chart tarball
-<../_static/aster_ingress_helm_chart_upgrade.tar.gz>`.
-
 Back up your current ingress helm chart.::
 
     $ cd burrito-<version>
-    $ mv openstack-helm-infra/ingress openstack-helm-ingra/ingress.bak
+    $ mv openstack-helm-infra/ingress openstack-helm-infra/ingress.bak
+
+Download :download:`a new ingress helm chart tarball
+<../_static/aster_ingress_helm_chart_upgrade.tar.gz>`.
 
 Put the tarball in your burrito directory and extract it.::
 
@@ -78,9 +78,8 @@ Edit roles/burrito.openstack/templates/osh_infra/ingress.yml.j2.::
     network:
       host_namespace: true
 
-Uninstall and install the ingress controller.::
+Install the new openstack ingress.::
 
-    $ ./scripts/burrito.sh uninstall ingress
     $ ./scripts/burrito.sh install ingress
 
 Check the ingress controller has a new version.::
@@ -106,13 +105,11 @@ Edit roles/burrito.openstack/templates/osh_infra/mariadb.yml.j2.::
         ingress: .../ingress-nginx/controller:v1.12.1
                                               ^^^^^^^- changed image tag here
 
-Uninstall and install mariadb.::
+Install a new mariadb ingress.::
 
-    $ ./scripts/burrito.sh uninstall mariadb
     $ ./scripts/burrito.sh install mariadb
 
-
-Check the ingress controller has a new version.::
+Check the mariadb ingress controller has a new version.::
 
     root@btx-0:/# k exec mariadb-ingress-5885866bb4-6p2pp -c ingress -- /nginx-ingress-controller --version
     -------------------------------------------------------------------------------
