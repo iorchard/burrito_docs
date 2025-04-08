@@ -26,7 +26,7 @@ Welcome to Burrito's documentation!
    :caption: Operation
    :maxdepth: 2
 
-   operation/upgrade_openstack_ingress_controller
+   operation/upgrade_ingress_controller
    operation/upgrade_from_2.0.x
    operation/openstack_volume_resize
    operation/openstack_ha_test
