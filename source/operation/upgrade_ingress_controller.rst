@@ -1,5 +1,5 @@
-Upgrade OpenStack Ingress Controller
-=====================================
+Upgrade Ingress Controller
+===========================
 
 The version of nginx ingress controller in Burrito Begonia Series is v1.8.2.
 
