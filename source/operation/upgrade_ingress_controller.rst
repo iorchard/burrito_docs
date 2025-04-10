@@ -41,6 +41,10 @@ it will be *<keepalived_vip>:5000*.::
 
 Push the tagged image to your local registry.::
 
+    ## for begonia 2.0.x
+    $ sudo ctr -n k8s.io images push --plain-http --platform linux/amd64 \
+        <keepalived_vip>:5000/ingress-nginx/controller:v1.12.1
+    ## for begonia 2.1.0 - 2.1.6
     $ sudo ctr -n k8s.io images push --skip-verify --platform linux/amd64 \
         <keepalived_vip>:5000/ingress-nginx/controller:v1.12.1
 
