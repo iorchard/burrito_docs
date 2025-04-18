@@ -56,7 +56,7 @@ Patch nova-instances PV to add mountOptions.::
 
 Add volumeName in openstack-helm/nova/templates/pvc-instances.yaml.::
 
-    $ vi roles/burrito.openstack/templates/osh/nova.yml.j2
+    $ vi openstack-helm/nova/templates/pvc-instances.yaml
     ...
     spec:
       accessModes: [ "ReadWriteMany" ]
@@ -119,6 +119,8 @@ Step6. Install Nova
 Install a nova helm chart.::
 
     $ ./scripts/burrito.sh install nova
+
+Wait until all nova pods are ready and running.
 
 Step7. Check if nconnect is applied
 -------------------------------------
