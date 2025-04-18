@@ -25,6 +25,7 @@ Welcome to Burrito's documentation!
    :caption: Operation
    :maxdepth: 2
 
+   operation/setup_nfs_nconnect
    operation/upgrade_ingress_controller
    operation/errata
    operation/openstack_volume_resize
