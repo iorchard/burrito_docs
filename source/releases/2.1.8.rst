@@ -1,0 +1,26 @@
+2.1.8 Begonia
+==============
+
+This is the 8th patch in the Begonia 2.1 series.
+
+Notable Changes
+----------------
+
+Apache2 security configuration and upgrade mariadb to the latest patch level.
+
+* Set LimitRequestBody on apache configuration to prevent
+  Denial of Service attacks.
+* Set ServerTokens to Prod on apache configuration to hide the version
+  information.
+* Set ServerSignature to Off on apache configuration to hide
+  the server information on the error page.
+* Upgrade the mariadb version to 10.11.13 which is the latest version at
+  the moment.
+
+Changelog
+----------
+
+* remove runsc off of bin.txt
+* script: add close action in milestone script
+* feature/begonia/security hardening (#276)
+
