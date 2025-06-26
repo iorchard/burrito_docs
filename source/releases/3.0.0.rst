@@ -1,0 +1,122 @@
+3.0.0 Camellia
+==============
+
+This is the first release in the Camellia 3.0 series.
+
+Notable Changes
+----------------
+
+Upgrades
++++++++++
+
+* Upgrade OS to Rocky Linux 9.6.
+* Upgrade kubernetes to 1.32.5.
+* Upgrade openstack to 2024.1 (Caracal).
+* Upgrade ceph to 19.2.2 (squid).
+* Upgrade btx to 3.0.0.
+
+New
+++++
+
+* The default neutron ML2 driver is OVN.
+* Mariadb controller is added for mariadb HA service.
+
+
+Deprecate
+++++++++++
+
+* Deprecate nova_vnc_cert submodule playbook.
+  It is replaced by OpenStack-Helm nova chart.
+  It will be removed in the future release.
+* Deprecate nova_compute_sshkey_copy submodule playbook.
+  It is replaced by OpenStack-Helm nova chart.
+  It will be removed in the future release.
+
+Removed
+++++++++
+
+* ML2/LinuxBridge is not supported any more.
+* Mariadb ingress controller is removed (Replaced by mariadb controller).
+
+Changelog
+----------
+
+* openstack(mariadb): add service and mgmt cidr to mariadb netpol
+* openstack(cinder): set cinder-volume replica to 1
+* descheduler: add a variable install_descheduler(default: false)
+* descheduler: remove Role and RoleBinding in rbac.yaml
+* common: add python3-libselinux in prerequiresite package
+* remove runsc off of bin.txt
+* script: add close action in milestone script
+* feature/begonia/security hardening (#276)
+* descheduler: upgrade to 0.32.1
+* openstack(ovn): Set db and northd to a single replica
+* script: remove curl download in create_tarball.sh
+* openstack(neutron): fix tenant_network_types
+* openstack(neutron): metadata_proxy_shared_secret in vault
+* openstack(glance): modify useHostNetwork.api in glance.yml.j2
+* openstack(neutron): add ovn_metadata_agent TLS configuration; set ovn_db_sync mode to repair
+* openstack(nova): add security.conf in apache configuration
+* openstack(neutron): use public endpoint for metadata service
+* mariadb: upgrade version to 10.11.13
+* openstack-helm: update version information
+* openstack(ovn): add ovn_controller_gw label
+* ansible: modify hosts.sample to update node_labels
+* openstack(ovn): Change PVC mountpoint from /etc/ovn to /var/lib/ovn where db file is
+* openstack(neutron): add neutron_ovn_db_sync image entry in neutron.yml.j2
+* openstack: keep the order of item list in osh_infra_charts and osh_charts
+* openstack(neutron): add {runtime,priority}ClassName for cron-job-ovn-db-sync
+* openstack-helm: add neutron ovn db sync in configmap-bin.yaml
+* openstack-helm: add _kubernetes_pod_priority_class.tpl in helm-toolkit
+* openstack(neutron): Add ovn db sync cron job
+* openstack(mariadb): move db_acl_cidrs variable to defaults/main
+* openstack(mariadb): add db_acl_cidrs
+* openstack(mariadb): add network policy
+* openstack(libvirt): add kubectl image url
+* openstack(mariadb): support multiple db acl cidr
+* fix(nova): add back instances_path in nova conf
+* update netapp_vars.yml
+* add openstack-helm git commit ID in VERSIONS
+* update btx submodule to 3.0.0
+* update VERSIONS file
+* add csi-powerstore helm chart files which were missing
+* vars: update versions
+* patch: include 02, 03, 04 patch files
+* update genesisregistry and localrepo roles
+* patch: comment out validate in kubeadm-secondary.yml
+* patches: update 02, 03, 04 patch files
+* update download url variables
+* update kubelet csr approver version in vars.yml.sample
+* upgrade kubelet-csr-approver to 1.2.10
+* prepare.sh: bump up python version to 3.12
+* vars: override coredns_deployment_nodeselector variable to run coredns pods on control plane nodes
+* openstack(nova): fix ssh keypair variables
+* update image list
+* update binary and image list files
+* vars: update variables
+* burrito.openstack: add openvswitch in osh_infra chart group
+* openstack(mariadb): remove backup variables
+* openstack(openvswitch): fix --remote parameter value
+* openstack(nova): add --yes-i-really-mean-it in storage init script
+* remove --apiserver-count from kube-apiserver manifest since it is deprecated
+* ceph: fix templating tasks
+* add nova ssh public/private keys in vault
+* install helm-diff plugin for online installation
+* nova: add nova-compute-ssh configuration
+* upgrade ceph_version variable to v19.2.2
+* add never tag to nova_vnc_cert and nova_compute_sshkey_copy playbook since they are replaced by openstack-helm chart
+* upgrade kubespray to v2.28.0 and k8s v1.32.5
+* upgrade openstack-helm charts and burrito.openstack role
+* update mariadb chart
+* ceph: bump up to v19.2.1
+* ceph: bump up to v19.2.1
+* update ceph-provisioners openstack-helm chart
+* update nova_vnc_cert submodule
+* Update vars files to support Rocky Linux 9
+* update vars.yml.sample
+* update patch.sh script to exclude 02,03,04 patch files
+* update bin.txt and images.txt
+* openstack: upgrade to 2024.1 (Caracal)
+* ceph: upgrade version to v19.2.0
+* update dellemc.powerflex version from 1.7.0 to 2.6.0 in pfx_requirements.yml
+* kubespray: update patches

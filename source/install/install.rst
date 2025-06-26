@@ -6,8 +6,7 @@ This is a guide to install Burrito online.
 Supported OS
 -------------
 
-* Debian 12 (Bookworm)
-* Rocky Linux 8.x
+* Rocky Linux 9.x
 
 System requirements
 --------------------
@@ -304,6 +303,11 @@ Edit vars.yml
    # Only one IP: 192.168.20.95/32
    metallb_ip_range: "192.168.20.95-192.168.20.98"
    
+   ### descheduler
+   # https://github.com/kubernetes-sigs/descheduler
+   # To install descheduler, change it to true (default: false)
+   install_descheduler: false
+      
    ### storage
    # storage backends
    # If there are multiple backends, the first one is the default backend.
@@ -365,7 +369,7 @@ keepalived_vip_svc (optional)
 
 metallb_enabled (default: false)
   Set true to use metallb LoadBalancer.
-  (See ` what is metallb? <https://metallb.universe.tf/>`_)
+  (See `what is metallb? <https://metallb.universe.tf/>`_)
 
 metallb_ip_range
   Set metallb LoadBalancer IP range or cidr notation.
@@ -373,6 +377,10 @@ metallb_ip_range
   * IP range: 192.168.20.95-192.168.20.98 (4 IPs can be assigned.)
   * CIDR: 192.168.20.128/26 (192.168.20.128 - 191 can be assigned.)
   * Only one IP: 192.168.20.95/32 (192.168.20.95 can be assigned.)
+
+install_descheduler
+  Set true to install descheduler.
+  (See `what is descheduler? <https://github.com/kubernetes-sigs/descheduler>`_)
 
 storage_backends
   List of the supported storage backends
@@ -1018,6 +1026,7 @@ Step.6 Patch
 
 The Patch installation step implements the following tasks.
 
+* Install descheduler if *install_descheduler* is true.
 * Install asklepios auto-healing service.
 * Patch kube-apiserver.
 
@@ -1195,29 +1204,22 @@ Check openstack volume service status.::
 Check openstack network agent status.::
 
    root@btx-0:/# openstack network agent list
-   +--------------------------------------+--------------------+----------+-------------------+-------+-------+---------------------------+
-   | ID                                   | Agent Type         | Host     | Availability Zone | Alive | State | Binary                    |
-   +--------------------------------------+--------------------+----------+-------------------+-------+-------+---------------------------+
-   | 0b4ddf14-d593-44bb-a0aa-2776dfc20dc9 | Metadata agent     | control1 | None              | :-)   | UP    | neutron-metadata-agent    |
-   | 189c6f4a-4fad-4962-8439-0daf400fcae0 | DHCP agent         | control3 | nova              | :-)   | UP    | neutron-dhcp-agent        |
-   | 22b0d873-4192-41ad-831b-0d468fa2e411 | Metadata agent     | control3 | None              | :-)   | UP    | neutron-metadata-agent    |
-   | 4e51b0a0-e38a-402e-bbbd-5b759130220f | Linux bridge agent | compute1 | None              | :-)   | UP    | neutron-linuxbridge-agent |
-   | 56e43554-47bc-45c8-8c46-fb2aa0557cc0 | DHCP agent         | control1 | nova              | :-)   | UP    | neutron-dhcp-agent        |
-   | 7f51c2b7-b9e3-4218-9c7b-94076d2b162a | Linux bridge agent | compute2 | None              | :-)   | UP    | neutron-linuxbridge-agent |
-   | 95d09bfd-0d71-40d4-a5c2-d46eb640e967 | DHCP agent         | control2 | nova              | :-)   | UP    | neutron-dhcp-agent        |
-   | b76707f2-f13c-4f68-b769-fab8043621c7 | Linux bridge agent | control3 | None              | :-)   | UP    | neutron-linuxbridge-agent |
-   | c3a6a32c-cbb5-406c-9b2f-de3734234c46 | Linux bridge agent | control1 | None              | :-)   | UP    | neutron-linuxbridge-agent |
-   | c7187dc2-eea3-4fb6-a3f6-1919b82ced5b | Linux bridge agent | control2 | None              | :-)   | UP    | neutron-linuxbridge-agent |
-   | f0a396d3-8200-41c3-9057-5d609204be3f | Metadata agent     | control2 | None              | :-)   | UP    | neutron-metadata-agent    |
-   +--------------------------------------+--------------------+----------+-------------------+-------+-------+---------------------------+
+   +------------+------------+----------+-------------------+-------+-------+------------+
+   | ID         | Agent Type | Host     | Availability Zone | Alive | State | Binary     |
+   +------------+------------+----------+-------------------+-------+-------+------------+
+   | 23a2fd31-  | OVN        | compute2 | nova              | :-)   | UP    | ovn-       |
+   | a6be-47cd- | Controller |          |                   |       |       | controller |
+   | 836b-      | Gateway    |          |                   |       |       |            |
+   | c2f5b4a649 | agent      |          |                   |       |       |            |
+   | d2         |            |          |                   |       |       |            |
+   | f8973878-  | OVN        | compute1 | nova              | :-)   | UP    | ovn-       |
+   | 13f2-4b47- | Controller |          |                   |       |       | controller |
+   | b011-      | Gateway    |          |                   |       |       |            |
+   | 59aaf3272f | agent      |          |                   |       |       |            |
+   | 44         |            |          |                   |       |       |            |
+   +------------+------------+----------+-------------------+-------+-------+------------+
 
 * All agents should be :-) and UP.
-* If you set overlay_iface_name to null, there is no 'L3 agent' in Agent Type
-  column.
-* If you set is_ovs to false, there should be 'Linux bridge agent' in Agent
-  Type column.
-* If you set is_ovs to true, there should be 'Open vSwitch agent' in Agent
-  Type column.
 
 
 Check openstack compute service status.::
