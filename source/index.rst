@@ -40,16 +40,5 @@ Welcome to Burrito's documentation!
    :caption: Releases
    :maxdepth: 2
 
-   releases/2.1.8
-   releases/2.1.7
-   releases/2.1.6
-   releases/2.1.5
-   releases/2.1.4
-   releases/2.1.3
-   releases/2.1.2
-   releases/2.1.1
-   releases/2.1.0
-   releases/2.0.9
-   releases/2.0.8
-   releases/2.0.7
+   releases/3.0.0
 
