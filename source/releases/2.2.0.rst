@@ -1,0 +1,28 @@
+2.2.0 Begonia
+==============
+
+This is the first release in the Begonia 2.2 series.
+
+Notable Changes
+----------------
+
+* Upgrade kubernetes from v1.30.3 to v1.31.9.
+
+* Upgrade ceph from 18.2.1 to 18.2.7. 
+
+* Fixed some bugs in horizon.
+
+  - 500 Internal Server error 
+    `issue 278 <https://github.com/iorchard/burrito/issues/278>`_
+  - csrf token missing error
+    `issue 284 <https://github.com/iorchard/burrito/issues/284>`_
+
+Changelog
+----------
+
+* fix(horizon): set csrf_cookie_httponly to False to fix csrf token missing error
+* fix(begonia ceph): check all monitors are up before client tasks (#292)
+* fix(horizon): update policy files to nuke deprecated warnings (#291)
+* feature/k8s/upgrade to v1.31.x (#289)
+* feature(ceph): upgrade to 18.2.7 (#282)
+
