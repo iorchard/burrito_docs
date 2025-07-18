@@ -1,0 +1,27 @@
+3.0.1 Camellia
+==============
+
+This is the first patch in the Camellia 3.0 series.
+
+Notable Changes
+----------------
+
+* Fixed some bugs in horizon.
+
+  - 500 Internal Server error 
+    `issue 278 <https://github.com/iorchard/burrito/issues/278>`_
+  - csrf token missing error
+    `issue 284 <https://github.com/iorchard/burrito/issues/284>`_
+
+* Fix novnc console error due to client TLS certificate validation in qemu vnc.
+  `issue 279 <https://github.com/iorchard/burrito/issues/279>`_
+
+
+Changelog
+----------
+
+* fix(ceph): add a task to check if all monitors is up (#288)
+* fix/openstack/horizon csrf token missing (#285)
+* fix/openstack/novnc proxy vnc console error (#280)
+* openstack(horizon): fix horizon 500 (Internal Server Error)
+
