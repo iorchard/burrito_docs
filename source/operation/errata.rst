@@ -29,7 +29,7 @@ So the script is stuck at the third step forever.
 Fix
 ++++
 
-Do the following tasks on the control plane nodes for the affected versions.
+Do the following tasks on each control plane node.
 
 1. Update k8s-certs-renew.sh script. 
    The script is in /usr/bin for version 2.1.1 and
@@ -43,16 +43,16 @@ After::
 
     until printf "" 2>>/dev/null >>/dev/tcp/192.168.21.91/6443; do sleep 1; done
 
-192.168.21.91 is the management ip address.
+192.168.21.91 is the management ip address of the control node.
 
 2. Verify that the k8s-certs-renew.sh script is running.
 
-The k8s-certs-renew.sh script should be running in the affected versions.::
+The k8s-certs-renew.sh script could be stuck in the process list.::
 
     $ ps axuww |grep k8s-certs-renew.sh
     root     3452430  0.0  0.0 235784  3540 ?        Ss    2023 372:17 /bin/bash /usr/bin/k8s-certs-renew.sh
 
-3. Kill the process.::
+3. Kill the process if it is stuck in.::
 
     $ sudo kill 3452430
 
