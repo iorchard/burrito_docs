@@ -279,7 +279,7 @@ Run k8s playbook with upgrade_cluster_setup=true.::
 
     $ ./run.sh k8s -e upgrade_cluster_setup=true
 
-Check if the kubernetes version is v1.27.5.::
+Check if the kubernetes version is v1.28.3.::
 
     $ kubectl version
     Client Version: v1.28.3
@@ -287,7 +287,7 @@ Check if the kubernetes version is v1.27.5.::
     Server Version: v1.28.3
 
 Whew~~
-Upgrading kubernetes  is done!
+Upgrading kubernetes is done!
 
 
 Last but not least
@@ -326,8 +326,7 @@ Next, update each openstack component.
 Update OpenStack components
 ----------------------------
 
-Install each openstack component - keystone, glance, placement, neutron
-nova, and cinder - in 1.3.3.::
+Install each openstack component in 1.3.3.::
 
         $ ./scripts/burrito.sh install keystone
         $ ./scripts/burrito.sh install placement
@@ -335,6 +334,8 @@ nova, and cinder - in 1.3.3.::
         $ ./scripts/burrito.sh install neutron
         $ ./scripts/burrito.sh install nova
         $ ./scripts/burrito.sh install cinder
+        $ ./scripts/burrito.sh install horizon
+        $ ./scripts/burrito.sh install btx
 
 Check to see if any openstack operations are okay such as 
 
