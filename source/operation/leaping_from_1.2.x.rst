@@ -145,10 +145,6 @@ Run preflight playbook.::
 
     $ ./run.sh preflight
 
-Run ha playbook.::
-
-    $ ./run.sh ha
-
 You are ready to upgrade kubernetes cluster now.
 
 Upgrade kubernetes
@@ -160,7 +156,7 @@ Upgrade to k8s v1.25.13
 ++++++++++++++++++++++++++
 
 The first upgrade should be to v1.25.13.
-Set kube_version to v1.25.13 in vars.yml.::
+Make sure kube_version is v1.25.13 in vars.yml.::
 
     # aster-leap release is a bridge release for leaping
     # from burrito 1.2.x (k8s v1.24.x) to burrito 1.3.x (k8s v1.28.3)
@@ -303,7 +299,7 @@ Run registry playbook.::
 
     $ ./run.sh registry
 
-Check the last images(e.g. kube-apiserver:v1.28.3) are added to 
+Check the new images(e.g. kube-apiserver:v1.28.3) are added to 
 the local registry.::
 
     $ curl -s control1:32680/v2/kube-apiserver/tags/list
