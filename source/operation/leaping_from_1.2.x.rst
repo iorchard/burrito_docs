@@ -322,16 +322,9 @@ Next, update each openstack component.
 Update OpenStack components
 ----------------------------
 
-Install each openstack component in 1.3.3.::
+Upgrade openstack components in 1.3.3.::
 
-        $ ./scripts/burrito.sh install keystone
-        $ ./scripts/burrito.sh install placement
-        $ ./scripts/burrito.sh install glance
-        $ ./scripts/burrito.sh install neutron
-        $ ./scripts/burrito.sh install nova
-        $ ./scripts/burrito.sh install cinder
-        $ ./scripts/burrito.sh install horizon
-        $ ./scripts/burrito.sh install btx
+        $ ./run.sh burrito --tags=openstack
 
 Check to see if any openstack operations are okay such as 
 
