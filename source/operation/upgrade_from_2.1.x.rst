@@ -1,0 +1,297 @@
+Upgrade from 2.1.x
+===================
+
+This is a guide to upgrade Burrito Begonia 2.1.x to 2.2.0.
+
+I assume Burrito Begonia 2.1.x is already installed and running.
+This guide will show you how to upgrade it to Burrito Begonia 2.2.0.
+
+Here is the example node ip address table.
+
+===============     ================
+Hostname            management IP         
+===============     ================
+control1            192.168.21.111
+control2            192.168.21.112
+control3            192.168.21.113
+compute1            192.168.21.114
+compute2            192.168.21.115
+storage1            192.168.21.116
+storage2            192.168.21.117
+storage3            192.168.21.118
+===============     ================
+
+* KeepAlived VIP: 192.168.21.110
+
+This is a version table between 2.1.x and 2.2.0.
+
+===============  ============= ==============
+Components       Begonia 2.1.x  Begonia 2.2.0
+===============  ============= ==============
+ceph                v18.2.1     v18.2.7
+ceph-client         v18.2.1     v18.2.2
+containerd          v1.7.16     
+kubernetes          v1.30.3
+etcd                v3.5.12
+calico              v3.27.3
+coredns             v1.11.1     same as left
+helm                v3.14.2     same as left
+nerdctl             1.7.4
+crictl              v1.30.0
+nodelocaldns        1.22.28     same as left
+cert-manager        v1.14.7
+metallb             v0.13.9     same as left
+registry            2.8.3       same as left
+===============  ============= ==============
+
+Prepare 2.2.0 iso
+--------------------
+
+We will use Burrito 2.2.0 iso to upgrade the existing Burrito
+2.1.x cluster.
+
+Mount burrito-2.2.0_8.10.iso in /mnt.::
+
+    $ sudo mount -o loop,ro burrito-2.2.0_8.10.iso /mnt
+
+Unarchive burrito-2.2.0 tarball from the iso.::
+
+    $ tar xzf /mnt/burrito-2.2.0.tar.gz
+
+Remove localrepo.cfg and registry.cfg in /etc/haproxy/conf.d/.::
+
+    $ sudo mv /etc/haproxy/conf.d/localrepo.cfg \
+        /etc/haproxy/conf.d/localrepo.cfg.bak
+    $ sudo mv /etc/haproxy/conf.d/registry.cfg \
+        /etc/haproxy/conf.d/registry.cfg.bak
+
+These haproxy configuration files will be recreated while upgrading.
+
+Reload haproxy.service on the first control node.::
+
+    $ sudo systemctl reload haproxy.service
+
+Run prepare.sh script.::
+
+    $ cd burrito-2.2.0
+    $ ./prepare.sh offline
+
+Copy files from the existing burrito dir (e.g. $HOME/burrito-2.1.x).::
+
+    $ cp $HOME/burrito-2.1.x/.vaultpass .
+    $ cp $HOME/burrito-2.1.x/group_vars/all/vault.yml group_vars/all/
+
+Edit hosts and vars.yml for your environment.::
+
+    $ vi hosts
+    $ vi vars.yml
+
+Edit group_vars/all/\*.yml if you modified them
+for your environment.::
+
+    $ vi group_vars/all/netapp_vars.yml
+    $ vi group_vars/all/ceph_vars.yml
+
+Check the node connectivity.::
+
+    $ ./run.sh ping
+
+Check if keepalived_vip(192.168.21.110) is on the first control node.::
+
+    $ ip -br a s dev eth1
+    eth1             UP             192.168.21.111/24 192.168.21.110/32
+
+If it is not, move keepalived_vip to the first control node by restarting 
+keepalived service.
+For example, if keepalived_vip is on the second control node, 
+restart keepalived service on the second control node.::
+
+    $ sudo systemctl restart keepalived.service
+
+Then the keepalived_vip will be moved to the first control node.
+
+Remove asklepios pods.::
+
+    $ sudo kubectl delete deploy asklepios -n kube-system
+    deployment.apps "asklepios" deleted
+
+These pods will be recreated while upgrading.
+
+Run preflight playbook.::
+
+    $ ./run.sh preflight
+
+You are ready to upgrade.
+
+
+Upgrade Ceph
+--------------
+
+We will upgrade Burrito 2.1.8 (ceph reef 18.2.1) to Burrito 2.2.0
+(ceph reef 18.2.7).
+
+Here is the example ceph node table.
+
+===============     ================    ==============
+Host                Role                IP address
+===============     ================    ==============
+storage1            mon,mgr,osd         192.168.24.116
+storage2            mon,mgr,osd,rgw     192.168.24.117
+storage3            mon,osd,rgw         192.168.24.118
+===============     ================    ==============
+
+* ceph public/cluster network: 192.168.24.0/24
+* osd devices on each osd node: /dev/sdb, /dev/sdc, /dev/sdd
+
+Check ceph health status.::
+
+    $ sudo ceph -s
+
+Turn off autoscale.::
+
+    $ sudo ceph osd pool set noautoscale
+    noautoscale is set, all pools now have autoscale off
+
+Upgrade to ceph v18.2.7.::
+
+    $ sudo ceph orch upgrade start --image 192.168.21.110:5000/ceph/ceph:v18.2.7
+    Initiating upgrade to 192.168.21.110:5000/ceph/ceph:v18.2.7
+
+Check upgrade status.::
+
+    $ sudo ceph orch upgrade status
+    {
+        "target_image": "192.168.21.110:5000/ceph/ceph:v18.2.7",
+        "in_progress": true,
+        "which": "Upgrading all daemon types on all hosts",
+        "services_complete": [],
+        "progress": "",
+        "message": "Doing first pull of 192.168.21.110:5000/ceph/ceph:v18.2.7 image",
+        "is_paused": false
+    }
+
+It will upgrade manager, monitor, crash, osd, and radosgw in that order.
+
+Check each ceph component is upgraded to new versions.::
+
+    $ sudo ceph versions
+    {
+        "mon": {
+            "ceph version 18.2.7 (6b0e988052ec84cf2d4a54ff9bbbc5e720b621ad) reef (stable)": 3
+        },
+        "mgr": {
+            "ceph version 18.2.7 (6b0e988052ec84cf2d4a54ff9bbbc5e720b621ad) reef (stable)": 2
+        },
+        "osd": {
+            "ceph version 18.2.7 (6b0e988052ec84cf2d4a54ff9bbbc5e720b621ad) reef (stable)": 9
+        },
+        "rgw": {
+            "ceph version 18.2.7 (6b0e988052ec84cf2d4a54ff9bbbc5e720b621ad) reef (stable)": 2
+        },
+        "overall": {
+            "ceph version 18.2.7 (6b0e988052ec84cf2d4a54ff9bbbc5e720b621ad) reef (stable)": 16
+        }
+    }
+
+The 18.2.7 ceph-common package is not available for Rocky Linux 8.
+The latest ceph-common package for Rocky Linux 8 is v18.2.2.
+Upgrade the ceph client package to v18.2.2 on every node.::
+
+    $ . ~/.envs/burrito/bin/activate
+    $ ansible all -m package -a "name=ceph-common state=latest" --become
+
+Check the ceph client version.::
+
+    $ ceph --version
+    ceph version 18.2.2 (531c0d11a1c5d39fbfe6aa8a521f023abf3bf3e2) reef (stable)
+
+Ceph upgrade is done!
+
+Upgrade kubernetes
+-------------------
+
+First,
+we need to modify kube-apiserver manifest.
+
+Modify --anonymous-auth to true in
+/etc/kubernetes/manifests/kube-apiserver.yaml on every control node.::
+
+    $ sudo vi /etc/kubernetes/manifests/kube-apiserver.yaml
+    ...
+        - --anonymous-auth=true
+
+Wait until kube-apiserver is restarted on each control node.
+
+Check if we can connect to each kube-apiserver.::
+
+    $ curl -sk https://control1:6443/healthz
+    ok
+    $ curl -sk https://control2:6443/healthz
+    ok
+    $ curl -sk https://control3:6443/healthz
+    ok
+
+Run k8s playbook with upgrade_cluster_setup=true.::
+
+    $ ./run.sh k8s -e upgrade_cluster_setup=true
+
+It will take a long time. 
+It took about 50 minutes in my testbed.
+
+Check if the kubernetes version is v1.30.3.::
+
+    $ kubectl version
+    Client Version: v1.31.9
+    Kustomize Version: v5.4.2
+    Server Version: v1.31.9
+
+Run storage playbook.::
+
+    $ ./run.sh storage
+
+Run patch playbook.::
+
+    $ ./run.sh patch
+
+Run registry playbook.::
+
+    $ ./run.sh registry
+
+Check the new images(e.g. kube-apiserver:v1.31.9) are added to 
+the local registry.::
+
+    $ curl -sk https://192.168.21.110:32680/v2/kube-apiserver/tags/list
+    {"name":"kube-apiserver","tags":["v1.30.3","v1.31.9"]}
+
+Run landing playbook.::
+
+    $ ./run.sh landing
+
+Check the new images (e.g. kube-apiserver:v1.31.9) are added to 
+the genesis registry.::
+
+    $ curl -sk https://192.168.21.110:6000/v2/kube-apiserver/tags/list
+    {"name":"kube-apiserver","tags":["v1.30.3","v1.31.9"]}
+
+Kubernetes upgrade is done!
+
+Upgrade OpenStack 
+-------------------
+
+Run burrito playbook with system tag to update /etc/hosts file.::
+
+    $ ./run.sh burrito --tags=system
+
+Run burrito playbook with openstack tag to update openstack components.::
+
+    $ ./run.sh burrito --tags=openstack
+
+Check to see if any openstack operations are okay such as
+
+* listing openstack volume, compute services, and network agent service
+* listing volumes and instances
+* creating an image and a volume
+* creating an instance
+
+You’ve completed the upgrade to Burrito 2.0.0.
+
