@@ -322,7 +322,11 @@ Next, update each openstack component.
 Update OpenStack components
 ----------------------------
 
-Upgrade openstack components in 1.3.3.::
+Run burrito playbook with system tag to update /etc/hosts file.::
+
+    $ ./run.sh burrito --tags=system
+
+Run burrito playbook with openstack tag to update openstack components.::
 
         $ ./run.sh burrito --tags=openstack
 
