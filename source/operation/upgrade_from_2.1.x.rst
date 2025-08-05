@@ -30,19 +30,40 @@ Components       Begonia 2.1.x  Begonia 2.2.0
 ===============  ============= ==============
 ceph                v18.2.1     v18.2.7
 ceph-client         v18.2.1     v18.2.2
-containerd          v1.7.16     
-kubernetes          v1.30.3
-etcd                v3.5.12
-calico              v3.27.3
-coredns             v1.11.1     same as left
-helm                v3.14.2     same as left
-nerdctl             1.7.4
-crictl              v1.30.0
-nodelocaldns        1.22.28     same as left
-cert-manager        v1.14.7
+containerd          v1.7.16     v2.0.5
+kubernetes          v1.30.3     v1.31.9
+etcd                v3.5.12     v3.5.16
+calico              v3.27.3     same as left
+coredns             v1.11.1     v1.11.3
+helm                v3.14.2     v1.16.4
+nerdctl             1.7.4       2.0.5
+crictl              v1.30.0     v1.31.1
+nodelocaldns        1.22.28     1.25.0
+cert-manager        v1.14.7     v1.15.3
 metallb             v0.13.9     same as left
 registry            2.8.3       same as left
 ===============  ============= ==============
+
+Modify kube-apiserver
+----------------------
+
+Modify --anonymous-auth to true in
+/etc/kubernetes/manifests/kube-apiserver.yaml on every control node.::
+
+    $ sudo vi /etc/kubernetes/manifests/kube-apiserver.yaml
+    ...
+        - --anonymous-auth=true
+
+Wait until kube-apiserver is restarted on each control node.
+
+Check if we can connect to each kube-apiserver.::
+
+    $ curl -sk https://control1:6443/healthz
+    ok
+    $ curl -sk https://control2:6443/healthz
+    ok
+    $ curl -sk https://control3:6443/healthz
+    ok
 
 Prepare 2.2.0 iso
 --------------------
@@ -110,10 +131,11 @@ restart keepalived service on the second control node.::
 
 Then the keepalived_vip will be moved to the first control node.
 
-Remove asklepios pods.::
+Remove asklepios and registry pods.::
 
-    $ sudo kubectl delete deploy asklepios -n kube-system
+    $ sudo kubectl delete deploy asklepios registry -n kube-system
     deployment.apps "asklepios" deleted
+    deployment.apps "registry" deleted
 
 These pods will be recreated while upgrading.
 
@@ -126,6 +148,8 @@ You are ready to upgrade.
 
 Upgrade Ceph
 --------------
+
+If ceph is not installed, skip this.
 
 We will upgrade Burrito 2.1.8 (ceph reef 18.2.1) to Burrito 2.2.0
 (ceph reef 18.2.7).
@@ -197,8 +221,8 @@ The 18.2.7 ceph-common package is not available for Rocky Linux 8.
 The latest ceph-common package for Rocky Linux 8 is v18.2.2.
 Upgrade the ceph client package to v18.2.2 on every node.::
 
-    $ . ~/.envs/burrito/bin/activate
-    $ ansible all -m package -a "name=ceph-common state=latest" --become
+    $ . ~/.envs/burrito/bin/activate && \
+      ansible all -m package -a "name=ceph-common state=latest" --become
 
 Check the ceph client version.::
 
@@ -210,26 +234,18 @@ Ceph upgrade is done!
 Upgrade kubernetes
 -------------------
 
-First,
-we need to modify kube-apiserver manifest.
+There is a problem with upgrading k8s v1.30 to v1.31. 
 
-Modify --anonymous-auth to true in
-/etc/kubernetes/manifests/kube-apiserver.yaml on every control node.::
+When kubelet is upgraded and restarted before kube-apiserver is upgraded,
+some pods go to the failed states due to version skew problem and
+the upgrade job is aborted.
 
-    $ sudo vi /etc/kubernetes/manifests/kube-apiserver.yaml
-    ...
-        - --anonymous-auth=true
+To work around this problem, 
+edit vars.yml to add *CreateJob* in kubeadm_ignore_preflight_errors.::
 
-Wait until kube-apiserver is restarted on each control node.
-
-Check if we can connect to each kube-apiserver.::
-
-    $ curl -sk https://control1:6443/healthz
-    ok
-    $ curl -sk https://control2:6443/healthz
-    ok
-    $ curl -sk https://control3:6443/healthz
-    ok
+    kubeadm_ignore_preflight_errors:
+      - "Port-{{ kube_apiserver_port }}"
+      - "CreateJob"
 
 Run k8s playbook with upgrade_cluster_setup=true.::
 
@@ -238,12 +254,17 @@ Run k8s playbook with upgrade_cluster_setup=true.::
 It will take a long time. 
 It took about 50 minutes in my testbed.
 
-Check if the kubernetes version is v1.30.3.::
+Check if the kubernetes version is upgraded to v1.31.9.::
 
     $ kubectl version
     Client Version: v1.31.9
     Kustomize Version: v5.4.2
     Server Version: v1.31.9
+
+(For netapp nfs only)
+Uninstall trident before running storage playbook.::
+
+    $ sudo tridentctl uninstall -n trident
 
 Run storage playbook.::
 
@@ -275,23 +296,79 @@ the genesis registry.::
 
 Kubernetes upgrade is done!
 
-Upgrade OpenStack 
+Update OpenStack 
 -------------------
+
+Before updating openstack
+++++++++++++++++++++++++++++
+
+(For netapp nfs only)
+Before upgrade, stop all VM instances.::
+
+    root@btx-0:/# o server stop <VM_NAME> [<VM_NAME> ...]
+
+(For netapp nfs only)
+Preserve nova-instances PVC if NetApp NFS is the default storage backend.
+
+Patch nova-instances PVC.::
+
+    $ NOVA_INSTANCES_PVC=$(kubectl get pvc nova-instances -n openstack \
+        -o jsonpath='{.spec.volumeName}')
+    $ echo $NOVA_INSTANCES_PVC
+    pvc-cc0d533d-eaaf-4a8f-81a0-3e11d9720944
+    $ sudo kubectl patch pv $NOVA_INSTANCES_PVC -p \
+        '{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}'
+    persistentvolume/pvc-cc0d533d-eaaf-4a8f-81a0-3e11d9720944 patched
+
+Uninstall nova which cannot be upgraded while it is running.::
+
+    $ ./scripts/burrito.sh uninstall nova
+
+(For netapp nfs only)
+Add volumeName in openstack-helm/nova/templates/pvc-instances.yaml.::
+
+    spec:
+      accessModes: [ "ReadWriteMany" ]
+      resources:
+        requests:
+          storage: {{ .Values.volume.size }}
+      storageClassName: {{ .Values.volume.class_name }}
+      volumeName: pvc-cc0d533d-eaaf-4a8f-81a0-3e11d9720944
+    {{- end }}
+
+(For netapp nfs only)
+Unmount /var/lib/nova/instances in every compute node
+if netapp NFS is the default storage backend
+Run the following ansible command.::
+
+    $ . ~/.envs/burrito/bin/activate && \
+      ansible --become compute-node -m ansible.posix.mount \
+        -a "path=/var/lib/nova/instances state=unmounted"
+
+
+Update openstack components
++++++++++++++++++++++++++++++
 
 Run burrito playbook with system tag to update /etc/hosts file.::
 
     $ ./run.sh burrito --tags=system
 
-Run burrito playbook with openstack tag to update openstack components.::
+Run burrito playbook with openstack tag to update openstack.::
 
     $ ./run.sh burrito --tags=openstack
 
-Check to see if any openstack operations are okay such as
+Check any openstack operations are okay.
 
-* listing openstack volume, compute services, and network agent service
-* listing volumes and instances
-* creating an image and a volume
-* creating an instance
+* checking openstack compute, volume and network agent services
+* listing images, volumes and instances
+* creating an image and a volume, and an instance
+* deleting an instance, a volume, and an image
 
-You’ve completed the upgrade to Burrito 2.0.0.
+If everything is okay, start the previously stopped VM instances.::
+
+    root@btx-0:/# o server start <VM_NAME> [<VM_NAME> ...]
+
+OpenStack is updated.
+
+You’ve completed the upgrade to Burrito 2.2.0.
 
