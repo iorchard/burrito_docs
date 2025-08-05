@@ -325,6 +325,13 @@ Uninstall nova which cannot be upgraded while it is running.::
     $ ./scripts/burrito.sh uninstall nova
 
 (For netapp nfs only)
+Patch nova-instances PVC to nullify claim.::
+
+    $ sudo kubectl patch pv $NOVA_INSTANCES_PVC -p \
+        '{"spec":{"claimRef": {"resourceVersion": null, "uid": null}}}'
+    persistentvolume/pvc-cc0d533d-eaaf-4a8f-81a0-3e11d9720944 patched
+
+(For netapp nfs only)
 Add volumeName in openstack-helm/nova/templates/pvc-instances.yaml.::
 
     spec:
