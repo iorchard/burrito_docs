@@ -47,7 +47,7 @@ registry            2.8.3       same as left
 Modify kube-apiserver
 ----------------------
 
-Modify --anonymous-auth to true in
+Modify \--anonymous-auth to true in
 /etc/kubernetes/manifests/kube-apiserver.yaml on every control node.::
 
     $ sudo vi /etc/kubernetes/manifests/kube-apiserver.yaml
@@ -144,6 +144,109 @@ Run preflight playbook.::
     $ ./run.sh preflight
 
 You are ready to upgrade.
+
+Update OpenStack
+-----------------
+
+Update OpenStack Infra components
++++++++++++++++++++++++++++++++++++
+
+Update ingress, libvirt, mariadb, memcached, and rabbitmq.::
+
+    $ ./scripts/burrito.sh install ingress
+    $ ./scripts/burrito.sh install libvirt
+    $ ./scripts/burrito.sh install mariadb
+    $ ./scripts/burrito.sh install memcached
+    $ ./scripts/burrito.sh install rabbitmq
+    ...
+
+Make sure the upated pods are running and ready before you move on to the next
+component.
+
+
+Update OpenStack components
+++++++++++++++++++++++++++++
+
+(For netapp nfs only)
+Before upgrade, stop all VM instances.::
+
+    root@btx-0:/# o server stop <VM_NAME> [<VM_NAME> ...]
+
+Update keystone, placement, neutron.::
+
+    $ ./scripts/burrito.sh install keystone
+    $ ./scripts/burrito.sh install placement
+    $ ./scripts/burrito.sh install neutron
+
+Nova cannot be updated while it is running.
+So we will uninstall nova.
+
+(For netapp nfs only)
+Preserve nova-instances PVC if NetApp NFS is the default storage backend.
+Patch nova-instances PVC.::
+
+    $ NOVA_INSTANCES_PVC=$(kubectl get pvc nova-instances -n openstack \
+        -o jsonpath='{.spec.volumeName}')
+    $ echo $NOVA_INSTANCES_PVC
+    pvc-cc0d533d-eaaf-4a8f-81a0-3e11d9720944
+    $ sudo kubectl patch pv $NOVA_INSTANCES_PVC -p \
+        '{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}'
+    persistentvolume/pvc-cc0d533d-eaaf-4a8f-81a0-3e11d9720944 patched
+
+Uninstall nova which cannot be upgraded while it is running.::
+
+    $ ./scripts/burrito.sh uninstall nova
+
+(For netapp nfs only)
+Patch nova-instances PVC to nullify the claim.::
+
+    $ sudo kubectl patch pv $NOVA_INSTANCES_PVC -p \
+        '{"spec":{"claimRef": {"resourceVersion": null, "uid": null}}}'
+    persistentvolume/pvc-cc0d533d-eaaf-4a8f-81a0-3e11d9720944 patched
+
+(For netapp nfs only)
+Add volumeName in openstack-helm/nova/templates/pvc-instances.yaml.::
+
+    spec:
+      accessModes: [ "ReadWriteMany" ]
+      resources:
+        requests:
+          storage: {{ .Values.volume.size }}
+      storageClassName: {{ .Values.volume.class_name }}
+      volumeName: pvc-cc0d533d-eaaf-4a8f-81a0-3e11d9720944
+    {{- end }}
+
+(For netapp nfs only)
+Unmount /var/lib/nova/instances in every compute node
+if netapp NFS is the default storage backend
+Run the following ansible command.::
+
+    $ . ~/.envs/burrito/bin/activate && \
+      ansible --become compute-node -m ansible.posix.mount \
+        -a "path=/var/lib/nova/instances state=unmounted"
+
+Install nova, glance, cinder, and horizon.::
+
+    $ ./scripts/burrito.sh install nova
+    $ ./scripts/burrito.sh install glance
+    $ ./scripts/burrito.sh install cinder
+    $ ./scripts/burrito.sh install horizon
+
+Make sure the updated pods are running and ready before you move on to the next
+component.
+
+Check any openstack operations are okay.
+
+* checking openstack compute, volume and network agent services
+* listing images, volumes and instances
+* creating an image and a volume, and an instance
+* deleting an instance, a volume, and an image
+
+If everything is okay, start the previously stopped VM instances.::
+
+    root@btx-0:/# o server start <VM_NAME> [<VM_NAME> ...]
+
+OpenStack is updated.
 
 
 Upgrade Ceph
@@ -300,86 +403,6 @@ the genesis registry.::
     {"name":"kube-apiserver","tags":["v1.30.3","v1.31.9"]}
 
 Kubernetes upgrade is done!
-
-Update OpenStack 
--------------------
-
-Before updating openstack
-++++++++++++++++++++++++++++
-
-(For netapp nfs only)
-Before upgrade, stop all VM instances.::
-
-    root@btx-0:/# o server stop <VM_NAME> [<VM_NAME> ...]
-
-(For netapp nfs only)
-Preserve nova-instances PVC if NetApp NFS is the default storage backend.
-Patch nova-instances PVC.::
-
-    $ NOVA_INSTANCES_PVC=$(kubectl get pvc nova-instances -n openstack \
-        -o jsonpath='{.spec.volumeName}')
-    $ echo $NOVA_INSTANCES_PVC
-    pvc-cc0d533d-eaaf-4a8f-81a0-3e11d9720944
-    $ sudo kubectl patch pv $NOVA_INSTANCES_PVC -p \
-        '{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}'
-    persistentvolume/pvc-cc0d533d-eaaf-4a8f-81a0-3e11d9720944 patched
-
-Uninstall nova which cannot be upgraded while it is running.::
-
-    $ ./scripts/burrito.sh uninstall nova
-
-(For netapp nfs only)
-Patch nova-instances PVC to nullify the claim.::
-
-    $ sudo kubectl patch pv $NOVA_INSTANCES_PVC -p \
-        '{"spec":{"claimRef": {"resourceVersion": null, "uid": null}}}'
-    persistentvolume/pvc-cc0d533d-eaaf-4a8f-81a0-3e11d9720944 patched
-
-(For netapp nfs only)
-Add volumeName in openstack-helm/nova/templates/pvc-instances.yaml.::
-
-    spec:
-      accessModes: [ "ReadWriteMany" ]
-      resources:
-        requests:
-          storage: {{ .Values.volume.size }}
-      storageClassName: {{ .Values.volume.class_name }}
-      volumeName: pvc-cc0d533d-eaaf-4a8f-81a0-3e11d9720944
-    {{- end }}
-
-(For netapp nfs only)
-Unmount /var/lib/nova/instances in every compute node
-if netapp NFS is the default storage backend
-Run the following ansible command.::
-
-    $ . ~/.envs/burrito/bin/activate && \
-      ansible --become compute-node -m ansible.posix.mount \
-        -a "path=/var/lib/nova/instances state=unmounted"
-
-
-Update openstack components
-+++++++++++++++++++++++++++++
-
-Run burrito playbook with system tag to update /etc/hosts file.::
-
-    $ ./run.sh burrito --tags=system
-
-Run burrito playbook with openstack tag to update openstack.::
-
-    $ ./run.sh burrito --tags=openstack
-
-Check any openstack operations are okay.
-
-* checking openstack compute, volume and network agent services
-* listing images, volumes and instances
-* creating an image and a volume, and an instance
-* deleting an instance, a volume, and an image
-
-If everything is okay, start the previously stopped VM instances.::
-
-    root@btx-0:/# o server start <VM_NAME> [<VM_NAME> ...]
-
-OpenStack is updated.
 
 You’ve completed the upgrade to Burrito 2.2.0.
 
