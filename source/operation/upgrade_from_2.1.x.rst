@@ -229,6 +229,11 @@ Check the ceph client version.::
     $ ceph --version
     ceph version 18.2.2 (531c0d11a1c5d39fbfe6aa8a521f023abf3bf3e2) reef (stable)
 
+Turn back on autoscale.::
+
+    $ sudo ceph osd pool unset noautoscale
+    noautoscale is unset, all pools now back to its previous mode
+
 Ceph upgrade is done!
 
 Upgrade kubernetes
@@ -309,7 +314,6 @@ Before upgrade, stop all VM instances.::
 
 (For netapp nfs only)
 Preserve nova-instances PVC if NetApp NFS is the default storage backend.
-
 Patch nova-instances PVC.::
 
     $ NOVA_INSTANCES_PVC=$(kubectl get pvc nova-instances -n openstack \
@@ -325,7 +329,7 @@ Uninstall nova which cannot be upgraded while it is running.::
     $ ./scripts/burrito.sh uninstall nova
 
 (For netapp nfs only)
-Patch nova-instances PVC to nullify claim.::
+Patch nova-instances PVC to nullify the claim.::
 
     $ sudo kubectl patch pv $NOVA_INSTANCES_PVC -p \
         '{"spec":{"claimRef": {"resourceVersion": null, "uid": null}}}'
