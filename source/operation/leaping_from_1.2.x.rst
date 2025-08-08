@@ -59,6 +59,9 @@ modify \--anonymous-auth to true in
         - --anonymous-auth=true
 
 Wait until kube-apiserver is restarted on each control node.
+Or restart kubelet service if you are impatient.::
+
+    $ sudo systemctl restart kubelet.service
 
 Check if you can connect to each kube-apiserver.::
 
@@ -319,16 +322,56 @@ You finished a long upgrade journey from k8s v1.24.14 to v1.28.3.
 
 Next, update each openstack component.
 
-Update OpenStack components
-----------------------------
+Update OpenStack
+-----------------
 
 Run burrito playbook with system tag to update /etc/hosts file.::
 
     $ ./run.sh burrito --tags=system
 
-Run burrito playbook with openstack tag to update openstack components.::
+Update OpenStack Infra components
++++++++++++++++++++++++++++++++++++
 
-        $ ./run.sh burrito --tags=openstack
+Update mariadb (mariadb server is upgraded from 10.6.11 to 10.6.16).::
+
+    $ ./scripts/burrito.sh install mariadb
+
+Make sure the updated pods are running and ready before you move on to next.
+
+Update OpenStack components
+++++++++++++++++++++++++++++
+
+(For netapp nfs only)
+Before upgrade, stop all VM instances.::
+
+    root@btx-0:/# o server stop <VM_NAME> [<VM_NAME> ...]
+
+Update keystone, placement, neutron, nova, glance, cinder, horizon, and btx.::
+
+    $ ./scripts/burrito.sh install keystone
+    $ ./scripts/burrito.sh install placement
+    $ ./scripts/burrito.sh install neutron
+    $ ./scripts/burrito.sh install nova
+    $ ./scripts/burrito.sh install glance
+    $ ./scripts/burrito.sh install cinder
+    $ ./scripts/burrito.sh install horizon
+    $ ./scripts/burrito.sh install btx
+
+Make sure the updated pods are running and ready before you move on to the next
+component.
+
+Check any openstack operations are okay.
+
+* checking openstack compute, volume and network agent services
+* listing images, volumes and instances
+* creating an image and a volume, and an instance
+* deleting an instance, a volume, and an image
+
+If everything is okay, start the previously stopped VM instances.::
+
+    root@btx-0:/# o server start <VM_NAME> [<VM_NAME> ...]
+
+OpenStack is updated.
 
 Check to see if any openstack operations are okay such as 
 
