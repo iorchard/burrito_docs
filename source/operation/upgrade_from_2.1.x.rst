@@ -158,9 +158,8 @@ Update ingress, libvirt, mariadb, memcached, and rabbitmq.::
     $ ./scripts/burrito.sh install mariadb
     $ ./scripts/burrito.sh install memcached
     $ ./scripts/burrito.sh install rabbitmq
-    ...
 
-Make sure the upated pods are running and ready before you move on to the next
+Make sure the updated pods are running and ready before you move on to the next
 component.
 
 
