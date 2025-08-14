@@ -341,11 +341,6 @@ Make sure the updated pods are running and ready before you move on to next.
 Update OpenStack components
 ++++++++++++++++++++++++++++
 
-(For netapp nfs only)
-Before upgrade, stop all VM instances.::
-
-    root@btx-0:/# o server stop <VM_NAME> [<VM_NAME> ...]
-
 Update keystone, placement, neutron, nova, glance, cinder, horizon, and btx.::
 
     $ ./scripts/burrito.sh install keystone
@@ -366,18 +361,5 @@ Check any openstack operations are okay.
 * listing images, volumes and instances
 * creating an image and a volume, and an instance
 * deleting an instance, a volume, and an image
-
-If everything is okay, start the previously stopped VM instances.::
-
-    root@btx-0:/# o server start <VM_NAME> [<VM_NAME> ...]
-
-OpenStack is updated.
-
-Check to see if any openstack operations are okay such as 
-
-* listing openstack volume, compute services, and network agent service
-* listing volumes and instances
-* creating an image and a volume
-* creating an instance
 
 You've completed the upgrade to Burrito 1.3.3.
