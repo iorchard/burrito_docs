@@ -953,11 +953,11 @@ Check all nodes are in ready state.::
 
    $ sudo kubectl get nodes
    NAME       STATUS   ROLES           AGE   VERSION
-   compute1   Ready    <none>          15m   v1.30.3
-   compute2   Ready    <none>          15m   v1.30.3
-   control1   Ready    control-plane   17m   v1.30.3
-   control2   Ready    control-plane   16m   v1.30.3
-   control3   Ready    control-plane   16m   v1.30.3
+   compute1   Ready    <none>          15m   v1.32.5
+   compute2   Ready    <none>          15m   v1.32.5
+   control1   Ready    control-plane   17m   v1.32.5
+   control2   Ready    control-plane   16m   v1.32.5
+   control3   Ready    control-plane   16m   v1.32.5
 
 Step.5 Storage
 ++++++++++++++++
